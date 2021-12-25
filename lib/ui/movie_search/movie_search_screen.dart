@@ -17,6 +17,8 @@ class _MovieSearchScreenState extends State<MovieSearchScreen> {
   final TextEditingController _textEditingController = TextEditingController();
   List<Movie> _movies = [];
   Timer? _debounce;
+  static List<String> themeList = ['latest', 'actions', 'romance', 'science'];
+  String _value = themeList[0];
 
   Future<void> getAllMovies() async {
     await _movieSearchData.initMovieData();
@@ -87,6 +89,17 @@ class _MovieSearchScreenState extends State<MovieSearchScreen> {
             ),
             onChanged: onQueryChanged,
           ),
+          DropdownButton<String>(
+              style: TextStyle(color: Colors.white),
+              value: _value,
+              isExpanded: true,
+              items: themeList
+                  .map(
+                      (e) => DropdownMenuItem<String>(value: e, child: Text(e)))
+                  .toList(),
+              onChanged: (value) => setState(() {
+                    _value = value ?? themeList[0];
+                  })),
           Expanded(
             child: GridView.builder(
               padding: const EdgeInsets.all(8),
