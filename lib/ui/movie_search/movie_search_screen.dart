@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:movie_search/model/genre.dart';
 import 'package:movie_search/model/movie.dart';
 import 'package:movie_search/ui/movie_detail/movie_detail_screen.dart';
 import 'package:movie_search/ui/movie_search/movie_search_data.dart';
@@ -16,9 +17,9 @@ class _MovieSearchScreenState extends State<MovieSearchScreen> {
   final MovieSearchData _movieSearchData = MovieSearchData();
   final TextEditingController _textEditingController = TextEditingController();
   List<Movie> _movies = [];
+  List<Genre> _genres = [];
   Timer? _debounce;
-  static List<String> themeList = ['latest', 'actions', 'romance', 'science'];
-  String _value = themeList[0];
+  Genre _value = Genre(id: 28, name: '액션'); // 액션 장르 id
 
   Future<void> getAllMovies() async {
     await _movieSearchData.initMovieData();
@@ -28,8 +29,18 @@ class _MovieSearchScreenState extends State<MovieSearchScreen> {
     });
   }
 
+  Future<void> getGenres() async {
+    _genres = await _movieSearchData.getGenres();
+    setState(() {});
+  }
+
   Future<void> searchMoviesWithQuery(String query) async {
     _movies = await _movieSearchData.getMoviesWithQuery(query);
+    setState(() {});
+  }
+
+  Future<void> searchMoviesWithGenre(Genre genre) async {
+    _movies = await _movieSearchData.getMoviesWithGenre(genre);
     setState(() {});
   }
 
@@ -45,6 +56,7 @@ class _MovieSearchScreenState extends State<MovieSearchScreen> {
 
   @override
   void initState() {
+    getGenres();
     getAllMovies();
     super.initState();
   }
@@ -89,16 +101,18 @@ class _MovieSearchScreenState extends State<MovieSearchScreen> {
             ),
             onChanged: onQueryChanged,
           ),
-          DropdownButton<String>(
-              style: TextStyle(color: Colors.white),
+          DropdownButton<Genre>(
+              style: const TextStyle(color: Colors.white),
+              dropdownColor: Colors.black,
               value: _value,
               isExpanded: true,
-              items: themeList
-                  .map(
-                      (e) => DropdownMenuItem<String>(value: e, child: Text(e)))
+              items: _genres
+                  .map((e) =>
+                      DropdownMenuItem<Genre>(value: e, child: Text(e.name)))
                   .toList(),
               onChanged: (value) => setState(() {
-                    _value = value ?? themeList[0];
+                    _value = value ?? Genre(id: 28, name: '액션');
+                    searchMoviesWithGenre(_value);
                   })),
           Expanded(
             child: GridView.builder(
