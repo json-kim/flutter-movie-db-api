@@ -9,16 +9,19 @@ void main() {
 
     final totalPage = await _movieApi.fetchTotalPage();
 
-    final searchMovies = await _movieApi.fetchMoviesWithQuery(query: '');
-
     final genres = await _movieApi.fetchGenres();
 
-    // expect(response.first.title, '스파이더맨: 노 웨이 홈');
+    final searchResponse =
+        await _movieApi.fetchMoviesWithQuery(query: '스파이더맨 노 웨이 홈');
 
-    // expect(totalPage, 31653);
+    expect(response.first.title, '스파이더맨: 노 웨이 홈');
 
-    // expect(searchMovies.length, 20);
+    expect(totalPage, 31706);
 
     expect(genres[0].name, '액션');
+
+    expect(queryChange('스파이더맨 노 웨이 홈'), '스파이더맨+노+웨이+홈');
+
+    expect(searchResponse.first.title, '스파이더맨: 노 웨이 홈');
   });
 }

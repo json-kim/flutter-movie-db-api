@@ -35,9 +35,9 @@ class TMDBApi {
   // 쿼리로 영화 정보 검색하여 가져오기
   Future<List<Movie>> fetchMoviesWithQuery({required String query}) async {
     // query가 빈 문자열일 경우 popular movie 데이터 가져오기
-    final url = query.isEmpty
-        ? 'https://api.themoviedb.org/3/movie/popular?api_key=bb7dc78e99a7426412596173e43a6781&language=ko-KR'
-        : 'https://api.themoviedb.org/3/search/movie?api_key=$apiKey&query=$query&language=ko-KR';
+    final changedQuery = queryChange(query);
+    final url =
+        'https://api.themoviedb.org/3/search/movie?api_key=$apiKey&query=$changedQuery&language=ko-KR';
 
     final response = await http.get(Uri.parse(url));
 
@@ -76,4 +76,8 @@ class TMDBApi {
       throw Exception('Failed to load movies with genre');
     }
   }
+}
+
+String queryChange(String query) {
+  return (query.split(' ')..removeWhere((e) => e.trim().isEmpty)).join('+');
 }

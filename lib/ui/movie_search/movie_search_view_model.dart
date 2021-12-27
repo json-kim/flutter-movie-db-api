@@ -9,6 +9,8 @@ class MovieSearchViewModel with ChangeNotifier {
   final TMDBApi movieDBApi;
   List<Movie> _loadedMovies = [];
   List<Genre> _loadedGenres = [];
+  Genre currentGenre = Genre(id: 28, name: '액션');
+  int _currentPage = 1;
   UnmodifiableListView<Movie> get movies => UnmodifiableListView(_loadedMovies);
   UnmodifiableListView<Genre> get genres => UnmodifiableListView(_loadedGenres);
   bool isLoading = false;
@@ -20,6 +22,13 @@ class MovieSearchViewModel with ChangeNotifier {
   void loadingStateChange(bool state) {
     isLoading = state;
     notifyListeners();
+  }
+
+  void genreChange(Genre genre) {
+    if (currentGenre != genre) {
+      _currentPage = 1;
+    }
+    currentGenre = genre;
   }
 
   Future<void> initMovieData() async {
@@ -37,6 +46,9 @@ class MovieSearchViewModel with ChangeNotifier {
   }
 
   Future<void> getMoviesWithQuery(String query) async {
+    if (query.isEmpty) {
+      return;
+    }
     loadingStateChange(true);
 
     final movies = await movieDBApi.fetchMoviesWithQuery(query: query);
@@ -50,10 +62,13 @@ class MovieSearchViewModel with ChangeNotifier {
     _loadedGenres = genres;
   }
 
-  Future<void> getMoviesWithGenre(Genre genre) async {
+  Future<void> getMoviesWithGenre(Genre? genre) async {
+    genre ??= Genre(id: 28, name: '액션');
+    genreChange(genre);
     loadingStateChange(true);
 
-    final movies = await movieDBApi.fetchMoviesWithGenre(genre: genre);
+    final movies =
+        await movieDBApi.fetchMoviesWithGenre(genre: genre, page: _currentPage);
     _loadedMovies = movies;
 
     loadingStateChange(false);

@@ -17,10 +17,10 @@ class MovieSearchScreen extends StatefulWidget {
 class _MovieSearchScreenState extends State<MovieSearchScreen> {
   final TextEditingController _textEditingController = TextEditingController();
   Timer? _debounce;
-  Genre _value = Genre(id: 28, name: '액션'); // 액션 장르 id
 
   // 디바운싱 처리
-  void onQueryChanged(ValueChanged<String> searchMovie, String query) {
+  void onQueryChanged(
+      {required ValueChanged<String> searchMovie, required String query}) {
     if (_debounce?.isActive ?? false) {
       _debounce?.cancel();
     }
@@ -77,26 +77,26 @@ class _MovieSearchScreenState extends State<MovieSearchScreen> {
                 },
               ),
             ),
-            onChanged: (value) => onQueryChanged((String query) {
-              context.read<MovieSearchViewModel>().getMoviesWithQuery(query);
-            }, value),
+            onChanged: (value) => onQueryChanged(
+              searchMovie: (query) {
+                context.read<MovieSearchViewModel>().getMoviesWithQuery(query);
+              },
+              query: value,
+            ),
           ),
           DropdownButton<Genre>(
               style: const TextStyle(color: Colors.white),
               dropdownColor: Colors.black,
-              value: _value,
+              value: viewModel.currentGenre,
               isExpanded: true,
               menuMaxHeight: 250,
               items: viewModel.genres
                   .map((e) =>
                       DropdownMenuItem<Genre>(value: e, child: Text(e.name)))
                   .toList(),
-              onChanged: (value) => setState(() {
-                    _value = value ?? Genre(id: 28, name: '액션');
-                    context
-                        .read<MovieSearchViewModel>()
-                        .getMoviesWithGenre(_value);
-                  })),
+              onChanged: (value) {
+                context.read<MovieSearchViewModel>().getMoviesWithGenre(value);
+              }),
           Expanded(
             child: viewModel.isLoading
                 ? const Center(child: CircularProgressIndicator())
