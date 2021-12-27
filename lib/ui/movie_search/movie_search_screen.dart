@@ -2,9 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:movie_search/model/genre.dart';
-import 'package:movie_search/model/movie.dart';
-import 'package:movie_search/ui/movie_detail/movie_detail_screen.dart';
-import 'package:movie_search/ui/movie_search/movie_search_data.dart';
+import 'package:movie_search/ui/movie_search/movie_search_view_model.dart';
+import 'package:provider/src/provider.dart';
+
+import 'components/movie_grid_view_card.dart';
 
 class MovieSearchScreen extends StatefulWidget {
   const MovieSearchScreen({Key? key}) : super(key: key);
@@ -14,50 +15,22 @@ class MovieSearchScreen extends StatefulWidget {
 }
 
 class _MovieSearchScreenState extends State<MovieSearchScreen> {
-  final MovieSearchData _movieSearchData = MovieSearchData();
   final TextEditingController _textEditingController = TextEditingController();
-  List<Movie> _movies = [];
-  List<Genre> _genres = [];
   Timer? _debounce;
   Genre _value = Genre(id: 28, name: '액션'); // 액션 장르 id
 
-  Future<void> getAllMovies() async {
-    await _movieSearchData.initMovieData();
-
-    setState(() {
-      _movies = _movieSearchData.movies;
-    });
-  }
-
-  Future<void> getGenres() async {
-    _genres = await _movieSearchData.getGenres();
-    setState(() {});
-  }
-
-  Future<void> searchMoviesWithQuery(String query) async {
-    _movies = await _movieSearchData.getMoviesWithQuery(query);
-    setState(() {});
-  }
-
-  Future<void> searchMoviesWithGenre(Genre genre) async {
-    _movies = await _movieSearchData.getMoviesWithGenre(genre);
-    setState(() {});
-  }
-
   // 디바운싱 처리
-  void onQueryChanged(String query) {
+  void onQueryChanged(ValueChanged<String> searchMovie, String query) {
     if (_debounce?.isActive ?? false) {
       _debounce?.cancel();
     }
 
-    _debounce = Timer(
-        const Duration(milliseconds: 500), () => searchMoviesWithQuery(query));
+    _debounce =
+        Timer(const Duration(milliseconds: 500), () => searchMovie(query));
   }
 
   @override
   void initState() {
-    getGenres();
-    getAllMovies();
     super.initState();
   }
 
@@ -70,6 +43,8 @@ class _MovieSearchScreenState extends State<MovieSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final viewModel = context.watch<MovieSearchViewModel>();
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -80,6 +55,7 @@ class _MovieSearchScreenState extends State<MovieSearchScreen> {
       body: Column(
         children: [
           TextField(
+            autofocus: false,
             style: const TextStyle(color: Colors.white),
             controller: _textEditingController,
             cursorColor: Colors.white,
@@ -95,91 +71,51 @@ class _MovieSearchScreenState extends State<MovieSearchScreen> {
                 ),
                 onPressed: () {
                   final query = _textEditingController.text;
-                  searchMoviesWithQuery(query);
+                  context
+                      .read<MovieSearchViewModel>()
+                      .getMoviesWithQuery(query);
                 },
               ),
             ),
-            onChanged: onQueryChanged,
+            onChanged: (value) => onQueryChanged((String query) {
+              context.read<MovieSearchViewModel>().getMoviesWithQuery(query);
+            }, value),
           ),
           DropdownButton<Genre>(
               style: const TextStyle(color: Colors.white),
               dropdownColor: Colors.black,
               value: _value,
               isExpanded: true,
-              items: _genres
+              menuMaxHeight: 250,
+              items: viewModel.genres
                   .map((e) =>
                       DropdownMenuItem<Genre>(value: e, child: Text(e.name)))
                   .toList(),
               onChanged: (value) => setState(() {
                     _value = value ?? Genre(id: 28, name: '액션');
-                    searchMoviesWithGenre(_value);
+                    context
+                        .read<MovieSearchViewModel>()
+                        .getMoviesWithGenre(_value);
                   })),
           Expanded(
-            child: GridView.builder(
-              padding: const EdgeInsets.all(8),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                mainAxisSpacing: 8,
-                crossAxisSpacing: 8,
-                childAspectRatio: 0.5,
-              ),
-              itemCount: _movies.length,
-              itemBuilder: (context, index) {
-                return InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MovieDetailScreen(
-                          movie: _movies[index],
-                        ),
-                      ),
-                    );
-                  },
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Flexible(
-                        flex: 8,
-                        fit: FlexFit.tight,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: _movies[index].posterPath.isEmpty
-                              ? Container(
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.white),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: const Text(
-                                    'no image',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                )
-                              : Image.network(
-                                  _movies[index].posterUrl,
-                                  fit: BoxFit.cover,
-                                ),
-                        ),
-                      ),
-                      Flexible(
-                        flex: 2,
-                        fit: FlexFit.tight,
-                        child: Center(
-                          child: Text(
-                            _movies[index].title,
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                overflow: TextOverflow.fade),
-                          ),
-                        ),
-                      )
-                    ],
+            child: viewModel.isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : GridView.builder(
+                    padding: const EdgeInsets.all(8),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      mainAxisSpacing: 8,
+                      crossAxisSpacing: 8,
+                      childAspectRatio: 0.5,
+                    ),
+                    itemCount: viewModel.movies.length,
+                    itemBuilder: (context, index) {
+                      final movie = viewModel.movies[index];
+
+                      return MovieGridViewCard(movie: movie);
+                    },
                   ),
-                );
-              },
-            ),
           ),
         ],
       ),

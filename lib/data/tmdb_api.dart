@@ -5,11 +5,11 @@ import 'package:movie_search/model/genre.dart';
 
 import '../model/movie.dart';
 
-class TheMovieDBApi {
+class TMDBApi {
   final subject = 'popular';
   final apiKey = 'bb7dc78e99a7426412596173e43a6781';
 
-  // 페이지를 가지고 영화 정보 가져오
+  // 페이지를 가지고 영화 정보 가져오기
   Future<List<Movie>> fetchMoviesWithPage({int page = 1}) async {
     final response = await http.get(Uri.parse(
         'https://api.themoviedb.org/3/movie/$subject?api_key=$apiKey&language=ko-KR&page=$page'));

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:movie_search/data/tmdb_api.dart';
 import 'package:movie_search/ui/movie_search/movie_search_screen.dart';
+import 'package:movie_search/ui/movie_search/movie_search_view_model.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,7 +19,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MovieSearchScreen(),
+      home: ChangeNotifierProvider(
+        create: (_) => MovieSearchViewModel(movieDBApi: TMDBApi()),
+        child: const MovieSearchScreen(),
+      ),
     );
   }
 }
