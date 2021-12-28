@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:movie_search/model/genre.dart';
 import 'package:movie_search/ui/movie_search/movie_search_view_model.dart';
 import 'package:provider/src/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'components/movie_grid_view_card.dart';
 
@@ -16,6 +17,8 @@ class MovieSearchScreen extends StatefulWidget {
 
 class _MovieSearchScreenState extends State<MovieSearchScreen> {
   final TextEditingController _textEditingController = TextEditingController();
+  final RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
   Timer? _debounce;
 
   // 디바운싱 처리
@@ -37,6 +40,7 @@ class _MovieSearchScreenState extends State<MovieSearchScreen> {
   @override
   void dispose() {
     _textEditingController.dispose();
+    _refreshController.dispose();
     _debounce?.cancel();
     super.dispose();
   }
@@ -95,26 +99,54 @@ class _MovieSearchScreenState extends State<MovieSearchScreen> {
                       DropdownMenuItem<Genre>(value: e, child: Text(e.name)))
                   .toList(),
               onChanged: (value) {
-                context.read<MovieSearchViewModel>().getMoviesWithGenre(value);
+                context
+                    .read<MovieSearchViewModel>()
+                    .getMoviesWithGenre(genre: value);
               }),
           Expanded(
             child: viewModel.isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : GridView.builder(
-                    padding: const EdgeInsets.all(8),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      mainAxisSpacing: 8,
-                      crossAxisSpacing: 8,
-                      childAspectRatio: 0.5,
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : SmartRefresher(
+                    controller: _refreshController,
+                    enablePullUp: true,
+                    enablePullDown: false,
+                    footer: CustomFooter(
+                      height: viewModel.isMoreLoading ? 55 : 0,
+                      builder: (context, mode) {
+                        if (mode == LoadStatus.loading) {
+                          return Container(
+                            height: 55.0,
+                            child: const Center(
+                                child: CircularProgressIndicator()),
+                          );
+                        }
+                        return Container();
+                      },
                     ),
-                    itemCount: viewModel.movies.length,
-                    itemBuilder: (context, index) {
-                      final movie = viewModel.movies[index];
-
-                      return MovieGridViewCard(movie: movie);
+                    onLoading: () async {
+                      // TODO: 영화정보를 더 가져오는게 쿼리 검색에서 더 가져오는지, 장르 검색에서 더 가져오는 구분 x
+                      // 구분하여 실행하는 과정 필요
+                      await viewModel.getMoviesWithGenre();
+                      _refreshController.loadComplete();
                     },
+                    child: GridView.builder(
+                      padding: const EdgeInsets.all(8),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        mainAxisSpacing: 8,
+                        crossAxisSpacing: 8,
+                        childAspectRatio: 0.5,
+                      ),
+                      itemCount: viewModel.movies.length,
+                      itemBuilder: (context, index) {
+                        final movie = viewModel.movies[index];
+
+                        return MovieGridViewCard(movie: movie);
+                      },
+                    ),
                   ),
           ),
         ],

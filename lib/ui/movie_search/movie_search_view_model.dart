@@ -14,21 +14,20 @@ class MovieSearchViewModel with ChangeNotifier {
   UnmodifiableListView<Movie> get movies => UnmodifiableListView(_loadedMovies);
   UnmodifiableListView<Genre> get genres => UnmodifiableListView(_loadedGenres);
   bool isLoading = false;
+  bool isMoreLoading = false;
 
   MovieSearchViewModel({required this.movieDBApi}) {
     initMovieData();
   }
 
-  void loadingStateChange(bool state) {
-    isLoading = state;
+  void loadingStateChange(bool newState) {
+    isLoading = newState;
     notifyListeners();
   }
 
   void genreChange(Genre genre) {
-    if (currentGenre != genre) {
-      _currentPage = 1;
-    }
     currentGenre = genre;
+    _currentPage = 1;
   }
 
   Future<void> initMovieData() async {
@@ -62,15 +61,30 @@ class MovieSearchViewModel with ChangeNotifier {
     _loadedGenres = genres;
   }
 
-  Future<void> getMoviesWithGenre(Genre? genre) async {
-    genre ??= Genre(id: 28, name: '액션');
-    genreChange(genre);
-    loadingStateChange(true);
+  Future<void> getMoviesWithGenre({Genre? genre}) async {
+    if (genre == null) {
+      getMoreMoviesWithGenre(currentGenre, ++_currentPage);
+    } else {
+      genreChange(genre);
+      loadingStateChange(true);
+
+      final movies = await movieDBApi.fetchMoviesWithGenre(
+          genre: genre, page: _currentPage);
+      _loadedMovies = movies;
+
+      loadingStateChange(false);
+    }
+  }
+
+  Future<void> getMoreMoviesWithGenre(Genre genre, int page) async {
+    isMoreLoading = true;
+    notifyListeners();
 
     final movies =
-        await movieDBApi.fetchMoviesWithGenre(genre: genre, page: _currentPage);
-    _loadedMovies = movies;
+        await movieDBApi.fetchMoviesWithGenre(genre: genre, page: page);
+    _loadedMovies.addAll(movies);
 
-    loadingStateChange(false);
+    isMoreLoading = false;
+    notifyListeners();
   }
 }
