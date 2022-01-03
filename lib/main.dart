@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:movie_search/core/util/constants.dart';
 import 'package:movie_search/data/tmdb_api.dart';
-import 'package:movie_search/ui/movie_search/movie_search_screen.dart';
-import 'package:movie_search/ui/movie_search/movie_search_view_model.dart';
+import 'package:movie_search/presentation/movie_search/movie_search_view_model.dart';
+import 'package:movie_search/presentation/movie_tab_screen.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -15,13 +16,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      title: kMaterialApptitle,
+      theme: ThemeData.dark(),
+      darkTheme: ThemeData.dark(),
       home: ChangeNotifierProvider(
         create: (_) => MovieSearchViewModel(movieDBApi: TMDBApi()),
-        child: const MovieSearchScreen(),
+        child: const MovieTabScreen(),
       ),
     );
   }

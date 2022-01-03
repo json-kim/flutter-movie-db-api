@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_search/model/movie.dart';
-import 'package:movie_search/ui/movie_detail/movie_detail_screen.dart';
+import 'package:movie_search/presentation/movie_detail/movie_detail_screen.dart';
 
 class MovieGridViewCard extends StatelessWidget {
   const MovieGridViewCard({
@@ -40,7 +40,6 @@ class MovieGridViewCard extends StatelessWidget {
                       ),
                       child: const Text(
                         'no image',
-                        style: TextStyle(color: Colors.white),
                       ),
                     )
                   : Image.network(
@@ -55,10 +54,8 @@ class MovieGridViewCard extends StatelessWidget {
             child: Center(
               child: Text(
                 movie.title,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    overflow: TextOverflow.fade),
+                style:
+                    const TextStyle(fontSize: 16, overflow: TextOverflow.fade),
               ),
             ),
           )

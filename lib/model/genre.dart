@@ -2,7 +2,7 @@ class Genre {
   final int id;
   final String name;
 
-  Genre({required this.id, required this.name});
+  const Genre({required this.id, required this.name});
 
   factory Genre.fromJson(Map<String, dynamic> json) {
     return Genre(
@@ -16,9 +16,11 @@ class Genre {
   }
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Genre && runtimeType == other.runtimeType && id == other.id;
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is Genre && other.id == id;
+  }
 
   @override
   int get hashCode => id.hashCode;

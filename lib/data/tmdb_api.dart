@@ -21,6 +21,17 @@ class TMDBApi {
     }
   }
 
+  Future<List<Movie>> fetchNowPlayingMovies({int page = 1}) async {
+    final response = await http.get(Uri.parse(
+        'https://api.themoviedb.org/3/movie/now_playing?api_key=bb7dc78e99a7426412596173e43a6781&language=ko-KR&page=$page'));
+
+    if (response.statusCode == 200) {
+      return Movie.listToMovies(jsonDecode(response.body)['results']);
+    } else {
+      throw Exception('Failed to load movies');
+    }
+  }
+
   Future<int> fetchTotalPage() async {
     final response = await http.get(Uri.parse(
         'https://api.themoviedb.org/3/movie/popular?api_key=bb7dc78e99a7426412596173e43a6781&language=ko-KR'));

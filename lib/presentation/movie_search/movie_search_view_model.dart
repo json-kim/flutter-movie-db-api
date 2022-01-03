@@ -9,7 +9,7 @@ class MovieSearchViewModel with ChangeNotifier {
   final TMDBApi movieDBApi;
   List<Movie> _loadedMovies = [];
   List<Genre> _loadedGenres = [];
-  Genre currentGenre = Genre(id: 28, name: '액션');
+  Genre currentGenre = const Genre(id: 28, name: '액션');
   int _currentPage = 1;
   UnmodifiableListView<Movie> get movies => UnmodifiableListView(_loadedMovies);
   UnmodifiableListView<Genre> get genres => UnmodifiableListView(_loadedGenres);

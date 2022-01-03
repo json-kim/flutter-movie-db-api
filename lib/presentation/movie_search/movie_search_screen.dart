@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:movie_search/model/genre.dart';
-import 'package:movie_search/ui/movie_search/movie_search_view_model.dart';
-import 'package:provider/src/provider.dart';
+import 'package:movie_search/presentation/movie_search/movie_search_view_model.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'components/movie_grid_view_card.dart';
@@ -50,11 +50,10 @@ class _MovieSearchScreenState extends State<MovieSearchScreen> {
     final viewModel = context.watch<MovieSearchViewModel>();
 
     return Scaffold(
-      backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text('영화 정보 검색기'),
+        title: const Text('Myflix'),
       ),
       body: Column(
         children: [
@@ -71,7 +70,6 @@ class _MovieSearchScreenState extends State<MovieSearchScreen> {
               suffixIcon: IconButton(
                 icon: const Text(
                   '검색',
-                  style: TextStyle(color: Colors.white),
                 ),
                 onPressed: () {
                   final query = _textEditingController.text;
@@ -89,7 +87,6 @@ class _MovieSearchScreenState extends State<MovieSearchScreen> {
             ),
           ),
           DropdownButton<Genre>(
-              style: const TextStyle(color: Colors.white),
               dropdownColor: Colors.black,
               value: viewModel.currentGenre,
               isExpanded: true,
@@ -116,10 +113,9 @@ class _MovieSearchScreenState extends State<MovieSearchScreen> {
                       height: viewModel.isMoreLoading ? 55 : 0,
                       builder: (context, mode) {
                         if (mode == LoadStatus.loading) {
-                          return Container(
+                          return const SizedBox(
                             height: 55.0,
-                            child: const Center(
-                                child: CircularProgressIndicator()),
+                            child: Center(child: CircularProgressIndicator()),
                           );
                         }
                         return Container();

@@ -1,5 +1,7 @@
+import 'package:movie_search/core/util/constants.dart';
+
 class Movie {
-  Movie({
+  const Movie({
     required this.adult,
     required this.backdropPath,
     required this.genreIds,
@@ -31,7 +33,7 @@ class Movie {
   final double voteAverage;
   final int voteCount;
 
-  String get posterUrl => 'https://image.tmdb.org/t/p/w500' + posterPath;
+  String get posterUrl => kPosterUrl + posterPath;
 
   factory Movie.fromJson(Map<String, dynamic> json) {
     return Movie(
@@ -77,6 +79,18 @@ class Movie {
 
   @override
   String toString() {
-    return 'Movie: $title';
+    return 'Movie(title: $title)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is Movie && other.id == id;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode;
   }
 }

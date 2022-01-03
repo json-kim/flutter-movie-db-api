@@ -8,7 +8,7 @@ void main() {
 
     expect(timer.isActive, true);
 
-    Future.delayed(Duration(milliseconds: 500)).then((_) {
+    Future.delayed(const Duration(milliseconds: 500)).then((_) {
       expect(timer.isActive, false);
     });
   });
