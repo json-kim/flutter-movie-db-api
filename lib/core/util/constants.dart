@@ -1,6 +1,7 @@
 const String kMaterialApptitle = 'TMDB application';
 
 // TMDB API
+const String kBaseUrl = 'https://api.themoviedb.org/3/';
 const String kMovieBaseUrl = 'https://api.themoviedb.org/3/movie/';
 const String kSearchBaseUrl = 'https://api.themoviedb.org/3/search/movie/';
 const String kGenreBaseUrl = 'https://api.themoviedb.org/3/genre/movie/list';
