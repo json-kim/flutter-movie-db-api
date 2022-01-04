@@ -6,6 +6,7 @@ import 'package:movie_search/domain/usecase/use_case.dart';
 
 class GetReviewWithMovieUseCase
     implements UseCase<Result<List<Review>>, RequestParams> {
+  @override
   final MovieDataRepository repository;
 
   GetReviewWithMovieUseCase(this.repository);

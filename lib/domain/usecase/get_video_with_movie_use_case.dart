@@ -6,6 +6,7 @@ import 'package:movie_search/domain/usecase/use_case.dart';
 
 class GetVideoWithMovieUseCase
     implements UseCase<Result<List<Video>>, RequestParams> {
+  @override
   final MovieDataRepository repository;
 
   GetVideoWithMovieUseCase(this.repository);

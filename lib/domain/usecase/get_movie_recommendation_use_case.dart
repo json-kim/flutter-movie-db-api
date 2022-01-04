@@ -4,18 +4,18 @@ import 'package:movie_search/domain/entity/movie/movie.dart';
 import 'package:movie_search/domain/repository/movie_data_repository.dart';
 import 'package:movie_search/domain/usecase/use_case.dart';
 
-class GetMovieWithKeywordUseCase
+class GetMovieRecommendation
     implements UseCase<Result<List<Movie>>, RequestParams> {
   @override
   final MovieDataRepository<Movie, RequestParams> repository;
 
-  GetMovieWithKeywordUseCase(this.repository);
+  GetMovieRecommendation(this.repository);
 
   @override
-  Future<Result<List<Movie>>> call(RequestParams param) async {
-    final keywordId = 9715;
+  Future<Result<List<Movie>>> call(RequestParams params) async {
+    final movieId = 634649;
     final params =
-        RequestParamsWithPage(pathParams: 'keyword/$keywordId/movies');
+        RequestParamsWithPage(pathParams: 'movie/$movieId/recommendations');
 
     final result = await repository.fetch(params);
 

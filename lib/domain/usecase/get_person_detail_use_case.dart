@@ -6,6 +6,7 @@ import 'package:movie_search/domain/usecase/use_case.dart';
 
 class GetPersonDetailUseCase
     implements UseCase<Result<List<Person>>, RequestParams> {
+  @override
   final MovieDataRepository repository;
 
   GetPersonDetailUseCase(this.repository);
