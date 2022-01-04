@@ -6,13 +6,22 @@ import 'package:movie_search/domain/usecase/use_case.dart';
 
 class GetCreditWithMovieUseCase
     implements UseCase<Result<List<Credit>>, RequestParams> {
-  final MovieDataRepository repository;
+  @override
+  final MovieDataRepository<Credit, RequestParams> repository;
 
   GetCreditWithMovieUseCase(this.repository);
 
   @override
-  Future<Result<List<Credit>>> call(RequestParams param) {
-    // TODO: implement call
-    throw UnimplementedError();
+  Future<Result<List<Credit>>> call(RequestParams param) async {
+    final movieId = 634649;
+    final params = RequestParams(pathParams: 'movie/$movieId/credits');
+
+    final result = await repository.fetch(params);
+
+    return result.when(success: (credits) {
+      return Result.success(credits);
+    }, error: (message) {
+      return Result.error(message);
+    });
   }
 }

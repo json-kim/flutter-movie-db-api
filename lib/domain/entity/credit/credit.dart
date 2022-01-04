@@ -7,16 +7,16 @@ part 'credit.g.dart';
 class Credit with _$Credit {
   const factory Credit({
     required bool adult,
-    required int gender,
+    required int? gender,
     required int id,
-    required String knownForDepartment,
+    @JsonKey(name: 'known_for_department') required String knownForDepartment,
     required String name,
-    required String originalName,
+    @JsonKey(name: 'original_name') required String originalName,
     required double popularity,
-    required String profilePath,
-    required int castId,
+    @JsonKey(name: 'profile_path') required String? profilePath,
+    @JsonKey(name: 'cast_id') required int castId,
     required String character,
-    required String creditId,
+    @JsonKey(name: 'credit_id') required String creditId,
     required int order,
   }) = _Credit;
 

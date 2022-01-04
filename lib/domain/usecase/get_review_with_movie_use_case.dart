@@ -7,13 +7,22 @@ import 'package:movie_search/domain/usecase/use_case.dart';
 class GetReviewWithMovieUseCase
     implements UseCase<Result<List<Review>>, RequestParams> {
   @override
-  final MovieDataRepository repository;
+  final MovieDataRepository<Review, RequestParams> repository;
 
   GetReviewWithMovieUseCase(this.repository);
 
   @override
-  Future<Result<List<Review>>> call(RequestParams param) {
-    // TODO: implement call
-    throw UnimplementedError();
+  Future<Result<List<Review>>> call(RequestParams param) async {
+    final movieId = 634649;
+    final params =
+        RequestParams(language: 'en-US', pathParams: 'movie/$movieId/reviews');
+
+    final result = await repository.fetch(params);
+
+    return result.when(success: (reviews) {
+      return Result.success(reviews);
+    }, error: (message) {
+      return Result.error(message);
+    });
   }
 }

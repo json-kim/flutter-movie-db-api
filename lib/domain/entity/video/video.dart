@@ -14,7 +14,7 @@ class Video with _$Video {
     required int size,
     required String type,
     required bool official,
-    required String publishedAt,
+    @JsonKey(name: 'published_at') required String publishedAt,
     required String id,
   }) = _Video;
 

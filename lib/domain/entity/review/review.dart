@@ -7,11 +7,10 @@ part 'review.g.dart';
 class Review with _$Review {
   const factory Review({
     required String author,
-    @JsonKey(name: 'author_details') required String userName,
     required String content,
-    required String createdAt,
+    @JsonKey(name: 'created_at') required String createdAt,
     required String id,
-    required String updatedAt,
+    @JsonKey(name: 'updated_at') required String updatedAt,
     required String url,
   }) = _Review;
 

@@ -113,6 +113,59 @@ void main() {
 
       final result = await tmdbApi.fetch(changeParamsToPath(testParams));
 
+      result.when(
+          success: (jsonString) {},
+          error: (message) {
+            throw Exception(message);
+          });
+    });
+
+    test('리뷰를 잘 가져오는지 테스트합니다.', () async {
+      final movieId = 634649;
+      final testParams = RequestParams(
+          language: 'en-US', pathParams: 'movie/$movieId/reviews');
+
+      final result = await tmdbApi.fetch(changeParamsToPath(testParams));
+
+      result.when(
+          success: (jsonString) {},
+          error: (message) {
+            throw Exception(message);
+          });
+    });
+
+    test('비디오 정보를 잘 가져오는지 테스트합니다.', () async {
+      final movieId = 634649;
+      final testParams = RequestParams(pathParams: 'movie/$movieId/videos');
+
+      final result = await tmdbApi.fetch(changeParamsToPath(testParams));
+
+      result.when(
+          success: (jsonString) {},
+          error: (message) {
+            throw Exception(message);
+          });
+    });
+
+    test('크레딧 정보를 잘 가져오는지 테스트합니다.', () async {
+      final movieId = 634649;
+      final testParams = RequestParams(pathParams: 'movie/$movieId/credits');
+
+      final result = await tmdbApi.fetch(changeParamsToPath(testParams));
+
+      result.when(success: (jsonString) {
+        print(jsonString);
+      }, error: (message) {
+        throw Exception(message);
+      });
+    });
+
+    test('인물 정보를 잘 가져오는지 테스트합니다.', () async {
+      final personId = 287;
+      final testParams = RequestParams(pathParams: 'person/$personId');
+
+      final result = await tmdbApi.fetch(changeParamsToPath(testParams));
+
       result.when(success: (jsonString) {
         print(jsonString);
       }, error: (message) {

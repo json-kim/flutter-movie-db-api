@@ -7,13 +7,21 @@ import 'package:movie_search/domain/usecase/use_case.dart';
 class GetPersonDetailUseCase
     implements UseCase<Result<List<Person>>, RequestParams> {
   @override
-  final MovieDataRepository repository;
+  final MovieDataRepository<Person, RequestParams> repository;
 
   GetPersonDetailUseCase(this.repository);
 
   @override
-  Future<Result<List<Person>>> call(RequestParams param) {
-    // TODO: implement call
-    throw UnimplementedError();
+  Future<Result<List<Person>>> call(RequestParams param) async {
+    final personId = 287;
+    final params = RequestParams(pathParams: 'person/$personId');
+
+    final result = await repository.fetch(params);
+
+    return result.when(success: (person) {
+      return Result.success(person);
+    }, error: (message) {
+      return Result.error(message);
+    });
   }
 }
