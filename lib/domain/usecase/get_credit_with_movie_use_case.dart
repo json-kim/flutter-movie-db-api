@@ -12,7 +12,7 @@ class GetCreditWithMovieUseCase
   GetCreditWithMovieUseCase(this.repository);
 
   @override
-  Future<Result<List<Credit>>> call(RequestParams param) async {
+  Future<Result<List<Credit>>> call(RequestParams params) async {
     final movieId = 634649;
     final params = RequestParams(pathParams: 'movie/$movieId/credits');
 

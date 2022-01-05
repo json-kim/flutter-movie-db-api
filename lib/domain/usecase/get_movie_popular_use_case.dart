@@ -4,16 +4,16 @@ import 'package:movie_search/domain/entity/movie/movie.dart';
 import 'package:movie_search/domain/repository/movie_data_repository.dart';
 import 'package:movie_search/domain/usecase/use_case.dart';
 
-class GetMoviePopularUseCase
-    implements UseCase<Result<List<Movie>>, RequestParams> {
+class GetMoviePopularUseCase implements UseCase<Result<List<Movie>>, int> {
   @override
   final MovieDataRepository<Movie, RequestParams> repository;
 
   GetMoviePopularUseCase(this.repository);
 
   @override
-  Future<Result<List<Movie>>> call(RequestParams param) async {
-    final params = RequestParamsWithPage(pathParams: 'movie/popular');
+  Future<Result<List<Movie>>> call(int page) async {
+    final params =
+        RequestParamsWithPage(pathParams: 'movie/popular', page: page);
 
     final result = await repository.fetch(params);
 

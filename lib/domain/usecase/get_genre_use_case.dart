@@ -11,7 +11,7 @@ class GetGenreUseCase implements UseCase<Result<List<Genre>>, void> {
   GetGenreUseCase(this.repository);
 
   @override
-  Future<Result<List<Genre>>> call(params) async {
+  Future<Result<List<Genre>>> call(void params) async {
     final params = RequestParams(pathParams: 'genre/movie/list');
 
     final result = await repository.fetch(params);

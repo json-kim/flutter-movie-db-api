@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movie_search/core/dependency_injection.dart';
 import 'package:movie_search/core/util/constants.dart';
 import 'package:movie_search/data/tmdb_api.dart';
 import 'package:movie_search/presentation/movie_search/movie_search_view_model.dart';
@@ -6,7 +7,10 @@ import 'package:movie_search/presentation/movie_tab_screen.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MultiProvider(
+    providers: globalProviders,
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {

@@ -1,24 +1,62 @@
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
-import 'package:movie_search/data/tmdb_api.dart';
-import 'package:movie_search/model/movie.dart';
+import 'package:movie_search/domain/usecase/get_genre_use_case.dart';
+import 'package:movie_search/domain/usecase/get_movie_now_playing_use_case.dart';
+import 'package:movie_search/domain/usecase/get_movie_popular_use_case.dart';
+import 'package:movie_search/domain/usecase/get_movie_with_genre_use_case.dart';
+
+import 'movie_home_state.dart';
 
 class MovieHomeViewModel with ChangeNotifier {
-  final TMDBApi _tmdbApi;
+  final GetMoviePopularUseCase _getMoviePopularUseCase;
+  final GetMovieNowPlayingUseCase _getMovieNowPlayingUseCase;
+  final GetMovieWithGenreUseCase _getMovieWithGenreUseCase;
+  final GetGenreUseCase _getGenreUseCase;
 
-  List<Movie> _nowPlayingMovies = [];
-  UnmodifiableListView<Movie> get nowPlayingMovies =>
-      UnmodifiableListView<Movie>(_nowPlayingMovies);
+  MovieHomeState state = MovieHomeState([], [], [], false);
 
-  MovieHomeViewModel({required TMDBApi tmdbApi}) : _tmdbApi = tmdbApi {
+  MovieHomeViewModel(
+    this._getMoviePopularUseCase,
+    this._getMovieNowPlayingUseCase,
+    this._getMovieWithGenreUseCase,
+    this._getGenreUseCase,
+  ) {
     loadNowPlayingMovies();
+    loadPopularMovies();
+    loadGenres();
   }
 
   Future<void> loadNowPlayingMovies() async {
-    final movies = await _tmdbApi.fetchNowPlayingMovies();
+    final result = await _getMovieNowPlayingUseCase(1);
 
-    _nowPlayingMovies = movies;
+    result.when(
+        success: (movies) {
+          state = state.copyWith(nowPlayingMovies: movies);
+        },
+        error: (error) {});
+
+    notifyListeners();
+  }
+
+  Future<void> loadPopularMovies() async {
+    final result = await _getMoviePopularUseCase(1);
+
+    result.when(
+        success: (movies) {
+          state = state.copyWith(popularMovies: movies);
+        },
+        error: (message) {});
+
+    notifyListeners();
+  }
+
+  Future<void> loadGenres() async {
+    final result = await _getGenreUseCase(0);
+
+    result.when(
+        success: (genres) {
+          state = state.copyWith(genreList: genres);
+        },
+        error: (message) {});
 
     notifyListeners();
   }
