@@ -18,7 +18,7 @@ class GetMovieNowPlayingUseCase implements UseCase<Result<List<Movie>>, int> {
     final result = await repository.fetch(params);
 
     return result.when(success: (movies) {
-      return Result.success(movies);
+      return Result.success(movies.take(10).toList());
     }, error: (message) {
       return Result.error(message);
     });

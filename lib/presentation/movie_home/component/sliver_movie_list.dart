@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:movie_search/core/util/constants.dart';
+import 'package:movie_search/domain/entity/movie/movie.dart';
+import 'package:movie_search/domain/usecase/get_credit_with_movie_use_case.dart';
+import 'package:movie_search/domain/usecase/get_movie_detail_use_case.dart';
 import 'package:movie_search/domain/usecase/use_case.dart';
+import 'package:movie_search/presentation/movie_detail/movie_detail_screen.dart';
+import 'package:movie_search/presentation/movie_detail/movie_detail_view_model.dart';
 import 'package:movie_search/presentation/movie_home/component/sliver_movie_list_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -42,31 +47,61 @@ class SliverMovieList<T extends UseCase, S> extends StatelessWidget {
             Expanded(
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemBuilder: (context, idx) => SizedBox(
-                  width: 115,
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: Image.network(
-                          kPosterUrl + movies[idx].posterPath!,
-                          fit: BoxFit.fitHeight,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 50,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          child: Text(
-                            movies[idx].title,
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
+                itemBuilder: (context, idx) =>
+                    MovieListCard(movie: movies[idx]),
                 itemCount: movies.length,
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class MovieListCard extends StatelessWidget {
+  const MovieListCard({
+    Key? key,
+    required this.movie,
+  }) : super(key: key);
+
+  final Movie movie;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+              builder: (context) => ChangeNotifierProvider(
+                    create: (context) => MovieDetailViewModel(
+                      context.read<GetMovieDetailUseCase>(),
+                      context.read<GetCreditWithMovieUseCase>(),
+                      movieId: movie.id,
+                    ),
+                    child: MovieDetailScreen(),
+                  )),
+        );
+      },
+      child: SizedBox(
+        width: 115,
+        child: Column(
+          children: [
+            Expanded(
+              child: Image.network(
+                kPosterUrl + movie.posterPath!,
+                fit: BoxFit.fitHeight,
+              ),
+            ),
+            SizedBox(
+              height: 50,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Text(
+                  movie.title,
+                ),
+              ),
+            )
           ],
         ),
       ),
