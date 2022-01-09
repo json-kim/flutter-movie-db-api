@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:movie_search/presentation/movie_home/movie_home_screen.dart';
 
+import 'movie_search/movie_search_screen.dart';
+
 class MovieTabScreen extends StatefulWidget {
   const MovieTabScreen({Key? key}) : super(key: key);
 
@@ -14,8 +16,7 @@ class _MovieTabScreenState extends State<MovieTabScreen> {
 
   final List<Widget> _pages = [
     const MovieHomeScreen(),
-    // const MovieSearchScreen(),
-    Container(),
+    const MovieSearchScreen(),
     Container(),
     Container(),
   ];

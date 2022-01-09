@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:movie_search/core/util/constants.dart';
 import 'package:movie_search/domain/entity/movie/movie.dart';
-import 'package:movie_search/domain/usecase/get_credit_with_movie_use_case.dart';
 import 'package:movie_search/domain/usecase/get_movie_detail_use_case.dart';
-import 'package:movie_search/domain/usecase/use_case.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_screen.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_view_model.dart';
-import 'package:movie_search/presentation/movie_home/component/sliver_movie_list_view_model.dart';
+import 'package:movie_search/presentation/movie_list/data_list_view_model.dart';
 import 'package:provider/provider.dart';
 
-class SliverMovieList<T extends UseCase, S> extends StatelessWidget {
+class SliverMovieList<P> extends StatelessWidget {
   final String title;
 
   const SliverMovieList({
@@ -19,8 +17,8 @@ class SliverMovieList<T extends UseCase, S> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<SliverMovieListViewModel<T, S>>();
-    final movies = viewModel.state.movies;
+    final viewModel = context.watch<DataListViewModel<Movie, P>>();
+    final state = viewModel.state;
 
     return SliverToBoxAdapter(
       child: Container(
@@ -48,8 +46,8 @@ class SliverMovieList<T extends UseCase, S> extends StatelessWidget {
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemBuilder: (context, idx) =>
-                    MovieListCard(movie: movies[idx]),
-                itemCount: movies.length,
+                    MovieListCard(movie: state.data[idx]),
+                itemCount: state.data.length,
               ),
             ),
           ],
@@ -76,8 +74,7 @@ class MovieListCard extends StatelessWidget {
               builder: (context) => ChangeNotifierProvider(
                     create: (context) => MovieDetailViewModel(
                       context.read<GetMovieDetailUseCase>(),
-                      context.read<GetCreditWithMovieUseCase>(),
-                      movieId: movie.id,
+                      movie: movie,
                     ),
                     child: MovieDetailScreen(),
                   )),

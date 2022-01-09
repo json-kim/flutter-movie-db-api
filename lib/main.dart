@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_search/core/dependency_injection.dart';
 import 'package:movie_search/core/util/constants.dart';
-import 'package:movie_search/data/tmdb_api.dart';
-import 'package:movie_search/presentation/movie_search/movie_search_view_model.dart';
 import 'package:movie_search/presentation/movie_tab_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -23,10 +21,7 @@ class MyApp extends StatelessWidget {
       title: kMaterialApptitle,
       theme: ThemeData.dark(),
       darkTheme: ThemeData.dark(),
-      home: ChangeNotifierProvider(
-        create: (_) => MovieSearchViewModel(movieDBApi: TMDBApi()),
-        child: const MovieTabScreen(),
-      ),
+      home: const MovieTabScreen(),
     );
   }
 }

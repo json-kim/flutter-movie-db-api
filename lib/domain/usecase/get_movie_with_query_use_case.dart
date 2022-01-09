@@ -4,16 +4,15 @@ import 'package:movie_search/domain/entity/movie/movie.dart';
 import 'package:movie_search/domain/repository/movie_data_repository.dart';
 import 'package:movie_search/domain/usecase/use_case.dart';
 
-class GetMovieWithQueryUseCase
-    implements UseCase<Result<List<Movie>>, RequestParamsWithQuery> {
+class GetMovieWithQueryUseCase implements UseCase<Result<List<Movie>>, String> {
   @override
   final MovieDataRepository<Movie, RequestParams> repository;
 
   GetMovieWithQueryUseCase(this.repository);
 
   @override
-  Future<Result<List<Movie>>> call(RequestParamsWithQuery param) async {
-    final params = RequestParamsWithQuery(query: '스파이더맨');
+  Future<Result<List<Movie>>> call(String query) async {
+    final params = RequestParamsWithQuery(query: queryChange(query));
 
     final result = await repository.fetch(params);
 
@@ -22,5 +21,9 @@ class GetMovieWithQueryUseCase
     }, error: (message) {
       return Result.error(message);
     });
+  }
+
+  String queryChange(String query) {
+    return (query.split(' ')..removeWhere((e) => e.trim().isEmpty)).join('+');
   }
 }

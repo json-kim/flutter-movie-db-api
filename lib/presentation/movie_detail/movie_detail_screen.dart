@@ -2,8 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:movie_search/config/theme.dart';
 import 'package:movie_search/core/util/constants.dart';
+import 'package:movie_search/domain/entity/credit/credit.dart';
+import 'package:movie_search/domain/entity/movie/movie.dart';
+import 'package:movie_search/domain/entity/video/video.dart';
+import 'package:movie_search/domain/usecase/get_credit_with_movie_use_case.dart';
+import 'package:movie_search/domain/usecase/get_movie_similar_use_case.dart';
+import 'package:movie_search/domain/usecase/get_video_with_movie_use_case.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_view_model.dart';
+import 'package:movie_search/presentation/movie_list/data_list_view_model.dart';
 import 'package:provider/provider.dart';
+
+import 'component/credit_sliver_list.dart';
+import 'component/similar_sliver_list.dart';
+import 'component/sliver_fixed_header.dart';
+import 'component/video_sliver_list.dart';
 
 class MovieDetailScreen extends StatefulWidget {
   const MovieDetailScreen({Key? key}) : super(key: key);
@@ -60,10 +72,12 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                state.movieDetail.title,
-                                style: const TextStyle(
-                                  fontSize: 36,
+                              FittedBox(
+                                child: Text(
+                                  state.movieDetail.title,
+                                  style: const TextStyle(
+                                    fontSize: 36,
+                                  ),
                                 ),
                               ),
                               Row(
@@ -205,126 +219,16 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                 ),
               ),
             ),
-            //TODO: 배우 제작진
-            SliverPersistentHeader(
-                floating: true,
-                delegate: SliverFixedHeader(
-                  maxHeight: 250,
-                  minHeight: 250,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    color: kWhiteColor,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 16),
-                          child: Text(
-                            '배우 / 제작진',
-                            style: TextStyle(color: Colors.black, fontSize: 16),
-                          ),
-                        ),
-                        Expanded(
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: state.credits.length,
-                            itemBuilder: (context, idx) => Padding(
-                              padding: const EdgeInsets.only(right: 8.0),
-                              child: AspectRatio(
-                                aspectRatio: 0.8,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Expanded(
-                                      child:
-                                          state.credits[idx].profilePath == null
-                                              ? const Center(
-                                                  child: Text(
-                                                    'No Image',
-                                                    style: TextStyle(
-                                                        color: Colors.black),
-                                                  ),
-                                                )
-                                              : Image.network(
-                                                  kProfileUrl +
-                                                      state.credits[idx]
-                                                          .profilePath!,
-                                                  width: double.infinity,
-                                                  fit: BoxFit.cover,
-                                                ),
-                                    ),
-                                    FittedBox(
-                                      child: Text(
-                                        state.credits[idx].name,
-                                        style: const TextStyle(
-                                            color: Colors.black, fontSize: 16),
-                                      ),
-                                    ),
-                                    FittedBox(
-                                      child: Text(
-                                        state.credits[idx].character,
-                                        style: const TextStyle(
-                                            color: Colors.black, fontSize: 12),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                )),
+            // 배우 제작진
+            ChangeNotifierProvider(
+                create: (context) => DataListViewModel<Credit, Movie>(
+                    context.read<GetCreditWithMovieUseCase>(), viewModel.movie),
+                child: const CreditSliverList()),
             //TODO: 관련 영상
-            SliverPersistentHeader(
-                // floating: true,
-                delegate: SliverFixedHeader(
-              maxHeight: 250,
-              minHeight: 250,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                color: kWhiteColor,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      child: Text(
-                        '관련 동영상',
-                        style: TextStyle(color: Colors.black, fontSize: 16),
-                      ),
-                    ),
-                    Expanded(
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, idx) => Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: AspectRatio(
-                                aspectRatio: 1.6,
-                                child: Image.network(
-                                  'https://st2.depositphotos.com/1463799/8551/v/950/depositphotos_85514382-stock-illustration-winter-adventure-travel-vacation-poster.jpg',
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            Text(
-                              '안소니 루소',
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 16),
-                            ),
-                          ],
-                        ),
-                        itemCount: 10,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            )),
+            ChangeNotifierProvider(
+                create: (context) => DataListViewModel<Video, Movie>(
+                    context.read<GetVideoWithMovieUseCase>(), viewModel.movie),
+                child: const VideoSliverList()),
             const SliverToBoxAdapter(
               child: Padding(
                 padding: EdgeInsets.all(16),
@@ -334,52 +238,13 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                 ),
               ),
             ),
-            SliverGrid(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) => Image.network(
-                    'https://st2.depositphotos.com/1463799/8551/v/950/depositphotos_85514382-stock-illustration-winter-adventure-travel-vacation-poster.jpg',
-                    fit: BoxFit.cover,
-                  ),
-                  childCount: 10,
-                ),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 8,
-                    crossAxisSpacing: 8,
-                    childAspectRatio: 1 / 1.3))
+            ChangeNotifierProvider(
+                create: (context) => DataListViewModel<Movie, Movie>(
+                    context.read<GetMovieSimilarUseCase>(), viewModel.movie),
+                child: const SimilarSliverGrid()),
           ],
         ),
       ),
     );
-  }
-}
-
-class SliverFixedHeader extends SliverPersistentHeaderDelegate {
-  final double maxHeight;
-  final double minHeight;
-  final Widget child;
-
-  SliverFixedHeader(
-      {required this.maxHeight, required this.minHeight, required this.child});
-
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return SizedBox.expand(
-      child: child,
-    );
-  }
-
-  @override
-  double get maxExtent => maxHeight;
-
-  @override
-  double get minExtent => minHeight;
-
-  @override
-  bool shouldRebuild(SliverFixedHeader oldDelegate) {
-    return oldDelegate.minHeight != maxHeight ||
-        oldDelegate.minHeight != minHeight ||
-        oldDelegate.child != child;
   }
 }

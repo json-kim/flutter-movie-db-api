@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:movie_search/model/movie.dart';
+import 'package:movie_search/core/util/constants.dart';
+import 'package:movie_search/domain/entity/movie/movie.dart';
+import 'package:movie_search/domain/usecase/get_movie_detail_use_case.dart';
+import 'package:movie_search/presentation/movie_detail/movie_detail_screen.dart';
+import 'package:movie_search/presentation/movie_detail/movie_detail_view_model.dart';
+import 'package:provider/provider.dart';
 
 class MovieGridViewCard extends StatelessWidget {
   const MovieGridViewCard({
@@ -12,16 +17,18 @@ class MovieGridViewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      // onTap: () {
-      //   Navigator.push(
-      //     context,
-      //     MaterialPageRoute(
-      //       builder: (context) => MovieDetailScreen(
-      //         movie: movie,
-      //       ),
-      //     ),
-      //   );
-      // },
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+              builder: (context) => ChangeNotifierProvider(
+                    create: (context) => MovieDetailViewModel(
+                      context.read<GetMovieDetailUseCase>(),
+                      movie: movie,
+                    ),
+                    child: const MovieDetailScreen(),
+                  )),
+        );
+      },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -30,7 +37,7 @@ class MovieGridViewCard extends StatelessWidget {
             fit: FlexFit.tight,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: movie.posterPath.isEmpty
+              child: movie.posterPath == null
                   ? Container(
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
@@ -42,7 +49,7 @@ class MovieGridViewCard extends StatelessWidget {
                       ),
                     )
                   : Image.network(
-                      movie.posterUrl,
+                      kPosterUrl + movie.posterPath!,
                       fit: BoxFit.cover,
                     ),
             ),

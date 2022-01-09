@@ -1,12 +1,12 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:movie_search/domain/entity/movie/movie.dart';
 
-part 'movie_list_state.freezed.dart';
+part 'movie_search_state.freezed.dart';
 
 @freezed
-class MovieListState with _$MovieListState {
-  factory MovieListState(
+class MovieSearchState with _$MovieSearchState {
+  const factory MovieSearchState(
     List<Movie> movies,
     bool isLoading,
-  ) = _MovieListState;
+  ) = _MovieSearchState;
 }

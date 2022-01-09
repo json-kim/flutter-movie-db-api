@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:movie_search/model/genre.dart';
 import 'package:movie_search/presentation/movie_search/movie_search_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -15,11 +14,15 @@ class MovieSearchScreen extends StatefulWidget {
   State<MovieSearchScreen> createState() => _MovieSearchScreenState();
 }
 
-class _MovieSearchScreenState extends State<MovieSearchScreen> {
+class _MovieSearchScreenState extends State<MovieSearchScreen>
+    with AutomaticKeepAliveClientMixin {
   final TextEditingController _textEditingController = TextEditingController();
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   Timer? _debounce;
+
+  @override
+  bool get wantKeepAlive => true;
 
   // 디바운싱 처리
   void onQueryChanged(
@@ -48,12 +51,13 @@ class _MovieSearchScreenState extends State<MovieSearchScreen> {
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<MovieSearchViewModel>();
+    final state = viewModel.state;
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text('Myflix'),
+        title: const Text('영화 검색'),
       ),
       body: Column(
         children: [
@@ -75,74 +79,37 @@ class _MovieSearchScreenState extends State<MovieSearchScreen> {
                   final query = _textEditingController.text;
                   context
                       .read<MovieSearchViewModel>()
-                      .getMoviesWithQuery(query);
+                      .loadMoviesWithQuery(query);
                 },
               ),
             ),
             onChanged: (value) => onQueryChanged(
               searchMovie: (query) {
-                context.read<MovieSearchViewModel>().getMoviesWithQuery(query);
+                context.read<MovieSearchViewModel>().loadMoviesWithQuery(query);
               },
               query: value,
             ),
           ),
-          DropdownButton<Genre>(
-              dropdownColor: Colors.black,
-              value: viewModel.currentGenre,
-              isExpanded: true,
-              menuMaxHeight: 250,
-              items: viewModel.genres
-                  .map((e) =>
-                      DropdownMenuItem<Genre>(value: e, child: Text(e.name)))
-                  .toList(),
-              onChanged: (value) {
-                context
-                    .read<MovieSearchViewModel>()
-                    .getMoviesWithGenre(genre: value);
-              }),
           Expanded(
-            child: viewModel.isLoading
+            child: viewModel.state.isLoading
                 ? const Center(
                     child: CircularProgressIndicator(),
                   )
-                : SmartRefresher(
-                    controller: _refreshController,
-                    enablePullUp: true,
-                    enablePullDown: false,
-                    footer: CustomFooter(
-                      height: viewModel.isMoreLoading ? 55 : 0,
-                      builder: (context, mode) {
-                        if (mode == LoadStatus.loading) {
-                          return const SizedBox(
-                            height: 55.0,
-                            child: Center(child: CircularProgressIndicator()),
-                          );
-                        }
-                        return Container();
-                      },
+                : GridView.builder(
+                    padding: const EdgeInsets.all(8),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      mainAxisSpacing: 8,
+                      crossAxisSpacing: 8,
+                      childAspectRatio: 0.5,
                     ),
-                    onLoading: () async {
-                      // TODO: 영화정보를 더 가져오는게 쿼리 검색에서 더 가져오는지, 장르 검색에서 더 가져오는 구분 x
-                      // 구분하여 실행하는 과정 필요
-                      await viewModel.getMoviesWithGenre();
-                      _refreshController.loadComplete();
-                    },
-                    child: GridView.builder(
-                      padding: const EdgeInsets.all(8),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        mainAxisSpacing: 8,
-                        crossAxisSpacing: 8,
-                        childAspectRatio: 0.5,
-                      ),
-                      itemCount: viewModel.movies.length,
-                      itemBuilder: (context, index) {
-                        final movie = viewModel.movies[index];
+                    itemCount: state.movies.length,
+                    itemBuilder: (context, index) {
+                      final movie = state.movies[index];
 
-                        return MovieGridViewCard(movie: movie);
-                      },
-                    ),
+                      return MovieGridViewCard(movie: movie);
+                    },
                   ),
           ),
         ],
@@ -150,3 +117,28 @@ class _MovieSearchScreenState extends State<MovieSearchScreen> {
     );
   }
 }
+
+//
+// SmartRefresher(
+// controller: _refreshController,
+// enablePullUp: true,
+// enablePullDown: false,
+// footer: CustomFooter(
+// height: viewModel.isMoreLoading ? 55 : 0,
+// builder: (context, mode) {
+// if (mode == LoadStatus.loading) {
+// return const SizedBox(
+// height: 55.0,
+// child: Center(child: CircularProgressIndicator()),
+// );
+// }
+// return Container();
+// },
+// ),
+// onLoading: () async {
+// // 구분하여 실행하는 과정 필요
+// await viewModel.getMoviesWithGenre();
+// _refreshController.loadComplete();
+// },
+//
+// ),

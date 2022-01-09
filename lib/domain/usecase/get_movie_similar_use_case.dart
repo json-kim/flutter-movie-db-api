@@ -4,17 +4,16 @@ import 'package:movie_search/domain/entity/movie/movie.dart';
 import 'package:movie_search/domain/repository/movie_data_repository.dart';
 import 'package:movie_search/domain/usecase/use_case.dart';
 
-class GetMovieSimilarUseCase
-    implements UseCase<Result<List<Movie>>, RequestParams> {
+class GetMovieSimilarUseCase implements UseCase<Result<List<Movie>>, Movie> {
   @override
   final MovieDataRepository<Movie, RequestParams> repository;
 
   GetMovieSimilarUseCase(this.repository);
 
   @override
-  Future<Result<List<Movie>>> call(RequestParams params) async {
-    final movieId = 634649;
-    final params = RequestParamsWithPage(pathParams: 'movie/$movieId/similar');
+  Future<Result<List<Movie>>> call(Movie movie) async {
+    final params =
+        RequestParamsWithPage(pathParams: 'movie/${movie.id}/similar');
 
     final result = await repository.fetch(params);
 

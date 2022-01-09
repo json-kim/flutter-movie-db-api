@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:movie_search/core/util/constants.dart';
 import 'package:movie_search/domain/entity/genre/genre.dart';
 import 'package:movie_search/domain/entity/movie/movie.dart';
-import 'package:movie_search/domain/usecase/get_credit_with_movie_use_case.dart';
 import 'package:movie_search/domain/usecase/get_movie_detail_use_case.dart';
 import 'package:movie_search/domain/usecase/get_movie_popular_use_case.dart';
 import 'package:movie_search/domain/usecase/get_movie_with_genre_use_case.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_screen.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_view_model.dart';
-import 'package:movie_search/presentation/movie_home/component/sliver_movie_list_view_model.dart';
+import 'package:movie_search/presentation/movie_list/data_list_view_model.dart';
 import 'package:provider/provider.dart';
 
 import 'component/sliver_movie_list.dart';
@@ -89,22 +88,19 @@ class _MovieHomeScreenState extends State<MovieHomeScreen>
           ),
         ),
         ChangeNotifierProvider(
-          create: (context) =>
-              SliverMovieListViewModel<GetMoviePopularUseCase, void>(
+          create: (context) => DataListViewModel<Movie, void>(
             context.read<GetMoviePopularUseCase>(),
+            1,
           ),
-          child: SliverMovieList<GetMoviePopularUseCase, void>(
+          child: const SliverMovieList<void>(
             title: '인기몰이 영화',
           ),
         ),
         ...viewModel.state.genreList
             .map((genre) => ChangeNotifierProvider(
-                create: (context) =>
-                    SliverMovieListViewModel<GetMovieWithGenreUseCase, Genre>(
-                        context.read<GetMovieWithGenreUseCase>(),
-                        data: genre),
-                child: SliverMovieList<GetMovieWithGenreUseCase, Genre>(
-                    title: genre.name)))
+                create: (context) => DataListViewModel<Movie, Genre>(
+                    context.read<GetMovieWithGenreUseCase>(), genre),
+                child: SliverMovieList<Genre>(title: genre.name)))
             .toList(),
       ],
     );
@@ -127,8 +123,7 @@ class MoviePageCard extends StatelessWidget {
             builder: (context) => ChangeNotifierProvider(
                   create: (context) => MovieDetailViewModel(
                     context.read<GetMovieDetailUseCase>(),
-                    context.read<GetCreditWithMovieUseCase>(),
-                    movieId: movie.id,
+                    movie: movie,
                   ),
                   child: MovieDetailScreen(),
                 )));
