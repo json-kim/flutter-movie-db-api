@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:movie_search/config/theme.dart';
@@ -41,6 +42,14 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
         body: CustomScrollView(
           slivers: [
             SliverAppBar(
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.bookmark_outline),
+                  onPressed: () {
+                    // 북마크 체크시 저장 하는 기능 추가
+                  },
+                )
+              ],
               collapsedHeight: 150,
               pinned: true,
               expandedHeight: size.height,
@@ -48,11 +57,13 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
               flexibleSpace: Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  Image.network(
-                    kBackdropUrl + state.movieDetail.backdropPath!,
+                  CachedNetworkImage(
+                    imageUrl: kBackdropUrl + state.movieDetail.backdropPath!,
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
+                    fit: BoxFit.cover,
                     height: size.height,
                     width: size.width,
-                    fit: BoxFit.cover,
                   ),
                   Container(
                     color: Colors.black.withOpacity(0.5),

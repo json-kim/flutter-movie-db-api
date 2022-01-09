@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_search/core/util/constants.dart';
 import 'package:movie_search/domain/entity/movie/movie.dart';
@@ -85,9 +86,10 @@ class MovieListCard extends StatelessWidget {
         child: Column(
           children: [
             Expanded(
-              child: Image.network(
-                kPosterUrl + movie.posterPath!,
-                fit: BoxFit.fitHeight,
+              child: CachedNetworkImage(
+                imageUrl: kPosterUrl + movie.posterPath!,
+                errorWidget: (context, url, error) => const Icon(Icons.error),
+                fit: BoxFit.cover,
               ),
             ),
             SizedBox(

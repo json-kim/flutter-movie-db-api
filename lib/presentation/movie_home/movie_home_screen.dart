@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_search/core/util/constants.dart';
 import 'package:movie_search/domain/entity/genre/genre.dart';
@@ -125,16 +126,16 @@ class MoviePageCard extends StatelessWidget {
                     context.read<GetMovieDetailUseCase>(),
                     movie: movie,
                   ),
-                  child: MovieDetailScreen(),
+                  child: const MovieDetailScreen(),
                 )));
       },
       child: Stack(
         children: [
           SizedBox.expand(
-            child: Image.network(
-              kBackdropUrl + movie.backdropPath!,
-              // movie.posterUrl,
+            child: CachedNetworkImage(
+              imageUrl: kBackdropUrl + movie.backdropPath!,
               fit: BoxFit.cover,
+              errorWidget: (context, url, error) => const Icon(Icons.error),
             ),
           ),
           Container(

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_search/config/theme.dart';
 import 'package:movie_search/core/util/constants.dart';
@@ -54,11 +55,13 @@ class CreditSliverList extends StatelessWidget {
                                         style: TextStyle(color: Colors.black),
                                       ),
                                     )
-                                  : Image.network(
-                                      kProfileUrl +
+                                  : CachedNetworkImage(
+                                      imageUrl: kProfileUrl +
                                           state.data[idx].profilePath!,
-                                      width: double.infinity,
                                       fit: BoxFit.cover,
+                                      width: double.infinity,
+                                      errorWidget: (context, url, error) =>
+                                          const Icon(Icons.error),
                                     ),
                             ),
                             FittedBox(

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_search/core/util/constants.dart';
 import 'package:movie_search/domain/entity/movie/movie.dart';
@@ -48,8 +49,10 @@ class MovieGridViewCard extends StatelessWidget {
                         'no image',
                       ),
                     )
-                  : Image.network(
-                      kPosterUrl + movie.posterPath!,
+                  : CachedNetworkImage(
+                      imageUrl: kPosterUrl + movie.posterPath!,
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
                       fit: BoxFit.cover,
                     ),
             ),
