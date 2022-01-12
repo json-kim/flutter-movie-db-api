@@ -4,7 +4,8 @@ import 'package:movie_search/domain/usecase/use_case.dart';
 
 import 'data_list_state.dart';
 
-/// List<T>형식의 데이터를 가져오는 유스케이스 1개만을 사용하는 뷰모델
+/// [UseCase] 1개만을 사용하는 뷰모델
+/// [UseCase]는 P타입의 데이터를 가지고 List<T>타입의 데이터 리스트를 가져온다.
 class DataListViewModel<T, P> with ChangeNotifier {
   final UseCase<List<T>, P> _useCase;
   final P data;
