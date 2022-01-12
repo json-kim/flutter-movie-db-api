@@ -6,17 +6,16 @@ import 'package:movie_search/domain/repository/movie_data_repository.dart';
 
 import 'use_case.dart';
 
-class GetMovieWithGenreUseCase implements UseCase<Result<List<Movie>>, Genre> {
-  @override
-  final MovieDataRepository<Movie, RequestParams> repository;
+class GetMovieWithGenreUseCase implements UseCase<List<Movie>, Genre> {
+  final MovieDataRepository<Movie, RequestParams> _repository;
 
-  GetMovieWithGenreUseCase(this.repository);
+  GetMovieWithGenreUseCase(this._repository);
 
   @override
   Future<Result<List<Movie>>> call(Genre genre) async {
     final params = RequestParamsWithGenre(genreId: genre.id);
 
-    final result = await repository.fetch(params);
+    final result = await _repository.fetch(params);
 
     return result.when(success: (movies) {
       return Result.success(movies);

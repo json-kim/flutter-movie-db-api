@@ -5,11 +5,10 @@ import 'package:movie_search/domain/repository/movie_data_repository.dart';
 import 'package:movie_search/domain/usecase/use_case.dart';
 
 class GetReviewWithMovieUseCase
-    implements UseCase<Result<List<Review>>, RequestParams> {
-  @override
-  final MovieDataRepository<Review, RequestParams> repository;
+    implements UseCase<List<Review>, RequestParams> {
+  final MovieDataRepository<Review, RequestParams> _repository;
 
-  GetReviewWithMovieUseCase(this.repository);
+  GetReviewWithMovieUseCase(this._repository);
 
   @override
   Future<Result<List<Review>>> call(RequestParams param) async {
@@ -17,7 +16,7 @@ class GetReviewWithMovieUseCase
     final params =
         RequestParams(language: 'en-US', pathParams: 'movie/$movieId/reviews');
 
-    final result = await repository.fetch(params);
+    final result = await _repository.fetch(params);
 
     return result.when(success: (reviews) {
       return Result.success(reviews);

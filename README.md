@@ -1,16 +1,10 @@
-# movie_search
+뷰는 뷰모델만 알아야하고
+뷰모델은 유스케이스만 알아야 하고
+유스케이스는 레포지토리만 알아야 하고
+레포지토리는 데이터소스만 알아야 하고
+(종속당하는 쪽에서는 종속 하려는 쪽을 모르도록 작성)
 
-A new Flutter project.
+각 단에서 사용되는 데이터 모델을 엔티티(모델)이라고 하고
 
-## Getting Started
+유스케이스와 레포지토리간에는 인터페이스를 통해 의존성을 역전시켜야 하고(대체 용이)
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.

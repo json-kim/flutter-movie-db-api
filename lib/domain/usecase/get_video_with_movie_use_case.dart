@@ -5,17 +5,16 @@ import 'package:movie_search/domain/model/video/video.dart';
 import 'package:movie_search/domain/repository/movie_data_repository.dart';
 import 'package:movie_search/domain/usecase/use_case.dart';
 
-class GetVideoWithMovieUseCase implements UseCase<Result<List<Video>>, Movie> {
-  @override
-  final MovieDataRepository<Video, RequestParams> repository;
+class GetVideoWithMovieUseCase implements UseCase<List<Video>, Movie> {
+  final MovieDataRepository<Video, RequestParams> _repository;
 
-  GetVideoWithMovieUseCase(this.repository);
+  GetVideoWithMovieUseCase(this._repository);
 
   @override
   Future<Result<List<Video>>> call(Movie movie) async {
     final params = RequestParams(pathParams: 'movie/${movie.id}/videos');
 
-    final result = await repository.fetch(params);
+    final result = await _repository.fetch(params);
 
     return result.when(success: (videos) async {
       var youtubeVideos =
@@ -36,7 +35,7 @@ class GetVideoWithMovieUseCase implements UseCase<Result<List<Video>>, Movie> {
       Movie movie, String language) async {
     final params = RequestParams(
         pathParams: 'movie/${movie.id}/videos', language: language);
-    final result = await repository.fetch(params);
+    final result = await _repository.fetch(params);
 
     return result.when(success: (videos) {
       final youtubeVideos =
