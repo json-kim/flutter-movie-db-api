@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:movie_search/domain/entity/genre/genre.dart';
+import 'package:movie_search/domain/model/genre/genre.dart';
 
 part 'movie_detail.freezed.dart';
 part 'movie_detail.g.dart';

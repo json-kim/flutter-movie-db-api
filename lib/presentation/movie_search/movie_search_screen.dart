@@ -1,6 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:movie_search/domain/usecase/get_movie_detail_use_case.dart';
+import 'package:movie_search/presentation/movie_detail/movie_detail_screen.dart';
+import 'package:movie_search/presentation/movie_detail/movie_detail_view_model.dart';
 import 'package:movie_search/presentation/movie_search/movie_search_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -108,7 +111,21 @@ class _MovieSearchScreenState extends State<MovieSearchScreen>
                     itemBuilder: (context, index) {
                       final movie = state.movies[index];
 
-                      return MovieGridViewCard(movie: movie);
+                      return MovieGridViewCard(
+                        movie: movie,
+                        onCardTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) => ChangeNotifierProvider(
+                                      create: (context) => MovieDetailViewModel(
+                                        context.read<GetMovieDetailUseCase>(),
+                                        movie: movie,
+                                      ),
+                                      child: const MovieDetailScreen(),
+                                    )),
+                          );
+                        },
+                      );
                     },
                   ),
           ),

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:movie_search/config/theme.dart';
-import 'package:movie_search/domain/entity/movie/movie.dart';
-import 'package:movie_search/domain/entity/video/video.dart';
+import 'package:movie_search/domain/model/movie/movie.dart';
+import 'package:movie_search/domain/model/video/video.dart';
 import 'package:movie_search/presentation/movie_detail/component/sliver_fixed_header.dart';
 import 'package:movie_search/presentation/movie_list/data_list_view_model.dart';
+import 'package:movie_search/ui/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
@@ -23,7 +23,7 @@ class VideoSliverList extends StatelessWidget {
       minHeight: 250,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        color: kWhiteColor,
+        color: whiteColor,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -45,8 +45,18 @@ class VideoSliverList extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
-                          child: YoutubeCard(
-                            video: state.data[idx],
+                          child: InheritedYoutubePlayer(
+                            controller: YoutubePlayerController(
+                                initialVideoId: state.data[idx].key,
+                                flags: const YoutubePlayerFlags(
+                                    enableCaption: true,
+                                    captionLanguage: 'ko',
+                                    autoPlay: false,
+                                    loop: false,
+                                    disableDragSeek: true)),
+                            child: YoutubeCard(
+                              video: state.data[idx],
+                            ),
                           ),
                         ),
                         Text(
@@ -79,87 +89,108 @@ class YoutubeCard extends StatefulWidget {
 }
 
 class _YoutubeCardState extends State<YoutubeCard> {
-  late final YoutubePlayerController youtubePlayerController;
   bool isExpand = false;
   @override
   void initState() {
-    youtubePlayerController = YoutubePlayerController(
-        initialVideoId: widget.video.key,
-        flags: const YoutubePlayerFlags(
-            enableCaption: true,
-            captionLanguage: 'ko',
-            autoPlay: false,
-            loop: false,
-            disableDragSeek: true));
+    // youtubePlayerController = YoutubePlayerController(
+    //     initialVideoId: widget.video.key,
+    //     flags: const YoutubePlayerFlags(
+    //         enableCaption: true,
+    //         captionLanguage: 'ko',
+    //         autoPlay: false,
+    //         loop: false,
+    //         disableDragSeek: true));
     super.initState();
   }
 
   @override
   void dispose() {
-    youtubePlayerController.dispose();
+    // youtubePlayerController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final controller = YoutubePlayerController.of(context)!;
     return Container(
       alignment: Alignment.center,
-      child: YoutubePlayerBuilder(
-          onEnterFullScreen: () {},
-          onExitFullScreen: () {
-            // Navigator.of(context).pop();
-          },
-          player: YoutubePlayer(
-            controller: youtubePlayerController,
-            bottomActions: [
-              CurrentPosition(),
-              ProgressBar(
-                isExpanded: true,
-              ),
-              RemainingDuration(),
-              // InkWell(
-              //   onTap: () {
-              //     Navigator.of(context).push(MaterialPageRoute(
-              //         builder: (context) => FullScreen(
-              //               video: widget.video,
-              //             )));
-              //   },
-              //   child: const Icon(Icons.fullscreen),
-              // )
-            ],
+      child: YoutubePlayer(
+        controller: controller,
+        bottomActions: [
+          CurrentPosition(),
+          ProgressBar(
+            isExpanded: true,
           ),
-          builder: (context, player) {
-            return player;
-          }),
+          RemainingDuration(),
+          InkWell(
+            onTap: () async {
+              final metaData = await Navigator.of(context)
+                  .push<YoutubeMetaData>(MaterialPageRoute(
+                      builder: (context) => Provider<YoutubePlayerController>(
+                            create: (_) => controller,
+                            child: FullScreen(
+                              video: widget.video,
+                              value: controller.value,
+                            ),
+                          )));
+              // if (metaData != null) {
+              //   controller.seekTo(metaData.duration);
+              // }
+              controller.play();
+            },
+            child: const Icon(Icons.fullscreen),
+          )
+        ],
+      ),
     );
   }
 }
 
 class FullScreen extends StatefulWidget {
   final Video video;
-  const FullScreen({Key? key, required this.video}) : super(key: key);
+  final YoutubePlayerValue value;
+  const FullScreen({Key? key, required this.value, required this.video})
+      : super(key: key);
 
   @override
   State<FullScreen> createState() => _FullScreenState();
 }
 
 class _FullScreenState extends State<FullScreen> {
-  late final YoutubePlayerController controller;
+  // late final YoutubePlayerController controller;
   @override
   void initState() {
-    controller = YoutubePlayerController(initialVideoId: widget.video.key);
+    // controller = YoutubePlayerController(initialVideoId: widget.video.key);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final controller = Provider.of<YoutubePlayerController>(context);
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
-      body: YoutubePlayer(
-        controller: controller,
+      backgroundColor: Colors.black,
+      extendBodyBehindAppBar: true,
+      body: Center(
+        child: YoutubePlayer(
+          onReady: () {
+            controller.play();
+          },
+          controller: controller,
+          bottomActions: [
+            CurrentPosition(),
+            ProgressBar(
+              isExpanded: true,
+            ),
+            RemainingDuration(),
+            InkWell(
+              onTap: () {
+                controller.pause();
+                Navigator.of(context).pop(controller.metadata);
+              },
+              child: const Icon(Icons.fullscreen_exit),
+            )
+          ],
+        ),
       ),
     );
   }

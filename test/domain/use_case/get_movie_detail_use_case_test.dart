@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:movie_search/data/data_source/tmdb_api.dart';
 import 'package:movie_search/data/repository/api_movie_detail_data_repository.dart';
-import 'package:movie_search/domain/entity/movie/movie.dart';
+import 'package:movie_search/domain/model/movie/movie.dart';
 import 'package:movie_search/domain/usecase/get_movie_detail_use_case.dart';
 
 void main() {

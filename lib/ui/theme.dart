@@ -1,3 +1,3 @@
 import 'package:flutter/material.dart';
 
-const kWhiteColor = Color(0xFFFAFAFA);
+const whiteColor = Color(0xFFFAFAFA);

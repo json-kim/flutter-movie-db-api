@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_search/core/util/constants.dart';
-import 'package:movie_search/domain/entity/genre/genre.dart';
-import 'package:movie_search/domain/entity/movie/movie.dart';
+import 'package:movie_search/domain/model/genre/genre.dart';
+import 'package:movie_search/domain/model/movie/movie.dart';
 import 'package:movie_search/domain/usecase/get_movie_detail_use_case.dart';
 import 'package:movie_search/domain/usecase/get_movie_popular_use_case.dart';
 import 'package:movie_search/domain/usecase/get_movie_with_genre_use_case.dart';

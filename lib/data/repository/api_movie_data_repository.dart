@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:movie_search/core/params/request_params.dart';
 import 'package:movie_search/core/resources/result.dart';
 import 'package:movie_search/data/data_source/tmdb_api.dart';
-import 'package:movie_search/domain/entity/movie/movie.dart';
+import 'package:movie_search/domain/model/movie/movie.dart';
 import 'package:movie_search/domain/repository/movie_data_repository.dart';
 
 // TMDB API를 사용해서 영화 관련 데이터를 가져오는 클래스

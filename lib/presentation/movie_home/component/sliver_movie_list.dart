@@ -1,12 +1,12 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:movie_search/core/util/constants.dart';
-import 'package:movie_search/domain/entity/movie/movie.dart';
+import 'package:movie_search/domain/model/movie/movie.dart';
 import 'package:movie_search/domain/usecase/get_movie_detail_use_case.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_screen.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_view_model.dart';
 import 'package:movie_search/presentation/movie_list/data_list_view_model.dart';
 import 'package:provider/provider.dart';
+
+import 'movie_list_card.dart';
 
 class SliverMovieList<P> extends StatelessWidget {
   final String title;
@@ -46,61 +46,24 @@ class SliverMovieList<P> extends StatelessWidget {
             Expanded(
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemBuilder: (context, idx) =>
-                    MovieListCard(movie: state.data[idx]),
+                itemBuilder: (context, idx) => MovieListCard(
+                  movie: state.data[idx],
+                  onCardTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (context) => ChangeNotifierProvider(
+                                create: (context) => MovieDetailViewModel(
+                                  context.read<GetMovieDetailUseCase>(),
+                                  movie: state.data[idx],
+                                ),
+                                child: const MovieDetailScreen(),
+                              )),
+                    );
+                  },
+                ),
                 itemCount: state.data.length,
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class MovieListCard extends StatelessWidget {
-  const MovieListCard({
-    Key? key,
-    required this.movie,
-  }) : super(key: key);
-
-  final Movie movie;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-              builder: (context) => ChangeNotifierProvider(
-                    create: (context) => MovieDetailViewModel(
-                      context.read<GetMovieDetailUseCase>(),
-                      movie: movie,
-                    ),
-                    child: MovieDetailScreen(),
-                  )),
-        );
-      },
-      child: SizedBox(
-        width: 115,
-        child: Column(
-          children: [
-            Expanded(
-              child: CachedNetworkImage(
-                imageUrl: kPosterUrl + movie.posterPath!,
-                errorWidget: (context, url, error) => const Icon(Icons.error),
-                fit: BoxFit.cover,
-              ),
-            ),
-            SizedBox(
-              height: 50,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Text(
-                  movie.title,
-                ),
-              ),
-            )
           ],
         ),
       ),

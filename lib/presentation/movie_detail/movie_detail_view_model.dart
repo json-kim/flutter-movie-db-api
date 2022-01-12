@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:movie_search/domain/entity/movie/movie.dart';
+import 'package:movie_search/domain/model/movie/movie.dart';
 import 'package:movie_search/domain/usecase/get_movie_detail_use_case.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_state.dart';
 

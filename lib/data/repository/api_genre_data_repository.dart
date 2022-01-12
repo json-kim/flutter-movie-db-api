@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:movie_search/core/params/request_params.dart';
 import 'package:movie_search/core/resources/result.dart';
 import 'package:movie_search/data/data_source/tmdb_api.dart';
-import 'package:movie_search/domain/entity/genre/genre.dart';
+import 'package:movie_search/domain/model/genre/genre.dart';
 import 'package:movie_search/domain/repository/movie_data_repository.dart';
 
 class ApiGenreDataRepository

@@ -1,11 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:movie_search/config/theme.dart';
 import 'package:movie_search/core/util/constants.dart';
-import 'package:movie_search/domain/entity/credit/credit.dart';
-import 'package:movie_search/domain/entity/movie/movie.dart';
+import 'package:movie_search/domain/model/credit/credit.dart';
+import 'package:movie_search/domain/model/movie/movie.dart';
 import 'package:movie_search/presentation/movie_detail/component/sliver_fixed_header.dart';
 import 'package:movie_search/presentation/movie_list/data_list_view_model.dart';
+import 'package:movie_search/ui/theme.dart';
 import 'package:provider/provider.dart';
 
 class CreditSliverList extends StatelessWidget {
@@ -25,7 +25,7 @@ class CreditSliverList extends StatelessWidget {
           minHeight: 250,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            color: kWhiteColor,
+            color: whiteColor,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_search/core/util/constants.dart';
-import 'package:movie_search/domain/entity/movie/movie.dart';
+import 'package:movie_search/domain/model/movie/movie.dart';
 import 'package:movie_search/domain/usecase/get_movie_detail_use_case.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_screen.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_view_model.dart';
