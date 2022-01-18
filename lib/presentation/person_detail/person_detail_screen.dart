@@ -28,7 +28,12 @@ class PersonDetailScreen extends StatelessWidget {
               elevation: 0,
               actions: [
                 IconButton(
-                    onPressed: () {}, icon: const Icon(Icons.bookmark_outline))
+                    onPressed: () {}, icon: const Icon(Icons.bookmark_outline)),
+                IconButton(
+                    onPressed: () {
+                      Navigator.of(context).popUntil((route) => route.isFirst);
+                    },
+                    icon: const Icon(Icons.close)),
               ],
             ),
             body: Column(

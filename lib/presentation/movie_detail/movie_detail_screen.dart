@@ -152,7 +152,13 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
           onPressed: () {
             // 북마크 체크시 저장 하는 기능 추가
           },
-        )
+        ),
+        IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          },
+        ),
       ],
       collapsedHeight: 150,
       pinned: true,

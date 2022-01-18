@@ -15,7 +15,7 @@ class Movie with _$Movie {
     required String overview,
     required double popularity,
     @JsonKey(name: 'poster_path') required String? posterPath,
-    @JsonKey(name: 'release_date') required String releaseDate,
+    @JsonKey(name: 'release_date') required String? releaseDate,
     required String title,
     required bool video,
     @JsonKey(name: 'vote_average') required double voteAverage,
