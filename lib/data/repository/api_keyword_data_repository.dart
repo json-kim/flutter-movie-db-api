@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:movie_search/core/params/request_params.dart';
 import 'package:movie_search/core/resources/result.dart';
-import 'package:movie_search/data/data_source/api/tmdb_api.dart';
+import 'package:movie_search/data/data_source/remote/tmdb_api.dart';
 import 'package:movie_search/domain/model/keyword/keyword.dart';
 import 'package:movie_search/domain/repository/movie_data_repository.dart';
 

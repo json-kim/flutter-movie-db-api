@@ -4,7 +4,7 @@ import 'package:movie_search/domain/model/genre/genre.dart';
 import 'package:movie_search/domain/model/movie/movie.dart';
 import 'package:movie_search/domain/repository/movie_data_repository.dart';
 
-import 'use_case.dart';
+import '../use_case.dart';
 
 class GetMovieWithGenreUseCase implements UseCase<List<Movie>, Genre> {
   final MovieDataRepository<Movie, RequestParams> _repository;

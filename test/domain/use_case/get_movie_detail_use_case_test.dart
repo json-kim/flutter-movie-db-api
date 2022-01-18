@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:movie_search/data/data_source/api/tmdb_api.dart';
 import 'package:movie_search/data/repository/api_movie_detail_data_repository.dart';
 import 'package:movie_search/domain/model/movie/movie.dart';
-import 'package:movie_search/domain/usecase/get_movie_detail_use_case.dart';
+import 'package:movie_search/domain/usecase/movie/get_movie_detail_use_case.dart';
 
 void main() {
   test('영화 상세정보 가져오기 유스케이스 테스트', () async {

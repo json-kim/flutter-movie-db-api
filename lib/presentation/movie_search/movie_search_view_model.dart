@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:movie_search/domain/usecase/get_movie_with_query_use_case.dart';
+import 'package:movie_search/domain/usecase/movie/get_movie_with_query_use_case.dart';
 import 'package:movie_search/presentation/movie_search/movie_search_state.dart';
 
 import 'movie_search_event.dart';

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:movie_search/domain/usecase/get_genre_use_case.dart';
-import 'package:movie_search/domain/usecase/get_movie_now_playing_use_case.dart';
-import 'package:movie_search/domain/usecase/get_movie_popular_use_case.dart';
-import 'package:movie_search/domain/usecase/get_movie_with_genre_use_case.dart';
+import 'package:movie_search/domain/usecase/genre/get_genre_use_case.dart';
+import 'package:movie_search/domain/usecase/movie/get_movie_now_playing_use_case.dart';
+import 'package:movie_search/domain/usecase/movie/get_movie_popular_use_case.dart';
+import 'package:movie_search/domain/usecase/movie/get_movie_with_genre_use_case.dart';
 
 import 'movie_home_state.dart';
 

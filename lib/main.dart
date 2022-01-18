@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:movie_search/core/dependency_injection.dart';
+import 'package:movie_search/core/di/dependency_injection.dart';
 import 'package:movie_search/core/util/constants.dart';
 import 'package:movie_search/presentation/movie_tab_screen.dart';
 import 'package:provider/provider.dart';
