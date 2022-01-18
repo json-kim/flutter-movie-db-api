@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:movie_search/domain/model/movie/movie.dart';
 import 'package:movie_search/domain/model/video/video.dart';
 import 'package:movie_search/presentation/movie_detail/component/sliver_fixed_header.dart';
 import 'package:movie_search/presentation/movie_list/data_list_view_model.dart';
@@ -14,7 +13,7 @@ class VideoSliverList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<DataListViewModel<Video, Movie>>();
+    final viewModel = context.watch<DataListViewModel<Video, int>>();
     final state = viewModel.state;
 
     return SliverPersistentHeader(

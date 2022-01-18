@@ -10,8 +10,15 @@ class GetCastWithPersonUseCase implements UseCase<List<Cast>, int> {
   GetCastWithPersonUseCase(this._repository);
 
   @override
-  Future<Result<List<Cast>>> call(int personId) {
-    // TODO: implement call
-    throw UnimplementedError();
+  Future<Result<List<Cast>>> call(int personId) async {
+    final params = RequestParams(pathParams: 'person/$personId/movie_credits');
+
+    final result = await _repository.fetch(params);
+
+    return result.when(success: (credits) {
+      return Result.success(credits);
+    }, error: (message) {
+      return Result.error(message);
+    });
   }
 }

@@ -1,14 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:movie_search/core/util/constants.dart';
 import 'package:movie_search/domain/usecase/get_movie_detail_use_case.dart';
+import 'package:movie_search/presentation/global_components/movie_data_card.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_screen.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_view_model.dart';
+import 'package:movie_search/presentation/movie_search/movie_search_event.dart';
 import 'package:movie_search/presentation/movie_search/movie_search_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-
-import 'components/movie_grid_view_card.dart';
 
 class MovieSearchScreen extends StatefulWidget {
   const MovieSearchScreen({Key? key}) : super(key: key);
@@ -80,15 +81,13 @@ class _MovieSearchScreenState extends State<MovieSearchScreen>
                 ),
                 onPressed: () {
                   final query = _textEditingController.text;
-                  context
-                      .read<MovieSearchViewModel>()
-                      .loadMoviesWithQuery(query);
+                  viewModel.onEvent(MovieSearchEvent.search(query));
                 },
               ),
             ),
             onChanged: (value) => onQueryChanged(
               searchMovie: (query) {
-                context.read<MovieSearchViewModel>().loadMoviesWithQuery(query);
+                viewModel.onEvent(MovieSearchEvent.search(query));
               },
               query: value,
             ),
@@ -111,18 +110,23 @@ class _MovieSearchScreenState extends State<MovieSearchScreen>
                     itemBuilder: (context, index) {
                       final movie = state.movies[index];
 
-                      return MovieGridViewCard(
-                        movie: movie,
+                      return MovieDataCard(
+                        url: movie.posterPath == null
+                            ? null
+                            : kPosterUrl + movie.posterPath!,
+                        title: movie.title,
+                        titleColor: Colors.white,
                         onCardTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                                builder: (context) => ChangeNotifierProvider(
-                                      create: (context) => MovieDetailViewModel(
-                                        context.read<GetMovieDetailUseCase>(),
-                                        movie: movie,
-                                      ),
-                                      child: const MovieDetailScreen(),
-                                    )),
+                              builder: (context) => ChangeNotifierProvider(
+                                create: (context) => MovieDetailViewModel(
+                                  context.read<GetMovieDetailUseCase>(),
+                                  movieId: movie.id,
+                                ),
+                                child: const MovieDetailScreen(),
+                              ),
+                            ),
                           );
                         },
                       );

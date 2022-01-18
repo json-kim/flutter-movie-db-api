@@ -10,7 +10,7 @@ class MovieGridViewCard extends StatelessWidget {
     required this.movie,
   }) : super(key: key);
 
-  final void Function()? onCardTap;
+  final void Function() onCardTap;
   final Movie movie;
 
   @override
@@ -50,8 +50,8 @@ class MovieGridViewCard extends StatelessWidget {
             child: Center(
               child: Text(
                 movie.title,
-                style:
-                    const TextStyle(fontSize: 16, overflow: TextOverflow.fade),
+                style: const TextStyle(
+                    fontSize: 16, overflow: TextOverflow.ellipsis),
               ),
             ),
           )

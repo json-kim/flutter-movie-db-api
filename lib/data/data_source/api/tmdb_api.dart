@@ -12,10 +12,10 @@ class TMDBApi {
         // 성공
         return Result.success(response.body);
       } else {
-        return const Result.error('api 에러');
+        return Result.error('$runtimeType : 네트워크 에러 ${response.statusCode}');
       }
     } catch (e) {
-      return const Result.error('네트워크 통신 에러');
+      return Result.error('$runtimeType : 네트워크 에러');
     }
   }
 }

@@ -47,13 +47,15 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
             _buildMovieInfoBar(state.movieDetail),
             // 배우 제작진
             ChangeNotifierProvider(
-                create: (context) => DataListViewModel<Credit, Movie>(
-                    context.read<GetCreditWithMovieUseCase>(), viewModel.movie),
+                create: (context) => DataListViewModel<Credit, int>(
+                    context.read<GetCreditWithMovieUseCase>(),
+                    viewModel.movieId),
                 child: const CreditSliverList()),
             // 관련 영상
             ChangeNotifierProvider(
-                create: (context) => DataListViewModel<Video, Movie>(
-                    context.read<GetVideoWithMovieUseCase>(), viewModel.movie),
+                create: (context) => DataListViewModel<Video, int>(
+                    context.read<GetVideoWithMovieUseCase>(),
+                    viewModel.movieId),
                 child: const VideoSliverList()),
             // 비슷한 영화
             const SliverToBoxAdapter(
@@ -66,8 +68,8 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
               ),
             ),
             ChangeNotifierProvider(
-                create: (context) => DataListViewModel<Movie, Movie>(
-                    context.read<GetMovieSimilarUseCase>(), viewModel.movie),
+                create: (context) => DataListViewModel<Movie, int>(
+                    context.read<GetMovieSimilarUseCase>(), viewModel.movieId),
                 child: const SimilarSliverGrid()),
           ],
         ),
@@ -159,13 +161,17 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
       flexibleSpace: Stack(
         clipBehavior: Clip.none,
         children: [
-          CachedNetworkImage(
-            imageUrl: kBackdropUrl + movieDetail.backdropPath!,
-            errorWidget: (context, url, error) => const Icon(Icons.error),
-            fit: BoxFit.cover,
-            height: size.height,
-            width: size.width,
-          ),
+          movieDetail.backdropPath == null
+              ? Container(
+                  color: Colors.black,
+                )
+              : CachedNetworkImage(
+                  imageUrl: kBackdropUrl + movieDetail.backdropPath!,
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                  fit: BoxFit.cover,
+                  height: size.height,
+                  width: size.width,
+                ),
           Container(
             color: Colors.black.withOpacity(0.5),
           ),

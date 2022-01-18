@@ -17,24 +17,39 @@ class PersonDetailViewModel with ChangeNotifier {
     this.personId,
     this._getPersonDetailUseCase,
     this._getCastWithPersonUseCase,
-  );
+  ) {
+    _loadPerson(personId);
+  }
 
   Future<void> onEvent(PersonDetailEvent event) {
     return event.when(loadPerson: _loadPerson, savePerson: _savePerson);
   }
 
   Future<void> _loadPerson(int personId) async {
+    _state = _state.copyWith(isLoading: true);
+    notifyListeners();
+
     final result = await _getPersonDetailUseCase(personId);
 
-    result.when(success: (person) {}, error: (message) {});
+    result.when(
+        success: (person) {
+          _state = _state.copyWith(person: person);
+        },
+        error: (message) {});
     await _loadCasts(personId);
+
+    _state = _state.copyWith(isLoading: false);
     notifyListeners();
   }
 
   Future<void> _loadCasts(int personId) async {
     final result = await _getCastWithPersonUseCase(personId);
 
-    result.when(success: (casts) {}, error: (message) {});
+    result.when(
+        success: (casts) {
+          _state = _state.copyWith(casts: casts);
+        },
+        error: (message) {});
   }
 
   Future<void> _savePerson(Person person) async {

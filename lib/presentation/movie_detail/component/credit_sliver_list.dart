@@ -2,9 +2,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_search/core/util/constants.dart';
 import 'package:movie_search/domain/model/credit/credit.dart';
-import 'package:movie_search/domain/model/movie/movie.dart';
+import 'package:movie_search/domain/usecase/get_cast_with_person_use_case.dart';
+import 'package:movie_search/domain/usecase/get_person_detail_use_case.dart';
 import 'package:movie_search/presentation/movie_detail/component/sliver_fixed_header.dart';
 import 'package:movie_search/presentation/movie_list/data_list_view_model.dart';
+import 'package:movie_search/presentation/person_detail/person_detail_screen.dart';
+import 'package:movie_search/presentation/person_detail/person_detail_view_model.dart';
 import 'package:movie_search/ui/theme.dart';
 import 'package:provider/provider.dart';
 
@@ -15,7 +18,7 @@ class CreditSliverList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<DataListViewModel<Credit, Movie>>();
+    final viewModel = context.watch<DataListViewModel<Credit, int>>();
     final state = viewModel.state;
 
     return SliverPersistentHeader(
@@ -40,45 +43,60 @@ class CreditSliverList extends StatelessWidget {
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     itemCount: state.data.length,
-                    itemBuilder: (context, idx) => Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: AspectRatio(
-                        aspectRatio: 0.8,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: state.data[idx].profilePath == null
-                                  ? const Center(
-                                      child: Text(
-                                        'No Image',
-                                        style: TextStyle(color: Colors.black),
+                    itemBuilder: (context, idx) => GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ChangeNotifierProvider(
+                              create: (context) => PersonDetailViewModel(
+                                state.data[idx].id,
+                                context.read<GetPersonDetailUseCase>(),
+                                context.read<GetCastWithPersonUseCase>(),
+                              ),
+                              child: const PersonDetailScreen(),
+                            ),
+                          ),
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: AspectRatio(
+                          aspectRatio: 0.8,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: state.data[idx].profilePath == null
+                                    ? Image.asset(
+                                        'asset/image/avatar_placeholder.png',
+                                        fit: BoxFit.cover,
+                                      )
+                                    : CachedNetworkImage(
+                                        imageUrl: kProfileUrl +
+                                            state.data[idx].profilePath!,
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                        errorWidget: (context, url, error) =>
+                                            const Icon(Icons.error),
                                       ),
-                                    )
-                                  : CachedNetworkImage(
-                                      imageUrl: kProfileUrl +
-                                          state.data[idx].profilePath!,
-                                      fit: BoxFit.cover,
-                                      width: double.infinity,
-                                      errorWidget: (context, url, error) =>
-                                          const Icon(Icons.error),
-                                    ),
-                            ),
-                            FittedBox(
-                              child: Text(
-                                state.data[idx].name,
-                                style: const TextStyle(
-                                    color: Colors.black, fontSize: 16),
                               ),
-                            ),
-                            FittedBox(
-                              child: Text(
-                                state.data[idx].character,
-                                style: const TextStyle(
-                                    color: Colors.black, fontSize: 12),
+                              FittedBox(
+                                child: Text(
+                                  state.data[idx].name,
+                                  style: const TextStyle(
+                                      color: Colors.black, fontSize: 16),
+                                ),
                               ),
-                            ),
-                          ],
+                              FittedBox(
+                                child: Text(
+                                  state.data[idx].character,
+                                  style: const TextStyle(
+                                      color: Colors.black, fontSize: 12),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),

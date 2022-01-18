@@ -9,5 +9,6 @@ class PersonDetailState with _$PersonDetailState {
   const factory PersonDetailState({
     Person? person,
     required List<Cast> casts,
+    @Default(false) bool isLoading,
   }) = _PersonDetailState;
 }

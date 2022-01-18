@@ -18,7 +18,6 @@ class _MovieTabScreenState extends State<MovieTabScreen> {
     const MovieHomeScreen(),
     const MovieSearchScreen(),
     Container(),
-    Container(),
   ];
 
   @override
@@ -49,7 +48,6 @@ class _MovieTabScreenState extends State<MovieTabScreen> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: '홈'),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: '검색'),
-          BottomNavigationBarItem(icon: Icon(Icons.movie), label: '클립'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: '마이페이지'),
         ],
       ),

@@ -19,7 +19,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: kMaterialApptitle,
-      theme: ThemeData.dark(),
+      theme: ThemeData.dark().copyWith(
+          appBarTheme: const AppBarTheme(
+              backgroundColor: Colors.transparent, elevation: 0)),
       darkTheme: ThemeData.dark(),
       home: const MovieTabScreen(),
     );

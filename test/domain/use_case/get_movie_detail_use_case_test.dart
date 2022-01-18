@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:movie_search/data/data_source/tmdb_api.dart';
+import 'package:movie_search/data/data_source/api/tmdb_api.dart';
 import 'package:movie_search/data/repository/api_movie_detail_data_repository.dart';
 import 'package:movie_search/domain/model/movie/movie.dart';
 import 'package:movie_search/domain/usecase/get_movie_detail_use_case.dart';
@@ -11,7 +11,7 @@ void main() {
     final useCase =
         GetMovieDetailUseCase(ApiMovieDetailDataRepository(TMDBApi()));
 
-    final result = await useCase(fakeMovie);
+    final result = await useCase(fakeMovie.id);
 
     result.when(
         success: (movieDetail) {

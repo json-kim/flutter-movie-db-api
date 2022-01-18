@@ -14,7 +14,7 @@ class Cast with _$Cast {
     @JsonKey(name: 'original_title') required String originalTitle,
     required String overview,
     @JsonKey(name: 'poster_path') required String? posterPath,
-    @JsonKey(name: 'release_date') required String releaseDate,
+    @JsonKey(name: 'release_date') required String? releaseDate,
     required String title,
     required bool video,
     @JsonKey(name: 'vote_average') required double voteAverage,

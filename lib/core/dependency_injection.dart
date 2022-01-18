@@ -1,10 +1,13 @@
 // 1. Provider 전체
-import 'package:movie_search/data/data_source/tmdb_api.dart';
+import 'package:movie_search/data/data_source/api/tmdb_api.dart';
+import 'package:movie_search/data/repository/api_cast_data_repository.dart';
 import 'package:movie_search/data/repository/api_credit_data_repository.dart';
 import 'package:movie_search/data/repository/api_genre_data_repository.dart';
 import 'package:movie_search/data/repository/api_movie_data_repository.dart';
 import 'package:movie_search/data/repository/api_movie_detail_data_repository.dart';
+import 'package:movie_search/data/repository/api_person_data_repository.dart';
 import 'package:movie_search/data/repository/api_video_data_repository.dart';
+import 'package:movie_search/domain/usecase/get_cast_with_person_use_case.dart';
 import 'package:movie_search/domain/usecase/get_credit_with_movie_use_case.dart';
 import 'package:movie_search/domain/usecase/get_genre_use_case.dart';
 import 'package:movie_search/domain/usecase/get_movie_detail_use_case.dart';
@@ -13,6 +16,7 @@ import 'package:movie_search/domain/usecase/get_movie_popular_use_case.dart';
 import 'package:movie_search/domain/usecase/get_movie_similar_use_case.dart';
 import 'package:movie_search/domain/usecase/get_movie_with_genre_use_case.dart';
 import 'package:movie_search/domain/usecase/get_movie_with_query_use_case.dart';
+import 'package:movie_search/domain/usecase/get_person_detail_use_case.dart';
 import 'package:movie_search/domain/usecase/get_video_with_movie_use_case.dart';
 import 'package:movie_search/presentation/movie_home/movie_home_view_model.dart';
 import 'package:movie_search/presentation/movie_search/movie_search_view_model.dart';
@@ -34,6 +38,7 @@ List<SingleChildWidget> independentModels = [
 
 // 3. 2번에 의존성있는 객체
 List<SingleChildWidget> dependentModels = [
+  // Repository
   ProxyProvider<TMDBApi, ApiMovieDataRepository>(
     update: (context, tmdbApi, _) => ApiMovieDataRepository(tmdbApi),
   ),
@@ -48,6 +53,20 @@ List<SingleChildWidget> dependentModels = [
   ),
   ProxyProvider<TMDBApi, ApiVideoDataRepository>(
     update: (context, tmdbApi, _) => ApiVideoDataRepository(tmdbApi),
+  ),
+  ProxyProvider<TMDBApi, ApiPersonDataRepository>(
+    update: (context, tmdbApi, _) => ApiPersonDataRepository(tmdbApi),
+  ),
+  ProxyProvider<TMDBApi, ApiCastDataRepository>(
+    update: (context, tmdbApi, _) => ApiCastDataRepository(tmdbApi),
+  ),
+
+  // UseCase
+  ProxyProvider<ApiPersonDataRepository, GetPersonDetailUseCase>(
+    update: (context, repository, _) => GetPersonDetailUseCase(repository),
+  ),
+  ProxyProvider<ApiCastDataRepository, GetCastWithPersonUseCase>(
+    update: (context, repository, _) => GetCastWithPersonUseCase(repository),
   ),
   ProxyProvider<ApiVideoDataRepository, GetVideoWithMovieUseCase>(
     update: (context, repository, _) => GetVideoWithMovieUseCase(repository),

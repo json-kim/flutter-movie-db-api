@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:movie_search/core/util/constants.dart';
 import 'package:movie_search/domain/model/movie/movie.dart';
 import 'package:movie_search/domain/usecase/get_movie_detail_use_case.dart';
+import 'package:movie_search/presentation/global_components/movie_data_card.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_screen.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_view_model.dart';
 import 'package:movie_search/presentation/movie_list/data_list_view_model.dart';
 import 'package:provider/provider.dart';
-
-import 'movie_list_card.dart';
 
 class SliverMovieList<P> extends StatelessWidget {
   final String title;
@@ -46,18 +46,24 @@ class SliverMovieList<P> extends StatelessWidget {
             Expanded(
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemBuilder: (context, idx) => MovieListCard(
-                  movie: state.data[idx],
+                itemBuilder: (context, idx) => MovieDataCard(
+                  title: state.data[idx].title,
+                  url: state.data[idx].posterPath == null
+                      ? null
+                      : kPosterUrl + state.data[idx].posterPath!,
+                  width: 115,
+                  titleColor: Colors.white,
                   onCardTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                          builder: (context) => ChangeNotifierProvider(
-                                create: (context) => MovieDetailViewModel(
-                                  context.read<GetMovieDetailUseCase>(),
-                                  movie: state.data[idx],
-                                ),
-                                child: const MovieDetailScreen(),
-                              )),
+                        builder: (context) => ChangeNotifierProvider(
+                          create: (context) => MovieDetailViewModel(
+                            context.read<GetMovieDetailUseCase>(),
+                            movieId: state.data[idx].id,
+                          ),
+                          child: const MovieDetailScreen(),
+                        ),
+                      ),
                     );
                   },
                 ),

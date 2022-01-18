@@ -1,8 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_search/core/util/constants.dart';
 import 'package:movie_search/domain/model/movie/movie.dart';
 import 'package:movie_search/domain/usecase/get_movie_detail_use_case.dart';
+import 'package:movie_search/presentation/global_components/movie_data_card.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_screen.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_view_model.dart';
 import 'package:movie_search/presentation/movie_list/data_list_view_model.dart';
@@ -15,40 +15,35 @@ class SimilarSliverGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<DataListViewModel<Movie, Movie>>();
+    final viewModel = context.watch<DataListViewModel<Movie, int>>();
     final state = viewModel.state;
 
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       sliver: SliverGrid(
           delegate: SliverChildBuilderDelegate(
-            (context, index) => GestureDetector(
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => ChangeNotifierProvider(
-                            create: (context) => MovieDetailViewModel(
-                                context.read<GetMovieDetailUseCase>(),
-                                movie: state.data[index]),
-                            child: const MovieDetailScreen(),
-                          )));
-                },
-                child: state.data[index].posterPath == null
-                    ? Center(
-                        child: Text(state.data[index].title),
-                      )
-                    : CachedNetworkImage(
-                        imageUrl: kPosterUrl + state.data[index].posterPath!,
-                        fit: BoxFit.cover,
-                        errorWidget: (context, url, error) =>
-                            const Icon(Icons.error),
-                      )),
+            (context, index) => MovieDataCard(
+              url: state.data[index].posterPath == null
+                  ? null
+                  : kPosterUrl + state.data[index].posterPath!,
+              title: state.data[index].title,
+              onCardTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => ChangeNotifierProvider(
+                          create: (context) => MovieDetailViewModel(
+                              context.read<GetMovieDetailUseCase>(),
+                              movieId: state.data[index].id),
+                          child: const MovieDetailScreen(),
+                        )));
+              },
+            ),
             childCount: state.data.length,
           ),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
               mainAxisSpacing: 8,
               crossAxisSpacing: 8,
-              childAspectRatio: 1 / 1.6)),
+              childAspectRatio: 1 / 1.8)),
     );
   }
 }
