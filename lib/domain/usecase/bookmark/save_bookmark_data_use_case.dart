@@ -1,16 +1,15 @@
 import 'package:movie_search/core/resources/result.dart';
-import 'package:movie_search/domain/model/movie/movie.dart';
 import 'package:movie_search/domain/repository/bookmark_data_repository.dart';
 import 'package:movie_search/domain/usecase/use_case.dart';
 
-class DeleteBookmarkMovieUseCase implements UseCase<int, int> {
-  final BookmarkDataRepository<Movie, int> _repository;
+class SaveBookmarkDataUseCase<DataType> implements UseCase<int, DataType> {
+  final BookmarkDataRepository<DataType, int> _repository;
 
-  DeleteBookmarkMovieUseCase(this._repository);
+  SaveBookmarkDataUseCase(this._repository);
 
   @override
-  Future<Result<int>> call(int movieId) async {
-    final result = await _repository.deleteData(movieId);
+  Future<Result<int>> call(DataType movie) async {
+    final result = await _repository.saveData(movie);
 
     return result.when(
       success: (movieId) {

@@ -1,16 +1,16 @@
 import 'package:movie_search/core/resources/result.dart';
-import 'package:movie_search/domain/model/movie/movie.dart';
 import 'package:movie_search/domain/repository/bookmark_data_repository.dart';
 
 import '../use_case.dart';
 
-class GetBookmarkMoviesUseCase implements UseCase<List<Movie>, int> {
-  final BookmarkDataRepository<Movie, int> _repository;
+class GetBookmarkDatasUseCase<DataType>
+    implements UseCase<List<DataType>, int> {
+  final BookmarkDataRepository<DataType, int> _repository;
 
-  GetBookmarkMoviesUseCase(this._repository);
+  GetBookmarkDatasUseCase(this._repository);
 
   @override
-  Future<Result<List<Movie>>> call(int page) async {
+  Future<Result<List<DataType>>> call(int page) async {
     final result = await _repository.loadDatas(page);
 
     return result.when(success: (movies) {
