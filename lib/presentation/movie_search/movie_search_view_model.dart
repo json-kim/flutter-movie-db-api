@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movie_search/core/param/param.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_with_query_use_case.dart';
 import 'package:movie_search/presentation/movie_search/movie_search_state.dart';
 
@@ -27,7 +28,8 @@ class MovieSearchViewModel with ChangeNotifier {
     if (query.isEmpty) {
       _state = _state.copyWith(movies: []);
     } else {
-      final result = await _getMovieWithQueryUseCase(query);
+      final result =
+          await _getMovieWithQueryUseCase(Param.movieWithQuery(query));
 
       result.when(
           success: (movies) {

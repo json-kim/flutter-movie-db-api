@@ -1,12 +1,12 @@
 // 1. Provider 전체
-import 'package:movie_search/data/data_source/remote/tmdb_api.dart';
-import 'package:movie_search/data/repository/api_cast_data_repository.dart';
-import 'package:movie_search/data/repository/api_credit_data_repository.dart';
-import 'package:movie_search/data/repository/api_genre_data_repository.dart';
-import 'package:movie_search/data/repository/api_movie_data_repository.dart';
-import 'package:movie_search/data/repository/api_movie_detail_data_repository.dart';
-import 'package:movie_search/data/repository/api_person_data_repository.dart';
-import 'package:movie_search/data/repository/api_video_data_repository.dart';
+import 'package:movie_search/data/data_source/remote/movie_remote_data_source.dart';
+import 'package:movie_search/data/repository/movie_data/cast_data_repository_impl.dart';
+import 'package:movie_search/data/repository/movie_data/credit_data_repository_impl.dart';
+import 'package:movie_search/data/repository/movie_data/genre_data_repository_impl.dart';
+import 'package:movie_search/data/repository/movie_data/movie_data_repository_impl.dart';
+import 'package:movie_search/data/repository/movie_data/movie_detail_data_repository_impl.dart';
+import 'package:movie_search/data/repository/movie_data/person_data_repository_impl.dart';
+import 'package:movie_search/data/repository/movie_data/video_data_repository_impl.dart';
 import 'package:movie_search/domain/usecase/cast/get_cast_with_person_use_case.dart';
 import 'package:movie_search/domain/usecase/credit/get_credit_with_movie_use_case.dart';
 import 'package:movie_search/domain/usecase/genre/get_genre_use_case.dart';
@@ -31,68 +31,68 @@ List<SingleChildWidget> globalProviders = [
 
 // 2. 독립적인 객체
 List<SingleChildWidget> independentModels = [
-  Provider<TMDBApi>(
-    create: (context) => TMDBApi(),
+  Provider<MovieRemoteDataSource>(
+    create: (context) => MovieRemoteDataSource(),
   ),
 ];
 
 // 3. 2번에 의존성있는 객체
 List<SingleChildWidget> dependentModels = [
   // Repository
-  ProxyProvider<TMDBApi, ApiMovieDataRepository>(
-    update: (context, tmdbApi, _) => ApiMovieDataRepository(tmdbApi),
+  ProxyProvider<MovieRemoteDataSource, MovieDataRepositoryImpl>(
+    update: (context, tmdbApi, _) => MovieDataRepositoryImpl(tmdbApi),
   ),
-  ProxyProvider<TMDBApi, ApiGenreDataRepository>(
-    update: (context, tmdbApi, _) => ApiGenreDataRepository(tmdbApi),
+  ProxyProvider<MovieRemoteDataSource, GenreDataRepositoryImpl>(
+    update: (context, tmdbApi, _) => GenreDataRepositoryImpl(tmdbApi),
   ),
-  ProxyProvider<TMDBApi, ApiMovieDetailDataRepository>(
-    update: (context, tmdbApi, _) => ApiMovieDetailDataRepository(tmdbApi),
+  ProxyProvider<MovieRemoteDataSource, MovieDetailDataRepositoryImpl>(
+    update: (context, tmdbApi, _) => MovieDetailDataRepositoryImpl(tmdbApi),
   ),
-  ProxyProvider<TMDBApi, ApiCreditDataRepository>(
-    update: (context, tmdbApi, _) => ApiCreditDataRepository(tmdbApi),
+  ProxyProvider<MovieRemoteDataSource, CreditDataRepositoryImpl>(
+    update: (context, tmdbApi, _) => CreditDataRepositoryImpl(tmdbApi),
   ),
-  ProxyProvider<TMDBApi, ApiVideoDataRepository>(
-    update: (context, tmdbApi, _) => ApiVideoDataRepository(tmdbApi),
+  ProxyProvider<MovieRemoteDataSource, VideoDataRepositoryImpl>(
+    update: (context, tmdbApi, _) => VideoDataRepositoryImpl(tmdbApi),
   ),
-  ProxyProvider<TMDBApi, ApiPersonDataRepository>(
-    update: (context, tmdbApi, _) => ApiPersonDataRepository(tmdbApi),
+  ProxyProvider<MovieRemoteDataSource, PersonDataRepositoryImpl>(
+    update: (context, tmdbApi, _) => PersonDataRepositoryImpl(tmdbApi),
   ),
-  ProxyProvider<TMDBApi, ApiCastDataRepository>(
-    update: (context, tmdbApi, _) => ApiCastDataRepository(tmdbApi),
+  ProxyProvider<MovieRemoteDataSource, CastDataRepositoryImpl>(
+    update: (context, tmdbApi, _) => CastDataRepositoryImpl(tmdbApi),
   ),
 
   // UseCase
-  ProxyProvider<ApiPersonDataRepository, GetPersonDetailUseCase>(
+  ProxyProvider<PersonDataRepositoryImpl, GetPersonDetailUseCase>(
     update: (context, repository, _) => GetPersonDetailUseCase(repository),
   ),
-  ProxyProvider<ApiCastDataRepository, GetCastWithPersonUseCase>(
+  ProxyProvider<CastDataRepositoryImpl, GetCastWithPersonUseCase>(
     update: (context, repository, _) => GetCastWithPersonUseCase(repository),
   ),
-  ProxyProvider<ApiVideoDataRepository, GetVideoWithMovieUseCase>(
+  ProxyProvider<VideoDataRepositoryImpl, GetVideoWithMovieUseCase>(
     update: (context, repository, _) => GetVideoWithMovieUseCase(repository),
   ),
-  ProxyProvider<ApiCreditDataRepository, GetCreditWithMovieUseCase>(
+  ProxyProvider<CreditDataRepositoryImpl, GetCreditWithMovieUseCase>(
     update: (context, repository, _) => GetCreditWithMovieUseCase(repository),
   ),
-  ProxyProvider<ApiMovieDataRepository, GetMoviePopularUseCase>(
+  ProxyProvider<MovieDataRepositoryImpl, GetMoviePopularUseCase>(
     update: (context, repository, _) => GetMoviePopularUseCase(repository),
   ),
-  ProxyProvider<ApiMovieDataRepository, GetMovieWithQueryUseCase>(
+  ProxyProvider<MovieDataRepositoryImpl, GetMovieWithQueryUseCase>(
     update: (context, repository, _) => GetMovieWithQueryUseCase(repository),
   ),
-  ProxyProvider<ApiMovieDataRepository, GetMovieNowPlayingUseCase>(
+  ProxyProvider<MovieDataRepositoryImpl, GetMovieNowPlayingUseCase>(
     update: (context, repository, _) => GetMovieNowPlayingUseCase(repository),
   ),
-  ProxyProvider<ApiMovieDataRepository, GetMovieWithGenreUseCase>(
+  ProxyProvider<MovieDataRepositoryImpl, GetMovieWithGenreUseCase>(
     update: (context, repository, _) => GetMovieWithGenreUseCase(repository),
   ),
-  ProxyProvider<ApiMovieDataRepository, GetMovieSimilarUseCase>(
+  ProxyProvider<MovieDataRepositoryImpl, GetMovieSimilarUseCase>(
     update: (context, repository, _) => GetMovieSimilarUseCase(repository),
   ),
-  ProxyProvider<ApiGenreDataRepository, GetGenreUseCase>(
+  ProxyProvider<GenreDataRepositoryImpl, GetGenreUseCase>(
     update: (context, repository, _) => GetGenreUseCase(repository),
   ),
-  ProxyProvider<ApiMovieDetailDataRepository, GetMovieDetailUseCase>(
+  ProxyProvider<MovieDetailDataRepositoryImpl, GetMovieDetailUseCase>(
     update: (context, repository, _) => GetMovieDetailUseCase(repository),
   ),
 ];

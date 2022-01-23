@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movie_search/core/param/param.dart';
 import 'package:movie_search/core/util/constants.dart';
 import 'package:movie_search/domain/model/movie/movie.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_detail_use_case.dart';
@@ -8,7 +9,7 @@ import 'package:movie_search/presentation/movie_detail/movie_detail_view_model.d
 import 'package:movie_search/presentation/movie_list/data_list_view_model.dart';
 import 'package:provider/provider.dart';
 
-class SliverMovieList<P> extends StatelessWidget {
+class SliverMovieList extends StatelessWidget {
   final String title;
 
   const SliverMovieList({
@@ -18,7 +19,7 @@ class SliverMovieList<P> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<DataListViewModel<Movie, P>>();
+    final viewModel = context.watch<DataListViewModel<Movie, Param>>();
     final state = viewModel.state;
 
     return SliverToBoxAdapter(

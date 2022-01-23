@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:movie_search/domain/model/genre/genre.dart';
+import 'package:movie_search/core/param/param.dart';
 import 'package:movie_search/domain/model/movie/movie.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_detail_use_case.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_popular_use_case.dart';
@@ -103,19 +103,20 @@ class _MovieHomeScreenState extends State<MovieHomeScreen>
           ),
         ),
         ChangeNotifierProvider(
-          create: (context) => DataListViewModel<Movie, void>(
+          create: (context) => DataListViewModel<Movie, Param>(
             context.read<GetMoviePopularUseCase>(),
-            1,
+            Param.moviePopular(),
           ),
-          child: const SliverMovieList<void>(
+          child: const SliverMovieList(
             title: '인기몰이 영화',
           ),
         ),
         ...viewModel.state.genreList
             .map((genre) => ChangeNotifierProvider(
-                create: (context) => DataListViewModel<Movie, Genre>(
-                    context.read<GetMovieWithGenreUseCase>(), genre),
-                child: SliverMovieList<Genre>(title: genre.name)))
+                create: (context) => DataListViewModel<Movie, Param>(
+                    context.read<GetMovieWithGenreUseCase>(),
+                    Param.movieWithGenre(genre.id)),
+                child: SliverMovieList(title: genre.name)))
             .toList(),
       ],
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movie_search/core/param/param.dart';
 import 'package:movie_search/domain/usecase/genre/get_genre_use_case.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_now_playing_use_case.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_popular_use_case.dart';
@@ -26,7 +27,7 @@ class MovieHomeViewModel with ChangeNotifier {
   }
 
   Future<void> loadNowPlayingMovies() async {
-    final result = await _getMovieNowPlayingUseCase(1);
+    final result = await _getMovieNowPlayingUseCase(Param.movieNowPlaying());
 
     result.when(
         success: (movies) {
@@ -38,7 +39,7 @@ class MovieHomeViewModel with ChangeNotifier {
   }
 
   Future<void> loadPopularMovies() async {
-    final result = await _getMoviePopularUseCase(1);
+    final result = await _getMoviePopularUseCase(Param.moviePopular());
 
     result.when(
         success: (movies) {
@@ -50,7 +51,7 @@ class MovieHomeViewModel with ChangeNotifier {
   }
 
   Future<void> loadGenres() async {
-    final result = await _getGenreUseCase(0);
+    final result = await _getGenreUseCase(const Param.genres());
 
     result.when(
         success: (genres) {

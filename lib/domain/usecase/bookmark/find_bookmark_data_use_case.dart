@@ -1,4 +1,5 @@
-import 'package:movie_search/core/resources/resultrk_data_repository.dart';
+import 'package:movie_search/core/result/result.dart';
+import 'package:movie_search/domain/repository/bookmark_data_repository.dart';
 import 'package:movie_search/domain/usecase/use_case.dart';
 
 class FindBookmarkDataUseCase<DataType> implements UseCase<DataType, int> {

@@ -1,10 +1,11 @@
 import 'package:http/http.dart' as http;
-import 'package:movie_search/core/resources/result.dart';
+import 'package:movie_search/core/param/param.dart';
+import 'package:movie_search/core/result/result.dart';
 
-class TMDBApi {
-  Future<Result<String>> fetch(String url) async {
+class MovieRemoteDataSource {
+  Future<Result<String>> fetch(Param param, {String language = 'ko-KR'}) async {
     try {
-      final uri = Uri.parse(url);
+      final uri = Uri.parse(paramToUrl(param, language));
 
       final response = await http.get(uri);
 

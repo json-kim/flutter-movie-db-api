@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:movie_search/core/param/param.dart';
 import 'package:movie_search/core/util/constants.dart';
 import 'package:movie_search/domain/model/credit/credit.dart';
 import 'package:movie_search/domain/usecase/cast/get_cast_with_person_use_case.dart';
@@ -18,7 +19,7 @@ class CreditSliverList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<DataListViewModel<Credit, int>>();
+    final viewModel = context.watch<DataListViewModel<Credit, Param>>();
     final state = viewModel.state;
 
     return SliverPersistentHeader(

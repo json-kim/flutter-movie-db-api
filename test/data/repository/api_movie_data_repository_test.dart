@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:movie_search/core/params/request_params.dart';
 import 'package:movie_search/data/data_source/api/tmdb_api.dart';
-import 'package:movie_search/data/repository/api_movie_data_repository.dart';
+import 'package:movie_search/data/repository/movie_data/movie_data_repository_impl.dart';
 
 void main() {
   group('영화 api 레포지토리를 테스트합니다.', () {
-    final repository = ApiMovieDataRepository(TMDBApi());
+    final repository = MovieDataRepositoryImpl(TMDBApi());
 
     test('인기 영화 정보를 파싱합니다.', () async {
       final result = await repository

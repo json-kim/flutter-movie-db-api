@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movie_search/core/param/param.dart';
 import 'package:movie_search/core/util/constants.dart';
 import 'package:movie_search/domain/model/movie/movie.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_detail_use_case.dart';
@@ -15,7 +16,7 @@ class SimilarSliverGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<DataListViewModel<Movie, int>>();
+    final viewModel = context.watch<DataListViewModel<Movie, Param>>();
     final state = viewModel.state;
 
     return SliverPadding(

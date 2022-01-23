@@ -1,6 +1,5 @@
-import 'package:movie_search/core/params/request_params.dart';
-import 'package:movie_search/core/resources/result.dart';
+import 'package:movie_search/core/result/result.dart';
 
-abstract class MovieDataRepository<T, P extends RequestParams> {
-  Future<Result<List<T>>> fetch(P params);
+abstract class MovieDataRepository<DataType, ParamType> {
+  Future<Result<DataType>> fetch(ParamType param);
 }

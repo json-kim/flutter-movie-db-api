@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movie_search/core/param/param.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_detail_use_case.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_event.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_state.dart';
@@ -21,7 +22,7 @@ class MovieDetailViewModel with ChangeNotifier {
   Future<void> _toggleSave() async {}
 
   Future<void> _loadMovieDetail() async {
-    final result = await _getMovieDetailUseCase(movieId);
+    final result = await _getMovieDetailUseCase(Param.movieDetail(movieId));
 
     result.when(
         success: (movieDetail) {

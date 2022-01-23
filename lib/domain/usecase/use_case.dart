@@ -1,4 +1,4 @@
-import 'package:movie_search/core/resources/result.dart';
+import 'package:movie_search/core/result/result.dart';
 
 /// T: 유스케이스 결과 값의 타입
 /// P: 유스케이스에 전달할 값의 타입

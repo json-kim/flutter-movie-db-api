@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:movie_search/core/resources/result.dart';
 import 'package:movie_search/data/data_source/api/tmdb_api.dart';
-import 'package:movie_search/data/repository/api_cast_data_repository.dart';
-import 'package:movie_search/data/repository/api_person_data_repository.dart';
+import 'package:movie_search/data/repository/movie_data/cast_data_repository_impl.dart';
+import 'package:movie_search/data/repository/movie_data/person_data_repository_impl.dart';
 import 'package:movie_search/domain/model/cast/cast.dart';
 import 'package:movie_search/domain/model/person/person.dart';
 import 'package:movie_search/domain/usecase/cast/get_cast_with_person_use_case.dart';
@@ -27,8 +27,8 @@ void main() {
 
     final PersonDetailViewModel realViewModel = PersonDetailViewModel(
         287,
-        GetPersonDetailUseCase(ApiPersonDataRepository(api)),
-        GetCastWithPersonUseCase(ApiCastDataRepository(api)));
+        GetPersonDetailUseCase(PersonDataRepositoryImpl(api)),
+        GetCastWithPersonUseCase(CastDataRepositoryImpl(api)));
 
     await realViewModel.onEvent(PersonDetailEvent.loadPerson(287));
 

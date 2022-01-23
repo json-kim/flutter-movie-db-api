@@ -1,22 +1,20 @@
 import 'dart:convert';
 
-import 'package:movie_search/core/params/request_params.dart';
-import 'package:movie_search/core/resources/result.dart';
-import 'package:movie_search/data/data_source/remote/tmdb_api.dart';
+import 'package:movie_search/core/param/param.dart';
+import 'package:movie_search/core/result/result.dart';
+import 'package:movie_search/data/data_source/remote/movie_remote_data_source.dart';
 import 'package:movie_search/domain/model/movie/movie.dart';
 import 'package:movie_search/domain/repository/movie_data_repository.dart';
 
-// TMDB API를 사용해서 영화 관련 데이터를 가져오는 클래스
-class ApiMovieDataRepository
-    implements MovieDataRepository<Movie, RequestParams> {
-  final TMDBApi tmdbApi;
+class MovieDataRepositoryImpl
+    implements MovieDataRepository<List<Movie>, Param> {
+  final MovieRemoteDataSource _remoteDataSource;
 
-  ApiMovieDataRepository(this.tmdbApi);
+  MovieDataRepositoryImpl(this._remoteDataSource);
 
   @override
-  Future<Result<List<Movie>>> fetch(RequestParams params) async {
-    String url = changeParamsToPath(params);
-    final result = await tmdbApi.fetch(url);
+  Future<Result<List<Movie>>> fetch(Param param) async {
+    final result = await _remoteDataSource.fetch(param);
 
     return result.when(success: (jsonBody) {
       List jsonResult = jsonDecode(jsonBody)['results'];

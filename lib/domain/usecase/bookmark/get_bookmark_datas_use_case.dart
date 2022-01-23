@@ -1,4 +1,4 @@
-import 'package:movie_search/core/resources/result.dart';
+import 'package:movie_search/core/result/result.dart';
 import 'package:movie_search/domain/repository/bookmark_data_repository.dart';
 
 import '../use_case.dart';

@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'package:movie_search/core/param/param.dart';
 import 'package:movie_search/core/util/constants.dart';
 import 'package:movie_search/domain/model/credit/credit.dart';
 import 'package:movie_search/domain/model/movie/movie.dart';
@@ -47,15 +47,17 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
             _buildMovieInfoBar(state.movieDetail),
             // 배우 제작진
             ChangeNotifierProvider(
-                create: (context) => DataListViewModel<Credit, int>(
-                    context.read<GetCreditWithMovieUseCase>(),
-                    viewModel.movieId),
+                create: (context) => DataListViewModel<Credit, Param>(
+                      context.read<GetCreditWithMovieUseCase>(),
+                      Param.creditWithMovie(viewModel.movieId),
+                    ),
                 child: const CreditSliverList()),
             // 관련 영상
             ChangeNotifierProvider(
-                create: (context) => DataListViewModel<Video, int>(
-                    context.read<GetVideoWithMovieUseCase>(),
-                    viewModel.movieId),
+                create: (context) => DataListViewModel<Video, Param>(
+                      context.read<GetVideoWithMovieUseCase>(),
+                      Param.videoWithMovie(viewModel.movieId),
+                    ),
                 child: const VideoSliverList()),
             // 비슷한 영화
             const SliverToBoxAdapter(
@@ -68,8 +70,10 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
               ),
             ),
             ChangeNotifierProvider(
-                create: (context) => DataListViewModel<Movie, int>(
-                    context.read<GetMovieSimilarUseCase>(), viewModel.movieId),
+                create: (context) => DataListViewModel<Movie, Param>(
+                      context.read<GetMovieSimilarUseCase>(),
+                      Param.movieSimilar(viewModel.movieId),
+                    ),
                 child: const SimilarSliverGrid()),
           ],
         ),
