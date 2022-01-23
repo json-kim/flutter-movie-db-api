@@ -16,10 +16,13 @@ class CastDataRepositoryImpl implements MovieDataRepository<List<Cast>, Param> {
     final result = await _remoteDataSource.fetch(param);
 
     return result.when(success: (jsonBody) {
-      final List jsonCast = jsonDecode(jsonBody)['cast'];
-      final List<Cast> casts = jsonCast.map((e) => Cast.fromJson(e)).toList();
-
-      return Result.success(casts);
+      try {
+        final List jsonCast = jsonDecode(jsonBody)['cast'];
+        final List<Cast> casts = jsonCast.map((e) => Cast.fromJson(e)).toList();
+        return Result.success(casts);
+      } catch (e) {
+        return Result.error('$runtimeType : 파싱 에러(${e.toString()})');
+      }
     }, error: (message) {
       return Result.error(message);
     });

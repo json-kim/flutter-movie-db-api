@@ -20,7 +20,7 @@ class Cast with _$Cast {
     @JsonKey(name: 'vote_average') required double voteAverage,
     @JsonKey(name: 'vote_count') required int voteCount,
     required double popularity,
-    required String character,
+    @Default('') String character,
     @JsonKey(name: 'credit_id') required String creditId,
     required int order,
   }) = _Cast;

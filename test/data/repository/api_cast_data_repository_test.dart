@@ -1,13 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:movie_search/core/params/request_params.dart';
-import 'package:movie_search/data/data_source/api/tmdb_api.dart';
+import 'package:movie_search/core/param/param.dart';
+import 'package:movie_search/data/data_source/remote/movie_remote_data_source.dart';
 import 'package:movie_search/data/repository/movie_data/cast_data_repository_impl.dart';
 
 void main() {
   test('캐스팅 정보를 가져와 모델로 잘 만들어지는지', () async {
-    final CastDataRepositoryImpl repository = CastDataRepositoryImpl(TMDBApi());
+    final CastDataRepositoryImpl repository =
+        CastDataRepositoryImpl(MovieRemoteDataSource());
 
-    final fakeParams = RequestParams(pathParams: 'person/287/movie_credits');
+    final fakeParams = Param.castWithPerson(287);
 
     final result = await repository.fetch(fakeParams);
 

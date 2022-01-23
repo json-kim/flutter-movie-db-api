@@ -45,7 +45,7 @@ class PersonDetailViewModel with ChangeNotifier {
 
   Future<void> _loadCasts(int personId) async {
     final result =
-        await _getCastWithPersonUseCase(Param.personDetail(personId));
+        await _getCastWithPersonUseCase(Param.castWithPerson(personId));
 
     result.when(
         success: (casts) {

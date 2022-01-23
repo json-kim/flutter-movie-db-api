@@ -18,12 +18,19 @@ class MoviePageCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Stack(
+        clipBehavior: Clip.none,
         children: [
-          SizedBox.expand(
-            child: CachedNetworkImage(
-              imageUrl: kBackdropUrl + movie.backdropPath!,
-              fit: BoxFit.cover,
-              errorWidget: (context, url, error) => const Icon(Icons.error),
+          Positioned(
+            bottom: 1,
+            left: 0,
+            right: 0,
+            top: 0,
+            child: SizedBox.expand(
+              child: CachedNetworkImage(
+                imageUrl: kBackdropUrl + movie.backdropPath!,
+                fit: BoxFit.cover,
+                errorWidget: (context, url, error) => const Icon(Icons.error),
+              ),
             ),
           ),
           Container(

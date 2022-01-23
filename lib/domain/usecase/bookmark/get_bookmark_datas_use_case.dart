@@ -11,7 +11,7 @@ class GetBookmarkDatasUseCase<DataType>
 
   @override
   Future<Result<List<DataType>>> call(int page) async {
-    final result = await _repository.loadDatas(page);
+    final result = await _repository.loadDataList(page);
 
     return result.when(success: (movies) {
       return Result.success(movies);
