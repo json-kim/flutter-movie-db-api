@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movie_search/presentation/movie_bookmark/movie_bookmark_screen.dart';
 import 'package:movie_search/presentation/movie_home/movie_home_screen.dart';
 
 import 'movie_search/movie_search_screen.dart';
@@ -17,7 +18,7 @@ class _MovieTabScreenState extends State<MovieTabScreen> {
   final List<Widget> _pages = [
     const MovieHomeScreen(),
     const MovieSearchScreen(),
-    Container(),
+    const MovieBookmarkScreen(),
   ];
 
   @override

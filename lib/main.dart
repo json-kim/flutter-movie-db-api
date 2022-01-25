@@ -4,7 +4,10 @@ import 'package:movie_search/core/util/constants.dart';
 import 'package:movie_search/presentation/movie_tab_screen.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final globalProviders = await setProvider();
+
   runApp(MultiProvider(
     providers: globalProviders,
     child: const MyApp(),
