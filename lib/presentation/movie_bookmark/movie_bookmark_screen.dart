@@ -4,8 +4,21 @@ import 'package:movie_search/core/util/constants.dart';
 import 'package:movie_search/presentation/movie_bookmark/movie_bookmark_view_model.dart';
 import 'package:provider/provider.dart';
 
-class MovieBookmarkScreen extends StatelessWidget {
+class MovieBookmarkScreen extends StatefulWidget {
   const MovieBookmarkScreen({Key? key}) : super(key: key);
+
+  @override
+  State<MovieBookmarkScreen> createState() => _MovieBookmarkScreenState();
+}
+
+class _MovieBookmarkScreenState extends State<MovieBookmarkScreen> {
+  @override
+  void initState() {
+    Future.microtask(() {
+      context.read<MovieBookmarkViewModel>().loadBookmarkMovie();
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:movie_search/domain/model/movie_detail/movie_detail.dart';
 
 part 'movie.freezed.dart';
 part 'movie.g.dart';
@@ -23,4 +24,11 @@ class Movie with _$Movie {
   }) = _Movie;
 
   factory Movie.fromJson(Map<String, dynamic> json) => _$MovieFromJson(json);
+
+  factory Movie.fromMovieDetail(MovieDetail movieDetail) {
+    Map<String, dynamic> json = movieDetail.toJson();
+    json['genre_ids'] = movieDetail.genres.map((e) => e.id).toList();
+
+    return Movie.fromJson(json);
+  }
 }

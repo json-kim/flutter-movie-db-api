@@ -5,13 +5,13 @@ import 'package:movie_search/domain/repository/movie_data_repository.dart';
 import 'package:movie_search/domain/usecase/use_case.dart';
 
 class GetMovieDetailUseCase implements UseCase<MovieDetail, Param> {
-  final MovieDataRepository<MovieDetail, Param> _repository;
+  final MovieDataRepository<MovieDetail, Param> _movieDataRepository;
 
-  GetMovieDetailUseCase(this._repository);
+  GetMovieDetailUseCase(this._movieDataRepository);
 
   @override
   Future<Result<MovieDetail>> call(Param param) async {
-    final result = await _repository.fetch(param);
+    final result = await _movieDataRepository.fetch(param);
 
     return result.when(success: (movieDetails) {
       return Result.success(movieDetails);

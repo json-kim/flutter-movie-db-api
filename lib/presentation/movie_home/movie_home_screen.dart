@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:movie_search/core/param/param.dart';
 import 'package:movie_search/domain/model/movie/movie.dart';
+import 'package:movie_search/domain/usecase/bookmark/delete_bookmark_data_use_case.dart';
+import 'package:movie_search/domain/usecase/bookmark/find_bookmark_data_use_case.dart';
+import 'package:movie_search/domain/usecase/bookmark/save_bookmark_data_use_case.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_detail_use_case.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_popular_use_case.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_with_genre_use_case.dart';
@@ -60,6 +63,10 @@ class _MovieHomeScreenState extends State<MovieHomeScreen>
                             builder: (context) => ChangeNotifierProvider(
                               create: (context) => MovieDetailViewModel(
                                 context.read<GetMovieDetailUseCase>(),
+                                context.read<FindBookmarkDataUseCase<Movie>>(),
+                                context.read<SaveBookmarkDataUseCase<Movie>>(),
+                                context
+                                    .read<DeleteBookmarkDataUseCase<Movie>>(),
                                 movieId:
                                     viewModel.state.nowPlayingMovies[idx].id,
                               ),

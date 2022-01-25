@@ -8,8 +8,8 @@ class DeleteBookmarkDataUseCase<DataType> implements UseCase<int, int> {
   DeleteBookmarkDataUseCase(this._repository);
 
   @override
-  Future<Result<int>> call(int movieId) async {
-    final result = await _repository.deleteData(movieId);
+  Future<Result<int>> call(int id) async {
+    final result = await _repository.deleteData(id);
 
     return result.when(
       success: (movieId) {

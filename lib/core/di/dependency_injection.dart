@@ -77,14 +77,18 @@ Future<List<SingleChildWidget>> setProvider() async {
       update: (context, repository, _) =>
           GetBookmarkDatasUseCase<Movie>(repository),
     ),
-    ProxyProvider<BookmarkMovieRepositoryImpl, FindBookmarkDataUseCase>(
-      update: (context, repository, _) => FindBookmarkDataUseCase(repository),
+    ProxyProvider<BookmarkMovieRepositoryImpl, FindBookmarkDataUseCase<Movie>>(
+      update: (context, repository, _) =>
+          FindBookmarkDataUseCase<Movie>(repository),
     ),
-    ProxyProvider<BookmarkMovieRepositoryImpl, DeleteBookmarkDataUseCase>(
-      update: (context, repository, _) => DeleteBookmarkDataUseCase(repository),
+    ProxyProvider<BookmarkMovieRepositoryImpl,
+        DeleteBookmarkDataUseCase<Movie>>(
+      update: (context, repository, _) =>
+          DeleteBookmarkDataUseCase<Movie>(repository),
     ),
-    ProxyProvider<BookmarkMovieRepositoryImpl, SaveBookmarkDataUseCase>(
-      update: (context, repository, _) => SaveBookmarkDataUseCase(repository),
+    ProxyProvider<BookmarkMovieRepositoryImpl, SaveBookmarkDataUseCase<Movie>>(
+      update: (context, repository, _) =>
+          SaveBookmarkDataUseCase<Movie>(repository),
     ),
     ProxyProvider<PersonDataRepositoryImpl, GetPersonDetailUseCase>(
       update: (context, repository, _) => GetPersonDetailUseCase(repository),

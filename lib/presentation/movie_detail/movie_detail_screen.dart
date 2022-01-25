@@ -9,6 +9,7 @@ import 'package:movie_search/domain/model/video/video.dart';
 import 'package:movie_search/domain/usecase/credit/get_credit_with_movie_use_case.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_similar_use_case.dart';
 import 'package:movie_search/domain/usecase/video/get_video_with_movie_use_case.dart';
+import 'package:movie_search/presentation/movie_detail/movie_detail_event.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_view_model.dart';
 import 'package:movie_search/presentation/movie_list/data_list_view_model.dart';
 import 'package:movie_search/ui/theme.dart';
@@ -33,18 +34,22 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
   Widget build(BuildContext context) {
     final viewModel = context.watch<MovieDetailViewModel>();
     final state = viewModel.state;
+    final movieDetail = state.movieDetail;
     final size = MediaQuery.of(context).size;
 
-    return state.map(
-      empty: (_) => const Center(child: CircularProgressIndicator()),
-      state: (state) => Scaffold(
+    if (state.isLoading || movieDetail == null) {
+      return const Center(child: CircularProgressIndicator());
+    } else {
+      return Scaffold(
         backgroundColor: whiteColor,
         extendBodyBehindAppBar: true,
         body: CustomScrollView(
           slivers: [
-            _buildAppBar(size, state.movieDetail),
+            _buildAppBar(size, movieDetail, state.isBookmarked, () {
+              viewModel.onEvent(const MovieDetailEvent.toggleBookmark());
+            }),
             // 영화 정보
-            _buildMovieInfoBar(state.movieDetail),
+            _buildMovieInfoBar(movieDetail),
             // 배우 제작진
             ChangeNotifierProvider(
                 create: (context) => DataListViewModel<Credit, Param>(
@@ -77,8 +82,8 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                 child: const SimilarSliverGrid()),
           ],
         ),
-      ),
-    );
+      );
+    }
   }
 
   Widget _buildMovieInfoBar(MovieDetail movieDetail) {
@@ -148,14 +153,15 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
     );
   }
 
-  Widget _buildAppBar(Size size, MovieDetail movieDetail) {
+  Widget _buildAppBar(Size size, MovieDetail movieDetail, bool isBookmarked,
+      void Function() onPressed) {
     return SliverAppBar(
       actions: [
         IconButton(
-          icon: const Icon(Icons.bookmark_outline),
-          onPressed: () {
-            // 북마크 체크시 저장 하는 기능 추가
-          },
+          icon: isBookmarked
+              ? const Icon(Icons.bookmark_outlined)
+              : const Icon(Icons.bookmark_outline),
+          onPressed: onPressed,
         ),
         IconButton(
           icon: const Icon(Icons.close),
