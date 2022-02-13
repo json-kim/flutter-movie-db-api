@@ -9,6 +9,7 @@ import 'package:movie_search/domain/usecase/movie/get_movie_detail_use_case.dart
 import 'package:movie_search/presentation/global_components/movie_data_card.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_screen.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_view_model.dart';
+import 'package:movie_search/presentation/person_detail/person_detail_event.dart';
 import 'package:movie_search/ui/theme.dart';
 import 'package:provider/provider.dart';
 
@@ -31,8 +32,15 @@ class PersonDetailScreen extends StatelessWidget {
               backgroundColor: Colors.transparent,
               elevation: 0,
               actions: [
+                // 북마크 버튼
                 IconButton(
-                    onPressed: () {}, icon: const Icon(Icons.bookmark_outline)),
+                    onPressed: () {
+                      viewModel
+                          .onEvent(const PersonDetailEvent.toggleBookmark());
+                    },
+                    icon: state.isBookmarked
+                        ? const Icon(Icons.bookmark)
+                        : const Icon(Icons.bookmark_outline)),
                 IconButton(
                     onPressed: () {
                       Navigator.of(context).popUntil((route) => route.isFirst);

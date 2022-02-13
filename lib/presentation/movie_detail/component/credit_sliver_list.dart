@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:movie_search/core/param/param.dart';
 import 'package:movie_search/core/util/constants.dart';
 import 'package:movie_search/domain/model/credit/credit.dart';
+import 'package:movie_search/domain/model/person/person.dart';
+import 'package:movie_search/domain/usecase/bookmark/delete_bookmark_data_use_case.dart';
+import 'package:movie_search/domain/usecase/bookmark/find_bookmark_data_use_case.dart';
+import 'package:movie_search/domain/usecase/bookmark/save_bookmark_data_use_case.dart';
 import 'package:movie_search/domain/usecase/cast/get_cast_with_person_use_case.dart';
 import 'package:movie_search/domain/usecase/person/get_person_detail_use_case.dart';
 import 'package:movie_search/presentation/movie_detail/component/sliver_fixed_header.dart';
@@ -54,6 +58,10 @@ class CreditSliverList extends StatelessWidget {
                                 state.data[idx].id,
                                 context.read<GetPersonDetailUseCase>(),
                                 context.read<GetCastWithPersonUseCase>(),
+                                context.read<FindBookmarkDataUseCase<Person>>(),
+                                context.read<SaveBookmarkDataUseCase<Person>>(),
+                                context
+                                    .read<DeleteBookmarkDataUseCase<Person>>(),
                               ),
                               child: const PersonDetailScreen(),
                             ),

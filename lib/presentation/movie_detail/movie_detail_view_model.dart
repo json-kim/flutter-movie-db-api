@@ -50,6 +50,8 @@ class MovieDetailViewModel with ChangeNotifier {
     if (resultVal != -1) {
       await _loadBookmarkData();
     }
+
+    notifyListeners();
   }
 
   Future<int> _saveBookmarkData(Movie movie) async {

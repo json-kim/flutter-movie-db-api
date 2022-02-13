@@ -15,8 +15,8 @@ class SqlService {
   Future<void> init() async {
     // Get a location using getDatabasesPath
     var databasesPath = await getDatabasesPath();
-    String path = join(databasesPath, 'demo.db');
-
+    String path = join(databasesPath, 'movie_person.db');
+    // await deleteDatabase(path);
     // open the database
     _db = await openDatabase(
       path,
@@ -25,21 +25,42 @@ class SqlService {
         await db.execute(
           '''
           CREATE TABLE movie(
-          id INTEGER PRIMARY KEY,
-          title TEXT NOT NULL,
-          posterPath TEXT,
-          backdropPath TEXT,
-          adult INTEGER NOT NULL,
-          genreIds TEXT,
-          originalLanguage TEXT,
-          originalTitle TEXT,
-          overview TEXT,
-          popularity REAL,
-          releaseDate TEXT,
-          video INTEGER,
-          voteAverage REAL,
-          voteCount INTEGER,
-          bookmarkTime INTEGER
+            id INTEGER PRIMARY KEY,
+            title TEXT NOT NULL,
+            posterPath TEXT,
+            backdropPath TEXT,
+            adult INTEGER NOT NULL,
+            genreIds TEXT,
+            originalLanguage TEXT,
+            originalTitle TEXT,
+            overview TEXT,
+            popularity REAL,
+            releaseDate TEXT,
+            video INTEGER,
+            voteAverage REAL,
+            voteCount INTEGER,
+            bookmarkTime INTEGER
+          )
+          ''',
+        );
+
+        await db.execute(
+          '''
+          CREATE TABLE person(
+            id INTEGER PRIMARY KEY,
+            gender INTEGER NOT NULL,
+            deathday TEXT,
+            birthday TEXT,
+            biography TEXT NOT NULL,
+            homepage TEXT,
+            imdbId TEXT NOT NULL,
+            knownForDepartment TEXT NOT NULL,
+            name TEXT NOT NULL,
+            placeOfBirth TEXT,
+            popularity REAL NOT NULL,
+            profilePath TEXT,
+            adult INTEGER NOT NULL,
+            alsoKnownAs NOT NULL
           )
           ''',
         );

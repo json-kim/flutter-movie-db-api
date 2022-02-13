@@ -8,7 +8,8 @@ part 'person_detail_state.freezed.dart';
 class PersonDetailState with _$PersonDetailState {
   const factory PersonDetailState({
     Person? person,
-    required List<Cast> casts,
+    @Default([]) List<Cast> casts,
+    @Default(false) bool isBookmarked,
     @Default(false) bool isLoading,
   }) = _PersonDetailState;
 }

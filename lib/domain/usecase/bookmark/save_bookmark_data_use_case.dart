@@ -8,12 +8,12 @@ class SaveBookmarkDataUseCase<DataType> implements UseCase<int, DataType> {
   SaveBookmarkDataUseCase(this._repository);
 
   @override
-  Future<Result<int>> call(DataType movie) async {
-    final result = await _repository.saveData(movie);
+  Future<Result<int>> call(DataType data) async {
+    final result = await _repository.saveData(data);
 
     return result.when(
-      success: (movieId) {
-        return Result.success(movieId);
+      success: (id) {
+        return Result.success(id);
       },
       error: (message) {
         return Result.error(message);

@@ -1,7 +1,9 @@
 // 1. Provider 전체
 import 'package:movie_search/data/data_source/local/movie_local_data_source.dart';
+import 'package:movie_search/data/data_source/local/person_local_data_source.dart';
 import 'package:movie_search/data/data_source/remote/movie_remote_data_source.dart';
 import 'package:movie_search/data/repository/bookmark_data/bookmark_movie_repository_impl.dart';
+import 'package:movie_search/data/repository/bookmark_data/bookmark_person_repository_impl.dart';
 import 'package:movie_search/data/repository/movie_data/cast_data_repository_impl.dart';
 import 'package:movie_search/data/repository/movie_data/credit_data_repository_impl.dart';
 import 'package:movie_search/data/repository/movie_data/genre_data_repository_impl.dart';
@@ -10,6 +12,7 @@ import 'package:movie_search/data/repository/movie_data/movie_detail_data_reposi
 import 'package:movie_search/data/repository/movie_data/person_data_repository_impl.dart';
 import 'package:movie_search/data/repository/movie_data/video_data_repository_impl.dart';
 import 'package:movie_search/domain/model/movie/movie.dart';
+import 'package:movie_search/domain/model/person/person.dart';
 import 'package:movie_search/domain/usecase/bookmark/delete_bookmark_data_use_case.dart';
 import 'package:movie_search/domain/usecase/bookmark/find_bookmark_data_use_case.dart';
 import 'package:movie_search/domain/usecase/bookmark/get_bookmark_datas_use_case.dart';
@@ -44,11 +47,18 @@ Future<List<SingleChildWidget>> setProvider() async {
     Provider<MovieLocalDataSource>(
       create: (context) => MovieLocalDataSource(db!),
     ),
+    Provider<PersonLocalDataSource>(
+      create: (context) => PersonLocalDataSource(db!),
+    ),
 
     // 레포지토리
     ProxyProvider<MovieLocalDataSource, BookmarkMovieRepositoryImpl>(
       update: (context, dataSource, _) =>
           BookmarkMovieRepositoryImpl(dataSource),
+    ),
+    ProxyProvider<PersonLocalDataSource, BookmarkPersonRepositoryImpl>(
+      update: (context, dataSource, _) =>
+          BookmarkPersonRepositoryImpl(dataSource),
     ),
     ProxyProvider<MovieRemoteDataSource, MovieDataRepositoryImpl>(
       update: (context, tmdbApi, _) => MovieDataRepositoryImpl(tmdbApi),
@@ -73,6 +83,7 @@ Future<List<SingleChildWidget>> setProvider() async {
     ),
 
     // 유스케이스
+    // 북마크<영화> 유스케이스
     ProxyProvider<BookmarkMovieRepositoryImpl, GetBookmarkDatasUseCase<Movie>>(
       update: (context, repository, _) =>
           GetBookmarkDatasUseCase<Movie>(repository),
@@ -90,6 +101,30 @@ Future<List<SingleChildWidget>> setProvider() async {
       update: (context, repository, _) =>
           SaveBookmarkDataUseCase<Movie>(repository),
     ),
+
+    // 북마크<인물> 유스케이스
+    ProxyProvider<BookmarkPersonRepositoryImpl,
+        GetBookmarkDatasUseCase<Person>>(
+      update: (context, repository, _) =>
+          GetBookmarkDatasUseCase<Person>(repository),
+    ),
+    ProxyProvider<BookmarkPersonRepositoryImpl,
+        FindBookmarkDataUseCase<Person>>(
+      update: (context, repository, _) =>
+          FindBookmarkDataUseCase<Person>(repository),
+    ),
+    ProxyProvider<BookmarkPersonRepositoryImpl,
+        DeleteBookmarkDataUseCase<Person>>(
+      update: (context, repository, _) =>
+          DeleteBookmarkDataUseCase<Person>(repository),
+    ),
+    ProxyProvider<BookmarkPersonRepositoryImpl,
+        SaveBookmarkDataUseCase<Person>>(
+      update: (context, repository, _) =>
+          SaveBookmarkDataUseCase<Person>(repository),
+    ),
+
+    // 영화정보 가져오기 유스케이스
     ProxyProvider<PersonDataRepositoryImpl, GetPersonDetailUseCase>(
       update: (context, repository, _) => GetPersonDetailUseCase(repository),
     ),
@@ -140,6 +175,7 @@ Future<List<SingleChildWidget>> setProvider() async {
     ChangeNotifierProvider(
       create: (context) => MovieBookmarkViewModel(
         context.read<GetBookmarkDatasUseCase<Movie>>(),
+        context.read<GetBookmarkDatasUseCase<Person>>(),
       ),
     ),
   ];

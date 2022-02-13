@@ -12,8 +12,8 @@ class DeleteBookmarkDataUseCase<DataType> implements UseCase<int, int> {
     final result = await _repository.deleteData(id);
 
     return result.when(
-      success: (movieId) {
-        return Result.success(movieId);
+      success: (count) {
+        return Result.success(count);
       },
       error: (message) {
         return Result.error(message);
