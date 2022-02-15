@@ -14,15 +14,16 @@ class ReviewDataRepositoryImpl
 
   @override
   Future<Result<List<Review>>> fetch(Param param) async {
-    final result = await _remoteDataSource.fetch(param);
-
-    return result.when(success: (jsonBody) {
-      final List jsonResult = jsonDecode(jsonBody)['results'];
-      final List<Review> reviews =
-          jsonResult.map((e) => Review.fromJson(e)).toList();
-      return Result.success(reviews);
-    }, error: (message) {
-      return Result.error(message);
-    });
+    // final result = await _remoteDataSource.fetch(param);
+    //
+    // return result.when(success: (jsonBody) {
+    //   final List jsonResult = jsonDecode(jsonBody)['results'];
+    //   final List<Review> reviews =
+    //       jsonResult.map((e) => Review.fromJson(e)).toList();
+    //   return Result.success(reviews);
+    // }, error: (message) {
+    //   return Result.error(message);
+    // });
+    throw UnimplementedError();
   }
 }
