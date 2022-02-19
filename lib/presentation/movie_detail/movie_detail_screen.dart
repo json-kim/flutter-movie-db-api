@@ -12,6 +12,7 @@ import 'package:movie_search/domain/model/video/video.dart';
 import 'package:movie_search/domain/usecase/credit/get_credit_with_movie_use_case.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_similar_use_case.dart';
 import 'package:movie_search/domain/usecase/review/create_review_use_case.dart';
+import 'package:movie_search/domain/usecase/review/get_review_by_movie_use_case.dart';
 import 'package:movie_search/domain/usecase/video/get_video_with_movie_use_case.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_event.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_view_model.dart';
@@ -29,10 +30,7 @@ import 'component/sliver_fixed_header.dart';
 import 'component/video_sliver_list.dart';
 
 class MovieDetailScreen extends StatefulWidget {
-  final GlobalKey<NavigatorState> navigatorKey;
-
-  const MovieDetailScreen({required this.navigatorKey, Key? key})
-      : super(key: key);
+  const MovieDetailScreen({Key? key}) : super(key: key);
 
   @override
   State<MovieDetailScreen> createState() => _MovieDetailScreenState();
@@ -64,63 +62,45 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
           fabCloseIcon: const Icon(Icons.close, color: Colors.black),
           children: [
             TextButton(
-                onPressed: () {
-                  Navigator.of(widget.navigatorKey.currentContext!).push(
+                onPressed: () async {
+                  await Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => ChangeNotifierProxyProvider<
-                          MovieDetailViewModel, ReviewEditViewModel>(
+                      builder: (context) => ChangeNotifierProvider(
                         create: (context) => ReviewEditViewModel(
                           context.read<CreateReviewUseCase>(),
-                          viewModel,
+                          context.read<GetReviewByMovieUseCase>(),
+                          review: review,
+                          movieDetail: movieDetail,
                           isEditMode: true,
-                          controller:
-                              StreamController<ReviewEditUiEvent>.broadcast(),
                         ),
-                        update: (context, detailViewModel, editViewModel) =>
-                            ReviewEditViewModel(
-                          context.read<CreateReviewUseCase>(),
-                          detailViewModel,
-                          isEditMode: editViewModel?.state.isEditMode ?? true,
-                          controller: editViewModel?.uiEventController ??
-                              StreamController<ReviewEditUiEvent>.broadcast(),
-                        ),
-                        child: ReviewEditScreen(movieDetail: movieDetail),
+                        child: ReviewEditScreen(),
                       ),
                     ),
                   );
+
+                  viewModel.onEvent(const MovieDetailEvent.loadReview());
                 },
                 child: const Text('리뷰 작성하기',
                     style: TextStyle(color: Colors.white))),
             TextButton(
                 onPressed: review == null
                     ? null
-                    : () {
-                        Navigator.of(widget.navigatorKey.currentContext!).push(
+                    : () async {
+                        await Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => ChangeNotifierProxyProvider<
-                                MovieDetailViewModel, ReviewEditViewModel>(
+                            builder: (context) => ChangeNotifierProvider(
                               create: (context) => ReviewEditViewModel(
                                 context.read<CreateReviewUseCase>(),
-                                viewModel,
+                                context.read<GetReviewByMovieUseCase>(),
+                                review: review,
                                 isEditMode: false,
-                                controller: StreamController<
-                                    ReviewEditUiEvent>.broadcast(),
                               ),
-                              update:
-                                  (context, detailViewModel, editViewModel) =>
-                                      ReviewEditViewModel(
-                                context.read<CreateReviewUseCase>(),
-                                detailViewModel,
-                                isEditMode:
-                                    editViewModel?.state.isEditMode ?? false,
-                                controller: editViewModel?.uiEventController ??
-                                    StreamController<
-                                        ReviewEditUiEvent>.broadcast(),
-                              ),
-                              child: ReviewEditScreen(movieDetail: movieDetail),
+                              child: ReviewEditScreen(),
                             ),
                           ),
                         );
+
+                        viewModel.onEvent(const MovieDetailEvent.loadReview());
                       },
                 child: Text('리뷰 확인하기',
                     style: TextStyle(

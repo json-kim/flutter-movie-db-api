@@ -16,7 +16,7 @@ class SqlService {
     // Get a location using getDatabasesPath
     var databasesPath = await getDatabasesPath();
     String path = join(databasesPath, 'movie_person.db');
-    await deleteDatabase(path);
+    // await deleteDatabase(path);
     // open the database
     _db = await openDatabase(
       path,

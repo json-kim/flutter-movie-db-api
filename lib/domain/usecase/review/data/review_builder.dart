@@ -1,3 +1,4 @@
+import 'package:movie_search/domain/model/movie_detail/movie_detail.dart';
 import 'package:movie_search/domain/model/review/review.dart';
 
 class ReviewBuilder {
@@ -7,6 +8,18 @@ class ReviewBuilder {
   double? starRating;
   String? content;
   DateTime? viewingDate;
+
+  void setFromReview(Review review) {
+    movieId = review.movieId;
+    movieTitle = review.movieTitle;
+    posterPath = review.posterPath;
+  }
+
+  void setFromMovieDetail(MovieDetail movieDetail) {
+    movieId = movieDetail.id;
+    movieTitle = movieDetail.title;
+    posterPath = movieDetail.posterPath;
+  }
 
   Review build() {
     if (movieId == null ||

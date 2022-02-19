@@ -8,6 +8,5 @@ class ReviewEditEvent with _$ReviewEditEvent {
   const factory ReviewEditEvent.setRating(double rating) = SetRating;
   const factory ReviewEditEvent.setDate(DateTime date) = SetDate;
   const factory ReviewEditEvent.changeMode(bool isEditMode) = ChangeMode;
-  const factory ReviewEditEvent.saveReview(
-      String content, MovieDetail movieDetail) = SaveReview;
+  const factory ReviewEditEvent.saveReview(String content) = SaveReview;
 }

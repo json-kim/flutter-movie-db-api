@@ -5,6 +5,7 @@ import 'package:movie_search/domain/model/movie_detail/movie_detail.dart';
 import 'package:movie_search/domain/model/review/review.dart';
 import 'package:movie_search/domain/usecase/review/create_review_use_case.dart';
 import 'package:movie_search/domain/usecase/review/data/review_builder.dart';
+import 'package:movie_search/domain/usecase/review/get_review_by_movie_use_case.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_event.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_view_model.dart';
 import 'package:movie_search/presentation/review_edit/review_edit_state.dart';
@@ -14,19 +15,29 @@ import 'review_edit_event.dart';
 
 class ReviewEditViewModel with ChangeNotifier {
   final CreateReviewUseCase _createReviewUseCase;
+  final GetReviewByMovieUseCase _getReviewByMovieUseCase;
 
-  final MovieDetailViewModel _movieDetailViewModel;
-
-  ReviewEditViewModel(this._createReviewUseCase, this._movieDetailViewModel,
-      {required StreamController<ReviewEditUiEvent> controller,
-      bool isEditMode = true})
-      : uiEventController = controller {
+  ReviewEditViewModel(this._createReviewUseCase, this._getReviewByMovieUseCase,
+      {MovieDetail? movieDetail, Review? review, bool isEditMode = true}) {
     _state = _state.copyWith(isEditMode: isEditMode);
-    _loadReview();
+    if (review != null) {
+      _builder.setFromReview(review);
+      _state = _state.copyWith(
+          rating: review.starRating,
+          content: review.content,
+          date: review.viewingDate);
+    }
+    if (movieDetail != null) {
+      _builder.setFromMovieDetail(movieDetail);
+    }
+    notifyListeners();
   }
 
-  final StreamController<ReviewEditUiEvent> uiEventController;
+  final uiEventController = StreamController<ReviewEditUiEvent>.broadcast();
   Stream<ReviewEditUiEvent> get uiEventStream => uiEventController.stream;
+
+  final ReviewBuilder _builder = ReviewBuilder();
+  String get movieTitle => _builder.movieTitle ?? 'unknown';
 
   ReviewEditState _state = ReviewEditState(date: DateTime.now());
   ReviewEditState get state => _state;
@@ -45,7 +56,6 @@ class ReviewEditViewModel with ChangeNotifier {
   }
 
   void _setRating(double rating) {
-    print(rating);
     _state = _state.copyWith(rating: rating);
     notifyListeners();
   }
@@ -55,43 +65,45 @@ class ReviewEditViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> _saveReview(String content, MovieDetail movieDetail) async {
+  Future<void> _saveReview(String content) async {
     if (content.isEmpty) {
       uiEventController.add(const ReviewEditUiEvent.snackBar('감상평을 입력해주세요'));
     }
-    final ReviewBuilder builder = ReviewBuilder();
-    builder.movieId = movieDetail.id;
-    builder.movieTitle = movieDetail.title;
-    builder.posterPath = movieDetail.posterPath;
-    builder.viewingDate = _state.date;
-    builder.content = content;
-    builder.starRating = _state.rating;
 
-    final Review review = builder.build();
+    _state = _state.copyWith(isLoading: true);
+    notifyListeners();
+
+    _builder.viewingDate = _state.date;
+    _builder.content = content;
+    _builder.starRating = _state.rating;
+
+    final Review review = _builder.build();
 
     final result = await _createReviewUseCase(review);
 
-    result.when(success: (createResult) {
-      _movieDetailViewModel.onEvent(const MovieDetailEvent.loadReview());
+    result.when(success: (createResult) async {
+      await _loadReview();
       _state = _state.copyWith(isEditMode: false);
       uiEventController.add(const ReviewEditUiEvent.snackBar('저장되었습니다.'));
     }, error: (message) {
       //TODO: 에러 메시지
     });
 
+    _state = _state.copyWith(isLoading: false);
     notifyListeners();
   }
 
   Future<void> _loadReview() async {
-    final review = _movieDetailViewModel.state.review;
+    final result = await _getReviewByMovieUseCase(_builder.movieId!);
 
-    if (review != null) {
+    result.when(success: (review) {
       _state = _state.copyWith(
-          date: review.viewingDate,
-          rating: review.starRating,
-          content: review.content);
-    }
-
-    notifyListeners();
+        date: review.viewingDate,
+        content: review.content,
+        rating: review.starRating,
+      );
+    }, error: (message) {
+      debugPrint(message);
+    });
   }
 }

@@ -10,10 +10,7 @@ import 'package:provider/provider.dart';
 import 'review_edit_view_model.dart';
 
 class ReviewEditScreen extends StatefulWidget {
-  final MovieDetail movieDetail;
-
-  const ReviewEditScreen({required this.movieDetail, Key? key})
-      : super(key: key);
+  const ReviewEditScreen({Key? key}) : super(key: key);
 
   @override
   State<ReviewEditScreen> createState() => _ReviewEditScreenState();
@@ -25,7 +22,6 @@ class _ReviewEditScreenState extends State<ReviewEditScreen> {
 
   @override
   void initState() {
-    print('initstate');
     super.initState();
     Future.microtask(() {
       final viewModel = context.read<ReviewEditViewModel>();
@@ -34,7 +30,6 @@ class _ReviewEditScreenState extends State<ReviewEditScreen> {
 
       _subscription = viewModel.uiEventStream.listen((event) {
         event.when(snackBar: (message) {
-          print(message);
           final snackBar = SnackBar(content: Text(message));
 
           ScaffoldMessenger.of(context)
@@ -59,7 +54,7 @@ class _ReviewEditScreenState extends State<ReviewEditScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.movieDetail.title),
+        title: Text(viewModel.movieTitle),
         elevation: 0,
         backgroundColor: Colors.transparent,
         leading: IconButton(
@@ -72,8 +67,7 @@ class _ReviewEditScreenState extends State<ReviewEditScreen> {
               ? IconButton(
                   onPressed: () {
                     final String content = _textEditingController.text;
-                    viewModel.onEvent(ReviewEditEvent.saveReview(
-                        content, widget.movieDetail));
+                    viewModel.onEvent(ReviewEditEvent.saveReview(content));
                   },
                   icon: const Text('저장'))
               : IconButton(

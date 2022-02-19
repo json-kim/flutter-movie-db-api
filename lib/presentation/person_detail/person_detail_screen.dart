@@ -11,7 +11,6 @@ import 'package:movie_search/domain/usecase/review/get_review_by_movie_use_case.
 import 'package:movie_search/presentation/global_components/movie_data_card.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_screen.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_view_model.dart';
-import 'package:movie_search/presentation/movie_detail/movie_nested_screen.dart';
 import 'package:movie_search/presentation/person_detail/person_detail_event.dart';
 import 'package:movie_search/ui/navigator_key.dart';
 import 'package:movie_search/ui/theme.dart';
@@ -193,9 +192,7 @@ class PersonDetailScreen extends StatelessWidget {
                                                 context.read<
                                                     DeleteReviewUseCase>(),
                                                 movieId: cast.id),
-                                            child: MovieNestedScreen(
-                                                navigatorKey: GlobalKey<
-                                                    NavigatorState>()),
+                                            child: const MovieDetailScreen(),
                                           ),
                                         ),
                                       );
