@@ -73,7 +73,7 @@ class _ReviewEditScreenState extends State<ReviewEditScreen> {
                   onPressed: () {
                     final String content = _textEditingController.text;
                     viewModel.onEvent(ReviewEditEvent.saveReview(
-                        content, widget.movieDetail.id));
+                        content, widget.movieDetail));
                   },
                   icon: const Text('저장'))
               : IconButton(

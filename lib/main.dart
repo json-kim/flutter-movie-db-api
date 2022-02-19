@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:movie_search/core/di/dependency_injection.dart';
@@ -6,8 +8,11 @@ import 'package:movie_search/presentation/movie_tab_screen.dart';
 import 'package:movie_search/ui/navigator_key.dart';
 import 'package:provider/provider.dart';
 
+import 'core/http_override.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  HttpOverrides.global = MyHttpOverrides();
   final globalProviders = await setProvider();
 
   runApp(MultiProvider(

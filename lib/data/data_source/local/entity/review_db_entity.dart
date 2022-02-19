@@ -3,6 +3,8 @@ import 'package:movie_search/domain/model/review/review.dart';
 class ReviewDbEntity {
   final String id;
   final int movieId;
+  final String movieTitle;
+  final String? posterPath;
   final double starRating;
   final String content;
   final String createdAt;
@@ -11,6 +13,8 @@ class ReviewDbEntity {
   ReviewDbEntity({
     required this.id,
     required this.movieId,
+    required this.movieTitle,
+    required this.posterPath,
     required this.starRating,
     required this.content,
     required this.createdAt,
@@ -21,6 +25,8 @@ class ReviewDbEntity {
     return ReviewDbEntity(
       id: json['id'] as String,
       movieId: json['movieId'] as int,
+      movieTitle: json['movieTitle'] as String,
+      posterPath: json['posterPath'] as String?,
       starRating: json['starRating'] / 1,
       content: json['content'] as String,
       createdAt: json['createdAt'] as String,
@@ -32,6 +38,8 @@ class ReviewDbEntity {
     return {
       'id': id,
       'movieId': movieId,
+      'movieTitle': movieTitle,
+      'posterPath': posterPath,
       'starRating': starRating,
       'content': content,
       'createdAt': createdAt,
@@ -43,6 +51,8 @@ class ReviewDbEntity {
     return ReviewDbEntity(
       id: review.id,
       movieId: review.movieId,
+      movieTitle: review.movieTitle,
+      posterPath: review.posterPath,
       starRating: review.starRating,
       content: review.content,
       createdAt: review.createdAt.toIso8601String(),
@@ -54,6 +64,8 @@ class ReviewDbEntity {
     return Review(
       id: id,
       movieId: movieId,
+      movieTitle: movieTitle,
+      posterPath: posterPath,
       starRating: starRating,
       content: content,
       createdAt: DateTime.parse(createdAt),

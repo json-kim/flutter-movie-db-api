@@ -210,6 +210,7 @@ Future<List<SingleChildWidget>> setProvider() async {
       create: (context) => MovieBookmarkViewModel(
         context.read<GetBookmarkDatasUseCase<Movie>>(),
         context.read<GetBookmarkDatasUseCase<Person>>(),
+        context.read<GetReviewsUseCase>(),
       ),
     ),
   ];

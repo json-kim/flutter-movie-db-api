@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:movie_search/domain/model/movie_detail/movie_detail.dart';
 import 'package:movie_search/domain/model/review/review.dart';
 import 'package:movie_search/domain/usecase/review/create_review_use_case.dart';
 import 'package:movie_search/domain/usecase/review/data/review_builder.dart';
@@ -21,24 +22,14 @@ class ReviewEditViewModel with ChangeNotifier {
       bool isEditMode = true})
       : uiEventController = controller {
     _state = _state.copyWith(isEditMode: isEditMode);
+    _loadReview();
   }
 
   final StreamController<ReviewEditUiEvent> uiEventController;
   Stream<ReviewEditUiEvent> get uiEventStream => uiEventController.stream;
 
   ReviewEditState _state = ReviewEditState(date: DateTime.now());
-
-  ReviewEditState get state {
-    final review = _movieDetailViewModel.state.review;
-    if (review != null) {
-      print(review.starRating);
-      _state = _state.copyWith(
-          date: review.viewingDate,
-          rating: review.starRating,
-          content: review.content);
-    }
-    return _state;
-  }
+  ReviewEditState get state => _state;
 
   void onEvent(ReviewEditEvent event) {
     event.when(
@@ -64,12 +55,14 @@ class ReviewEditViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> _saveReview(String content, int movieId) async {
+  Future<void> _saveReview(String content, MovieDetail movieDetail) async {
     if (content.isEmpty) {
       uiEventController.add(const ReviewEditUiEvent.snackBar('감상평을 입력해주세요'));
     }
     final ReviewBuilder builder = ReviewBuilder();
-    builder.movieId = movieId;
+    builder.movieId = movieDetail.id;
+    builder.movieTitle = movieDetail.title;
+    builder.posterPath = movieDetail.posterPath;
     builder.viewingDate = _state.date;
     builder.content = content;
     builder.starRating = _state.rating;
@@ -85,6 +78,19 @@ class ReviewEditViewModel with ChangeNotifier {
     }, error: (message) {
       //TODO: 에러 메시지
     });
+
+    notifyListeners();
+  }
+
+  Future<void> _loadReview() async {
+    final review = _movieDetailViewModel.state.review;
+
+    if (review != null) {
+      _state = _state.copyWith(
+          date: review.viewingDate,
+          rating: review.starRating,
+          content: review.content);
+    }
 
     notifyListeners();
   }

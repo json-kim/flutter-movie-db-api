@@ -2,12 +2,16 @@ import 'package:movie_search/domain/model/review/review.dart';
 
 class ReviewBuilder {
   int? movieId;
+  String? movieTitle;
+  String? posterPath;
   double? starRating;
   String? content;
   DateTime? viewingDate;
 
   Review build() {
     if (movieId == null ||
+        movieTitle == null ||
+        posterPath == null ||
         starRating == null ||
         content == null ||
         viewingDate == null) {
@@ -20,6 +24,8 @@ class ReviewBuilder {
     return Review(
         id: id,
         movieId: movieId!,
+        movieTitle: movieTitle!,
+        posterPath: posterPath,
         starRating: starRating!,
         content: content!,
         viewingDate: viewingDate!,

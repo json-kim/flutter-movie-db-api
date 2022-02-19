@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_stars/flutter_rating_stars.dart';
 import 'package:movie_search/core/util/constants.dart';
 import 'package:movie_search/domain/model/movie/movie.dart';
 import 'package:movie_search/domain/model/person/person.dart';
@@ -165,7 +166,40 @@ class _MovieBookmarkScreenState extends State<MovieBookmarkScreen>
           ),
 
           // 리뷰 탭바 뷰
-          Container(),
+          ListView.builder(
+            itemCount: state.reviews.length,
+            itemBuilder: (context, idx) {
+              final review = state.reviews[idx];
+
+              return InkWell(
+                onTap: () {},
+                child: Row(
+                  children: [
+                    review.posterPath == null
+                        ? Image.asset('asset/image/poster_placeholder.png')
+                        : CachedNetworkImage(
+                            imageUrl: kPosterUrl + review.posterPath!,
+                            width: 80,
+                            fit: BoxFit.cover,
+                          ),
+                    Expanded(
+                        child: Column(
+                      children: [
+                        Text(review.movieTitle),
+                        Text(review.content),
+                        RatingStars(
+                          starCount: 5,
+                          starSize: 40,
+                          value: review.starRating,
+                          valueLabelVisibility: false,
+                        ),
+                      ],
+                    ))
+                  ],
+                ),
+              );
+            },
+          ),
         ],
       ),
     );

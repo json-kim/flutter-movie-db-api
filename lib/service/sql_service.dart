@@ -70,6 +70,8 @@ class SqlService {
           CREATE TABLE review(
             id TEXT PRIMARY KEY,
             movieId INTEGER NOT NULL,
+            movieTitle TEXT NOT NULL,
+            posterPath TEXT,
             starRating REAL NOT NULL,
             content TEXT NOT NULL,
             createdAt TEXT NOT NULL,
