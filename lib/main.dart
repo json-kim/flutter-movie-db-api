@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:movie_search/core/di/dependency_injection.dart';
 import 'package:movie_search/core/util/constants.dart';
 import 'package:movie_search/presentation/movie_tab_screen.dart';
+import 'package:movie_search/ui/navigator_key.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -21,6 +23,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: NavigatorKey.navigatorKeyMain,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en', 'US'),
+        Locale('ko', 'KR'),
+      ],
       title: kMaterialApptitle,
       theme: ThemeData.dark().copyWith(
           appBarTheme: const AppBarTheme(

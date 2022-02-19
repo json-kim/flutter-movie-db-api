@@ -9,13 +9,17 @@ import 'package:movie_search/domain/usecase/bookmark/save_bookmark_data_use_case
 import 'package:movie_search/domain/usecase/cast/get_cast_with_person_use_case.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_detail_use_case.dart';
 import 'package:movie_search/domain/usecase/person/get_person_detail_use_case.dart';
+import 'package:movie_search/domain/usecase/review/delete_review_use_case.dart';
+import 'package:movie_search/domain/usecase/review/get_review_by_movie_use_case.dart';
 import 'package:movie_search/presentation/global_components/movie_data_card.dart';
+import 'package:movie_search/presentation/global_components/person_data_card.dart';
 import 'package:movie_search/presentation/movie_bookmark/movie_bookmark_event.dart';
 import 'package:movie_search/presentation/movie_bookmark/movie_bookmark_view_model.dart';
-import 'package:movie_search/presentation/movie_detail/movie_detail_screen.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_view_model.dart';
+import 'package:movie_search/presentation/movie_detail/movie_nested_screen.dart';
 import 'package:movie_search/presentation/person_detail/person_detail_screen.dart';
 import 'package:movie_search/presentation/person_detail/person_detail_view_model.dart';
+import 'package:movie_search/ui/navigator_key.dart';
 import 'package:provider/provider.dart';
 
 class MovieBookmarkScreen extends StatefulWidget {
@@ -94,7 +98,7 @@ class _MovieBookmarkScreenState extends State<MovieBookmarkScreen>
                   title: movie.title,
                   titleColor: Colors.white,
                   onCardTap: () {
-                    Navigator.of(context)
+                    Navigator.of(NavigatorKey.navigatorKeyMain.currentContext!)
                         .push(
                           MaterialPageRoute(
                             builder: (context) => ChangeNotifierProvider(
@@ -106,8 +110,11 @@ class _MovieBookmarkScreenState extends State<MovieBookmarkScreen>
                                       .read<SaveBookmarkDataUseCase<Movie>>(),
                                   context
                                       .read<DeleteBookmarkDataUseCase<Movie>>(),
+                                  context.read<GetReviewByMovieUseCase>(),
+                                  context.read<DeleteReviewUseCase>(),
                                   movieId: movie.id),
-                              child: const MovieDetailScreen(),
+                              child: MovieNestedScreen(
+                                  navigatorKey: GlobalKey<NavigatorState>()),
                             ),
                           ),
                         )
@@ -129,8 +136,13 @@ class _MovieBookmarkScreenState extends State<MovieBookmarkScreen>
             itemCount: state.bookmarkPerson.length,
             itemBuilder: (context, idx) {
               final person = state.bookmarkPerson[idx];
-              return InkWell(
-                onTap: () {
+              return PersonDataCard(
+                url: person.profilePath == null
+                    ? null
+                    : kProfileUrl + person.profilePath!,
+                title: person.name,
+                titleColor: Colors.white,
+                onCardTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -148,39 +160,6 @@ class _MovieBookmarkScreenState extends State<MovieBookmarkScreen>
                     ),
                   );
                 },
-                child: SizedBox(
-                  width: double.infinity,
-                  child: Column(
-                    children: [
-                      Flexible(
-                        flex: 8,
-                        fit: FlexFit.tight,
-                        child: person.profilePath == null
-                            ? Image.asset(
-                                'asset/image/poster_placeholder.png',
-                              )
-                            : CachedNetworkImage(
-                                imageUrl: kProfileUrl + person.profilePath!,
-                                errorWidget: (context, url, error) =>
-                                    const Icon(Icons.error),
-                                fit: BoxFit.cover,
-                              ),
-                      ),
-                      Flexible(
-                        flex: 2,
-                        fit: FlexFit.tight,
-                        child: Center(
-                          child: Text(
-                            person.name,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
               );
             },
           ),

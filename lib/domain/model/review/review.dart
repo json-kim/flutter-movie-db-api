@@ -3,8 +3,8 @@ class Review {
   final int movieId;
   final double starRating;
   final String content;
-  final String createdAt;
-  final String updatedAt;
+  final DateTime createdAt;
+  final DateTime viewingDate;
 
   Review({
     required this.id,
@@ -12,6 +12,11 @@ class Review {
     required this.starRating,
     required this.content,
     required this.createdAt,
-    required this.updatedAt,
+    required this.viewingDate,
   });
+
+  @override
+  String toString() {
+    return 'Review {id: $id, content: $content}';
+  }
 }

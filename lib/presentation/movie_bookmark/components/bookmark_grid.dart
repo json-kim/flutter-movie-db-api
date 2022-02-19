@@ -5,9 +5,12 @@ import 'package:movie_search/domain/usecase/bookmark/delete_bookmark_data_use_ca
 import 'package:movie_search/domain/usecase/bookmark/find_bookmark_data_use_case.dart';
 import 'package:movie_search/domain/usecase/bookmark/save_bookmark_data_use_case.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_detail_use_case.dart';
+import 'package:movie_search/domain/usecase/review/delete_review_use_case.dart';
+import 'package:movie_search/domain/usecase/review/get_review_by_movie_use_case.dart';
 import 'package:movie_search/presentation/global_components/movie_data_card.dart';
-import 'package:movie_search/presentation/movie_detail/movie_detail_screen.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_view_model.dart';
+import 'package:movie_search/presentation/movie_detail/movie_nested_screen.dart';
+import 'package:movie_search/ui/navigator_key.dart';
 import 'package:provider/provider.dart';
 
 class BookmarkGrid extends StatelessWidget {
@@ -40,7 +43,7 @@ class BookmarkGrid extends StatelessWidget {
             title: movie.title,
             titleColor: Colors.white,
             onCardTap: () {
-              Navigator.of(context)
+              Navigator.of(NavigatorKey.navigatorKeyMain.currentContext!)
                   .push(
                     MaterialPageRoute(
                       builder: (context) => ChangeNotifierProvider(
@@ -49,8 +52,11 @@ class BookmarkGrid extends StatelessWidget {
                             context.read<FindBookmarkDataUseCase<Movie>>(),
                             context.read<SaveBookmarkDataUseCase<Movie>>(),
                             context.read<DeleteBookmarkDataUseCase<Movie>>(),
+                            context.read<GetReviewByMovieUseCase>(),
+                            context.read<DeleteReviewUseCase>(),
                             movieId: movie.id),
-                        child: const MovieDetailScreen(),
+                        child: MovieNestedScreen(
+                            navigatorKey: GlobalKey<NavigatorState>()),
                       ),
                     ),
                   )

@@ -10,20 +10,6 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 void main() {
   test('인물 로컬 데이터소스 테스트', () async {
     final db = await databaseFactoryFfi.openDatabase(inMemoryDatabasePath);
-    final int id;
-    final int gender;
-    final String? deathday;
-    final String? birthday;
-    final String biography;
-    final String? homepage;
-    final String imdbId;
-    final String knownForDepartment;
-    final String name;
-    final String? placeOfBirth;
-    final double popularity;
-    final String? profilePath;
-    final int adult;
-    final String alsoKnownAs;
 
     await db.execute('''
       CREATE TABLE person(

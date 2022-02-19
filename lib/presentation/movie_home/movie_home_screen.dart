@@ -7,9 +7,12 @@ import 'package:movie_search/domain/usecase/bookmark/save_bookmark_data_use_case
 import 'package:movie_search/domain/usecase/movie/get_movie_detail_use_case.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_popular_use_case.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_with_genre_use_case.dart';
-import 'package:movie_search/presentation/movie_detail/movie_detail_screen.dart';
+import 'package:movie_search/domain/usecase/review/delete_review_use_case.dart';
+import 'package:movie_search/domain/usecase/review/get_review_by_movie_use_case.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_view_model.dart';
+import 'package:movie_search/presentation/movie_detail/movie_nested_screen.dart';
 import 'package:movie_search/presentation/movie_list/data_list_view_model.dart';
+import 'package:movie_search/ui/navigator_key.dart';
 import 'package:provider/provider.dart';
 
 import 'component/movie_page_card.dart';
@@ -58,7 +61,9 @@ class _MovieHomeScreenState extends State<MovieHomeScreen>
                     return MoviePageCard(
                       movie: viewModel.state.nowPlayingMovies[idx],
                       onTap: () {
-                        Navigator.of(context).push(
+                        Navigator.of(
+                                NavigatorKey.navigatorKeyMain.currentContext!)
+                            .push(
                           MaterialPageRoute(
                             builder: (context) => ChangeNotifierProvider(
                               create: (context) => MovieDetailViewModel(
@@ -67,10 +72,13 @@ class _MovieHomeScreenState extends State<MovieHomeScreen>
                                 context.read<SaveBookmarkDataUseCase<Movie>>(),
                                 context
                                     .read<DeleteBookmarkDataUseCase<Movie>>(),
+                                context.read<GetReviewByMovieUseCase>(),
+                                context.read<DeleteReviewUseCase>(),
                                 movieId:
                                     viewModel.state.nowPlayingMovies[idx].id,
                               ),
-                              child: const MovieDetailScreen(),
+                              child: MovieNestedScreen(
+                                  navigatorKey: GlobalKey<NavigatorState>()),
                             ),
                           ),
                         );

@@ -4,17 +4,17 @@ import 'package:movie_search/domain/repository/review_data_repository.dart';
 import '../../model/review/review.dart';
 import '../use_case.dart';
 
-class CreateReviewUseCase implements UseCase<int, Review> {
+class GetReviewByMovieUseCase implements UseCase<Review, int> {
   final ReviewDataRepository _reviewDataRepository;
 
-  CreateReviewUseCase(this._reviewDataRepository);
+  GetReviewByMovieUseCase(this._reviewDataRepository);
 
   @override
-  Future<Result<int>> call(Review review) async {
-    final result = await _reviewDataRepository.createReview(review);
+  Future<Result<Review>> call(int movieId) async {
+    final result = await _reviewDataRepository.loadReviewByMovie(movieId);
 
-    return result.when(success: (reviewId) {
-      return Result.success(reviewId);
+    return result.when(success: (review) {
+      return Result.success(review);
     }, error: (message) {
       return Result.error(message);
     });

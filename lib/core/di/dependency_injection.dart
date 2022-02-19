@@ -1,6 +1,7 @@
 // 1. Provider 전체
 import 'package:movie_search/data/data_source/local/movie_local_data_source.dart';
 import 'package:movie_search/data/data_source/local/person_local_data_source.dart';
+import 'package:movie_search/data/data_source/local/review_local_data_source.dart';
 import 'package:movie_search/data/data_source/remote/movie_remote_data_source.dart';
 import 'package:movie_search/data/repository/bookmark_data/bookmark_movie_repository_impl.dart';
 import 'package:movie_search/data/repository/bookmark_data/bookmark_person_repository_impl.dart';
@@ -11,8 +12,10 @@ import 'package:movie_search/data/repository/movie_data/movie_data_repository_im
 import 'package:movie_search/data/repository/movie_data/movie_detail_data_repository_impl.dart';
 import 'package:movie_search/data/repository/movie_data/person_data_repository_impl.dart';
 import 'package:movie_search/data/repository/movie_data/video_data_repository_impl.dart';
+import 'package:movie_search/data/repository/review/review_data_repository_impl.dart';
 import 'package:movie_search/domain/model/movie/movie.dart';
 import 'package:movie_search/domain/model/person/person.dart';
+import 'package:movie_search/domain/repository/review_data_repository.dart';
 import 'package:movie_search/domain/usecase/bookmark/delete_bookmark_data_use_case.dart';
 import 'package:movie_search/domain/usecase/bookmark/find_bookmark_data_use_case.dart';
 import 'package:movie_search/domain/usecase/bookmark/get_bookmark_datas_use_case.dart';
@@ -27,6 +30,11 @@ import 'package:movie_search/domain/usecase/movie/get_movie_similar_use_case.dar
 import 'package:movie_search/domain/usecase/movie/get_movie_with_genre_use_case.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_with_query_use_case.dart';
 import 'package:movie_search/domain/usecase/person/get_person_detail_use_case.dart';
+import 'package:movie_search/domain/usecase/review/create_review_use_case.dart';
+import 'package:movie_search/domain/usecase/review/delete_review_use_case.dart';
+import 'package:movie_search/domain/usecase/review/get_review_by_movie_use_case.dart';
+import 'package:movie_search/domain/usecase/review/get_reviews_use_case.dart';
+import 'package:movie_search/domain/usecase/review/update_review_use_case.dart';
 import 'package:movie_search/domain/usecase/video/get_video_with_movie_use_case.dart';
 import 'package:movie_search/presentation/movie_bookmark/movie_bookmark_view_model.dart';
 import 'package:movie_search/presentation/movie_home/movie_home_view_model.dart';
@@ -50,8 +58,14 @@ Future<List<SingleChildWidget>> setProvider() async {
     Provider<PersonLocalDataSource>(
       create: (context) => PersonLocalDataSource(db!),
     ),
+    Provider<ReviewLocalDataSource>(
+      create: (context) => ReviewLocalDataSource(db!),
+    ),
 
     // 레포지토리
+    ProxyProvider<ReviewLocalDataSource, ReviewDataRepository>(
+      update: (context, dataSource, _) => ReviewDataRepositoryImple(dataSource),
+    ),
     ProxyProvider<MovieLocalDataSource, BookmarkMovieRepositoryImpl>(
       update: (context, dataSource, _) =>
           BookmarkMovieRepositoryImpl(dataSource),
@@ -83,6 +97,26 @@ Future<List<SingleChildWidget>> setProvider() async {
     ),
 
     // 유스케이스
+    // 리뷰 유스케이스
+    ProxyProvider<ReviewDataRepository, GetReviewByMovieUseCase>(
+      update: (context, repository, _) => GetReviewByMovieUseCase(repository),
+    ),
+    ProxyProvider<ReviewDataRepository, GetReviewsUseCase>(
+      update: (context, repository, _) => GetReviewsUseCase(repository),
+    ),
+    ProxyProvider<ReviewDataRepository, CreateReviewUseCase>(
+      update: (context, repository, _) => CreateReviewUseCase(repository),
+    ),
+    ProxyProvider<ReviewDataRepository, DeleteReviewUseCase>(
+      update: (context, repository, _) => DeleteReviewUseCase(repository),
+    ),
+    ProxyProvider<ReviewDataRepository, UpdateReviewUseCase>(
+      update: (context, repository, _) => UpdateReviewUseCase(repository),
+    ),
+    ProxyProvider<ReviewDataRepository, CreateReviewUseCase>(
+      update: (context, repository, _) => CreateReviewUseCase(repository),
+    ),
+
     // 북마크<영화> 유스케이스
     ProxyProvider<BookmarkMovieRepositoryImpl, GetBookmarkDatasUseCase<Movie>>(
       update: (context, repository, _) =>

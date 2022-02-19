@@ -13,6 +13,7 @@ import 'package:movie_search/presentation/movie_detail/component/sliver_fixed_he
 import 'package:movie_search/presentation/movie_list/data_list_view_model.dart';
 import 'package:movie_search/presentation/person_detail/person_detail_screen.dart';
 import 'package:movie_search/presentation/person_detail/person_detail_view_model.dart';
+import 'package:movie_search/ui/navigator_key.dart';
 import 'package:movie_search/ui/theme.dart';
 import 'package:provider/provider.dart';
 
@@ -51,7 +52,7 @@ class CreditSliverList extends StatelessWidget {
                     itemBuilder: (context, idx) => GestureDetector(
                       onTap: () {
                         Navigator.push(
-                          context,
+                          NavigatorKey.navigatorKeyMain.currentContext!,
                           MaterialPageRoute(
                             builder: (context) => ChangeNotifierProvider(
                               create: (context) => PersonDetailViewModel(

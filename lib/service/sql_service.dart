@@ -16,7 +16,7 @@ class SqlService {
     // Get a location using getDatabasesPath
     var databasesPath = await getDatabasesPath();
     String path = join(databasesPath, 'movie_person.db');
-    // await deleteDatabase(path);
+    await deleteDatabase(path);
     // open the database
     _db = await openDatabase(
       path,
@@ -61,6 +61,19 @@ class SqlService {
             profilePath TEXT,
             adult INTEGER NOT NULL,
             alsoKnownAs NOT NULL
+          )
+          ''',
+        );
+
+        await db.execute(
+          '''
+          CREATE TABLE review(
+            id TEXT PRIMARY KEY,
+            movieId INTEGER NOT NULL,
+            starRating REAL NOT NULL,
+            content TEXT NOT NULL,
+            createdAt TEXT NOT NULL,
+            viewingDate TEXT NOT NULL
           )
           ''',
         );

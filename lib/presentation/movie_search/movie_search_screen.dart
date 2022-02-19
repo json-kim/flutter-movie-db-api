@@ -7,11 +7,14 @@ import 'package:movie_search/domain/usecase/bookmark/delete_bookmark_data_use_ca
 import 'package:movie_search/domain/usecase/bookmark/find_bookmark_data_use_case.dart';
 import 'package:movie_search/domain/usecase/bookmark/save_bookmark_data_use_case.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_detail_use_case.dart';
+import 'package:movie_search/domain/usecase/review/delete_review_use_case.dart';
+import 'package:movie_search/domain/usecase/review/get_review_by_movie_use_case.dart';
 import 'package:movie_search/presentation/global_components/movie_data_card.dart';
-import 'package:movie_search/presentation/movie_detail/movie_detail_screen.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_view_model.dart';
+import 'package:movie_search/presentation/movie_detail/movie_nested_screen.dart';
 import 'package:movie_search/presentation/movie_search/movie_search_event.dart';
 import 'package:movie_search/presentation/movie_search/movie_search_view_model.dart';
+import 'package:movie_search/ui/navigator_key.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -121,7 +124,9 @@ class _MovieSearchScreenState extends State<MovieSearchScreen>
                         title: movie.title,
                         titleColor: Colors.white,
                         onCardTap: () {
-                          Navigator.of(context).push(
+                          Navigator.of(
+                                  NavigatorKey.navigatorKeyMain.currentContext!)
+                              .push(
                             MaterialPageRoute(
                               builder: (context) => ChangeNotifierProvider(
                                 create: (context) => MovieDetailViewModel(
@@ -132,9 +137,12 @@ class _MovieSearchScreenState extends State<MovieSearchScreen>
                                       .read<SaveBookmarkDataUseCase<Movie>>(),
                                   context
                                       .read<DeleteBookmarkDataUseCase<Movie>>(),
+                                  context.read<GetReviewByMovieUseCase>(),
+                                  context.read<DeleteReviewUseCase>(),
                                   movieId: movie.id,
                                 ),
-                                child: const MovieDetailScreen(),
+                                child: MovieNestedScreen(
+                                    navigatorKey: GlobalKey<NavigatorState>()),
                               ),
                             ),
                           );
