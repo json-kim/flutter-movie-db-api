@@ -4,7 +4,8 @@ part 'movie_search_event.freezed.dart';
 
 @freezed
 class MovieSearchEvent with _$MovieSearchEvent {
-  const factory MovieSearchEvent.search(String query) = Search;
-  const factory MovieSearchEvent.loadMore() = LoadMore;
-  const factory MovieSearchEvent.refresh() = Refresh;
+  const factory MovieSearchEvent.search({
+    @Default(1) int page,
+    String? query,
+  }) = Search;
 }

@@ -6,8 +6,6 @@ import 'package:movie_search/domain/model/review/review.dart';
 import 'package:movie_search/domain/usecase/review/create_review_use_case.dart';
 import 'package:movie_search/domain/usecase/review/data/review_builder.dart';
 import 'package:movie_search/domain/usecase/review/get_review_by_movie_use_case.dart';
-import 'package:movie_search/presentation/movie_detail/movie_detail_event.dart';
-import 'package:movie_search/presentation/movie_detail/movie_detail_view_model.dart';
 import 'package:movie_search/presentation/review_edit/review_edit_state.dart';
 import 'package:movie_search/presentation/review_edit/review_edit_ui_event.dart';
 
@@ -33,14 +31,20 @@ class ReviewEditViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  final uiEventController = StreamController<ReviewEditUiEvent>.broadcast();
-  Stream<ReviewEditUiEvent> get uiEventStream => uiEventController.stream;
+  final _uiEventController = StreamController<ReviewEditUiEvent>.broadcast();
+  Stream<ReviewEditUiEvent> get uiEventStream => _uiEventController.stream;
 
   final ReviewBuilder _builder = ReviewBuilder();
   String get movieTitle => _builder.movieTitle ?? 'unknown';
 
   ReviewEditState _state = ReviewEditState(date: DateTime.now());
   ReviewEditState get state => _state;
+
+  @override
+  void dispose() {
+    _uiEventController.close();
+    super.dispose();
+  }
 
   void onEvent(ReviewEditEvent event) {
     event.when(
@@ -67,7 +71,7 @@ class ReviewEditViewModel with ChangeNotifier {
 
   Future<void> _saveReview(String content) async {
     if (content.isEmpty) {
-      uiEventController.add(const ReviewEditUiEvent.snackBar('감상평을 입력해주세요'));
+      _uiEventController.add(const ReviewEditUiEvent.snackBar('감상평을 입력해주세요'));
     }
 
     _state = _state.copyWith(isLoading: true);
@@ -84,7 +88,7 @@ class ReviewEditViewModel with ChangeNotifier {
     result.when(success: (createResult) async {
       await _loadReview();
       _state = _state.copyWith(isEditMode: false);
-      uiEventController.add(const ReviewEditUiEvent.snackBar('저장되었습니다.'));
+      _uiEventController.add(const ReviewEditUiEvent.snackBar('저장되었습니다.'));
     }, error: (message) {
       //TODO: 에러 메시지
     });

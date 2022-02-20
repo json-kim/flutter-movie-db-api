@@ -24,6 +24,7 @@ import 'package:movie_search/presentation/person_detail/person_detail_view_model
 import 'package:movie_search/presentation/review_edit/review_edit_screen.dart';
 import 'package:movie_search/presentation/review_edit/review_edit_view_model.dart';
 import 'package:movie_search/ui/navigator_key.dart';
+import 'package:movie_search/ui/theme.dart';
 import 'package:provider/provider.dart';
 
 class MovieBookmarkScreen extends StatefulWidget {
@@ -61,7 +62,7 @@ class _MovieBookmarkScreenState extends State<MovieBookmarkScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('북마크'),
+        title: const Text('마이 노트'),
         backgroundColor: Colors.transparent,
         elevation: 0,
         bottom: TabBar(
@@ -191,28 +192,49 @@ class _MovieBookmarkScreenState extends State<MovieBookmarkScreen>
 
                   viewModel.onEvent(const MovieBookmarkEvent.load());
                 },
-                child: Row(
+                child: Column(
                   children: [
-                    review.posterPath == null
-                        ? Image.asset('asset/image/poster_placeholder.png')
-                        : CachedNetworkImage(
-                            imageUrl: kPosterUrl + review.posterPath!,
-                            width: 80,
-                            fit: BoxFit.cover,
-                          ),
-                    Expanded(
-                        child: Column(
+                    Row(
                       children: [
-                        Text(review.movieTitle),
-                        Text(review.content),
-                        RatingStars(
-                          starCount: 5,
-                          starSize: 40,
-                          value: review.starRating,
-                          valueLabelVisibility: false,
-                        ),
+                        review.posterPath == null
+                            ? Image.asset('asset/image/poster_placeholder.png')
+                            : CachedNetworkImage(
+                                imageUrl: kPosterUrl + review.posterPath!,
+                                width: 80,
+                                fit: BoxFit.cover,
+                              ),
+                        Expanded(
+                            child: Column(
+                          children: [
+                            // 타이틀
+                            Text(review.movieTitle),
+                            const SizedBox(height: 10),
+
+                            // 내용
+                            Text(
+                              review.content,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                            ),
+                            const SizedBox(height: 10),
+
+                            // 별점
+                            RatingStars(
+                              starCount: 5,
+                              starSize: 30,
+                              starSpacing: 10,
+                              value: review.starRating,
+                              valueLabelVisibility: false,
+                            ),
+                          ],
+                        )),
                       ],
-                    ))
+                    ),
+                    const Divider(
+                      height: 7,
+                      color: whiteColor,
+                      thickness: 0.5,
+                    ),
                   ],
                 ),
               );

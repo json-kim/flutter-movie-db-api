@@ -35,42 +35,48 @@ class VideoSliverList extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (context, idx) => Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: AspectRatio(
-                    aspectRatio: 1.6,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: InheritedYoutubePlayer(
-                            controller: YoutubePlayerController(
-                                initialVideoId: state.data[idx].key,
-                                flags: const YoutubePlayerFlags(
-                                    enableCaption: true,
-                                    captionLanguage: 'ko',
-                                    autoPlay: false,
-                                    loop: false,
-                                    disableDragSeek: true)),
-                            child: YoutubeCard(
-                              video: state.data[idx],
+              child: state.isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : state.data.isEmpty
+                      ? const Center(
+                          child: Text('관련 영상이 없습니다.',
+                              style: TextStyle(color: Colors.black)))
+                      : ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, idx) => Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: AspectRatio(
+                              aspectRatio: 1.6,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: InheritedYoutubePlayer(
+                                      controller: YoutubePlayerController(
+                                          initialVideoId: state.data[idx].key,
+                                          flags: const YoutubePlayerFlags(
+                                              enableCaption: true,
+                                              captionLanguage: 'ko',
+                                              autoPlay: false,
+                                              loop: false,
+                                              disableDragSeek: true)),
+                                      child: YoutubeCard(
+                                        video: state.data[idx],
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    state.data[idx].name,
+                                    style: const TextStyle(
+                                        color: Colors.black, fontSize: 16),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
+                          itemCount: state.data.length,
                         ),
-                        Text(
-                          state.data[idx].name,
-                          style: const TextStyle(
-                              color: Colors.black, fontSize: 16),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                itemCount: state.data.length,
-              ),
             ),
           ],
         ),
@@ -90,6 +96,7 @@ class YoutubeCard extends StatefulWidget {
 
 class _YoutubeCardState extends State<YoutubeCard> {
   bool isExpand = false;
+
   @override
   void initState() {
     // youtubePlayerController = YoutubePlayerController(
@@ -149,6 +156,7 @@ class _YoutubeCardState extends State<YoutubeCard> {
 class FullScreen extends StatefulWidget {
   final Video video;
   final YoutubePlayerValue value;
+
   const FullScreen({Key? key, required this.value, required this.video})
       : super(key: key);
 

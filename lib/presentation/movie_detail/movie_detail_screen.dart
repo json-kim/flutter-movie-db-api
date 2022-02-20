@@ -23,7 +23,6 @@ import 'package:movie_search/ui/navigator_key.dart';
 import 'package:movie_search/ui/theme.dart';
 import 'package:provider/provider.dart';
 
-import '../review_edit/review_edit_ui_event.dart';
 import 'component/credit_sliver_list.dart';
 import 'component/similar_sliver_list.dart';
 import 'component/sliver_fixed_header.dart';
@@ -37,9 +36,33 @@ class MovieDetailScreen extends StatefulWidget {
 }
 
 class _MovieDetailScreenState extends State<MovieDetailScreen> {
-  bool screenState = false;
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
+  StreamSubscription? _subscription;
 
-  void moveToReviewPage(BuildContext context) {}
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      final viewModel = context.read<MovieDetailViewModel>();
+
+      _subscription = viewModel.stream.listen((event) {
+        event.when(snackBar: (message) {
+          final snackBar = SnackBar(
+              content: Text(message), behavior: SnackBarBehavior.floating);
+          _scaffoldMessengerKey.currentState
+            ?..hideCurrentSnackBar()
+            ..showSnackBar(snackBar);
+        });
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,111 +75,116 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
     if (state.isLoading || movieDetail == null) {
       return const Center(child: CircularProgressIndicator());
     } else {
-      return Scaffold(
-        backgroundColor: whiteColor,
-        extendBodyBehindAppBar: true,
-        floatingActionButton: FabCircularMenu(
-          ringColor: Colors.black.withOpacity(0.7),
-          fabColor: whiteColor,
-          fabOpenIcon: const Icon(Icons.edit, color: Colors.black),
-          fabCloseIcon: const Icon(Icons.close, color: Colors.black),
-          children: [
-            TextButton(
-                onPressed: () async {
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => ChangeNotifierProvider(
-                        create: (context) => ReviewEditViewModel(
-                          context.read<CreateReviewUseCase>(),
-                          context.read<GetReviewByMovieUseCase>(),
-                          review: review,
-                          movieDetail: movieDetail,
-                          isEditMode: true,
-                        ),
-                        child: ReviewEditScreen(),
-                      ),
-                    ),
-                  );
-
-                  viewModel.onEvent(const MovieDetailEvent.loadReview());
-                },
-                child: const Text('리뷰 작성하기',
-                    style: TextStyle(color: Colors.white))),
-            TextButton(
-                onPressed: review == null
-                    ? null
-                    : () async {
-                        await Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => ChangeNotifierProvider(
-                              create: (context) => ReviewEditViewModel(
-                                context.read<CreateReviewUseCase>(),
-                                context.read<GetReviewByMovieUseCase>(),
-                                review: review,
-                                isEditMode: false,
-                              ),
-                              child: ReviewEditScreen(),
+      return ScaffoldMessenger(
+        key: _scaffoldMessengerKey,
+        child: Scaffold(
+          body: Scaffold(
+            backgroundColor: whiteColor,
+            floatingActionButton: FabCircularMenu(
+              ringColor: Colors.black.withOpacity(0.7),
+              fabColor: whiteColor,
+              fabOpenIcon: const Icon(Icons.edit, color: Colors.black),
+              fabCloseIcon: const Icon(Icons.close, color: Colors.black),
+              children: [
+                TextButton(
+                    onPressed: () async {
+                      await Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => ChangeNotifierProvider(
+                            create: (context) => ReviewEditViewModel(
+                              context.read<CreateReviewUseCase>(),
+                              context.read<GetReviewByMovieUseCase>(),
+                              review: review,
+                              movieDetail: movieDetail,
+                              isEditMode: true,
                             ),
+                            child: ReviewEditScreen(),
                           ),
-                        );
+                        ),
+                      );
 
-                        viewModel.onEvent(const MovieDetailEvent.loadReview());
-                      },
-                child: Text('리뷰 확인하기',
-                    style: TextStyle(
-                        color: Colors.white
-                            .withOpacity(review == null ? 0.3 : 1)))),
-            TextButton(
-                onPressed: review == null
-                    ? null
-                    : () {
-                        viewModel
-                            .onEvent(const MovieDetailEvent.deleteReview());
-                      },
-                child: Text('리뷰 삭제하기',
-                    style: TextStyle(
-                        color: Colors.white
-                            .withOpacity(review == null ? 0.3 : 1)))),
-          ],
-        ),
-        body: CustomScrollView(
-          slivers: [
-            _buildAppBar(size, movieDetail, state.isBookmarked, () {
-              viewModel.onEvent(const MovieDetailEvent.toggleBookmark());
-            }),
-            // 영화 정보
-            _buildMovieInfoBar(movieDetail),
-            // 배우 제작진
-            ChangeNotifierProvider(
-                create: (context) => DataListViewModel<Credit, Param>(
-                      context.read<GetCreditWithMovieUseCase>(),
-                      Param.creditWithMovie(viewModel.movieId),
-                    ),
-                child: const CreditSliverList()),
-            // 관련 영상
-            ChangeNotifierProvider(
-                create: (context) => DataListViewModel<Video, Param>(
-                      context.read<GetVideoWithMovieUseCase>(),
-                      Param.videoWithMovie(viewModel.movieId),
-                    ),
-                child: const VideoSliverList()),
-            // 비슷한 영화
-            const SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: Text(
-                  '비슷한 작품',
-                  style: TextStyle(color: Colors.black, fontSize: 16),
-                ),
-              ),
+                      viewModel.onEvent(const MovieDetailEvent.loadReview());
+                    },
+                    child: const Text('리뷰 작성하기',
+                        style: TextStyle(color: Colors.white))),
+                TextButton(
+                    onPressed: review == null
+                        ? null
+                        : () async {
+                            await Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => ChangeNotifierProvider(
+                                  create: (context) => ReviewEditViewModel(
+                                    context.read<CreateReviewUseCase>(),
+                                    context.read<GetReviewByMovieUseCase>(),
+                                    review: review,
+                                    isEditMode: false,
+                                  ),
+                                  child: ReviewEditScreen(),
+                                ),
+                              ),
+                            );
+
+                            viewModel
+                                .onEvent(const MovieDetailEvent.loadReview());
+                          },
+                    child: Text('리뷰 확인하기',
+                        style: TextStyle(
+                            color: Colors.white
+                                .withOpacity(review == null ? 0.3 : 1)))),
+                TextButton(
+                    onPressed: review == null
+                        ? null
+                        : () {
+                            viewModel
+                                .onEvent(const MovieDetailEvent.deleteReview());
+                          },
+                    child: Text('리뷰 삭제하기',
+                        style: TextStyle(
+                            color: Colors.white
+                                .withOpacity(review == null ? 0.3 : 1)))),
+              ],
             ),
-            ChangeNotifierProvider(
-                create: (context) => DataListViewModel<Movie, Param>(
-                      context.read<GetMovieSimilarUseCase>(),
-                      Param.movieSimilar(viewModel.movieId),
+            body: CustomScrollView(
+              slivers: [
+                _buildAppBar(size, movieDetail, state.isBookmarked, () {
+                  viewModel.onEvent(const MovieDetailEvent.toggleBookmark());
+                }),
+                // 영화 정보
+                _buildMovieInfoBar(movieDetail),
+                // 배우 제작진
+                ChangeNotifierProvider(
+                    create: (context) => DataListViewModel<Credit, Param>(
+                          context.read<GetCreditWithMovieUseCase>(),
+                          Param.creditWithMovie(viewModel.movieId),
+                        ),
+                    child: const CreditSliverList()),
+                // 관련 영상
+                ChangeNotifierProvider(
+                    create: (context) => DataListViewModel<Video, Param>(
+                          context.read<GetVideoWithMovieUseCase>(),
+                          Param.videoWithMovie(viewModel.movieId),
+                        ),
+                    child: const VideoSliverList()),
+                // 비슷한 영화
+                const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Text(
+                      '비슷한 작품',
+                      style: TextStyle(color: Colors.black, fontSize: 16),
                     ),
-                child: const SimilarSliverGrid()),
-          ],
+                  ),
+                ),
+                ChangeNotifierProvider(
+                    create: (context) => DataPageViewModel<Movie, Param>(
+                          context.read<GetMovieSimilarUseCase>(),
+                          Param.movieSimilar(viewModel.movieId),
+                        ),
+                    child: const SimilarSliverGrid()),
+              ],
+            ),
+          ),
         ),
       );
     }

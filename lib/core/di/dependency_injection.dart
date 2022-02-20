@@ -197,7 +197,6 @@ Future<List<SingleChildWidget>> setProvider() async {
       create: (context) => MovieHomeViewModel(
         context.read<GetMoviePopularUseCase>(),
         context.read<GetMovieNowPlayingUseCase>(),
-        context.read<GetMovieWithGenreUseCase>(),
         context.read<GetGenreUseCase>(),
       ),
     ),

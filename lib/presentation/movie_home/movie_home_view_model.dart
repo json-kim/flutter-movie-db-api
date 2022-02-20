@@ -3,22 +3,20 @@ import 'package:movie_search/core/param/param.dart';
 import 'package:movie_search/domain/usecase/genre/get_genre_use_case.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_now_playing_use_case.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_popular_use_case.dart';
-import 'package:movie_search/domain/usecase/movie/get_movie_with_genre_use_case.dart';
 
 import 'movie_home_state.dart';
 
 class MovieHomeViewModel with ChangeNotifier {
   final GetMoviePopularUseCase _getMoviePopularUseCase;
   final GetMovieNowPlayingUseCase _getMovieNowPlayingUseCase;
-  final GetMovieWithGenreUseCase _getMovieWithGenreUseCase;
   final GetGenreUseCase _getGenreUseCase;
 
-  MovieHomeState state = MovieHomeState([], [], [], false);
+  MovieHomeState _state = MovieHomeState([], [], [], false);
+  MovieHomeState get state => _state;
 
   MovieHomeViewModel(
     this._getMoviePopularUseCase,
     this._getMovieNowPlayingUseCase,
-    this._getMovieWithGenreUseCase,
     this._getGenreUseCase,
   ) {
     loadNowPlayingMovies();
@@ -27,23 +25,28 @@ class MovieHomeViewModel with ChangeNotifier {
   }
 
   Future<void> loadNowPlayingMovies() async {
-    final result = await _getMovieNowPlayingUseCase(Param.movieNowPlaying());
+    _state = _state.copyWith(isLoading: true);
+    notifyListeners();
+
+    final result =
+        await _getMovieNowPlayingUseCase(const Param.movieNowPlaying());
 
     result.when(
-        success: (movies) {
-          state = state.copyWith(nowPlayingMovies: movies);
+        success: (page) {
+          _state = _state.copyWith(nowPlayingMovies: page.items);
         },
         error: (error) {});
 
+    _state = _state.copyWith(isLoading: false);
     notifyListeners();
   }
 
   Future<void> loadPopularMovies() async {
-    final result = await _getMoviePopularUseCase(Param.moviePopular());
+    final result = await _getMoviePopularUseCase(const Param.moviePopular());
 
     result.when(
-        success: (movies) {
-          state = state.copyWith(popularMovies: movies);
+        success: (page) {
+          _state = _state.copyWith(popularMovies: page.items);
         },
         error: (message) {});
 
@@ -55,7 +58,7 @@ class MovieHomeViewModel with ChangeNotifier {
 
     result.when(
         success: (genres) {
-          state = state.copyWith(genreList: genres);
+          _state = _state.copyWith(genreList: genres);
         },
         error: (message) {});
 

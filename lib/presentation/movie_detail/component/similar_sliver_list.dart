@@ -22,7 +22,7 @@ class SimilarSliverGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<DataListViewModel<Movie, Param>>();
+    final viewModel = context.watch<DataPageViewModel<Movie, Param>>();
     final state = viewModel.state;
 
     return SliverPadding(

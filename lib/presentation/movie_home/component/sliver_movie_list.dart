@@ -25,7 +25,7 @@ class SliverMovieList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<DataListViewModel<Movie, Param>>();
+    final viewModel = context.watch<DataPageViewModel<Movie, Param>>();
     final state = viewModel.state;
 
     return SliverToBoxAdapter(
@@ -43,45 +43,63 @@ class SliverMovieList extends StatelessWidget {
                     title,
                     style: const TextStyle(fontSize: 16),
                   ),
-                  IconButton(
-                      iconSize: 14,
-                      onPressed: () {},
-                      icon: const Icon(Icons.arrow_forward_ios))
+                  const Spacer(),
+                  InkWell(
+                    onTap: () {},
+                    child: Row(
+                      children: const [
+                        Text(
+                          '전체보기',
+                          style: TextStyle(fontSize: 13),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          size: 12,
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (context, idx) => MovieDataCard(
-                  title: state.data[idx].title,
-                  url: state.data[idx].posterPath == null
-                      ? null
-                      : kPosterUrl + state.data[idx].posterPath!,
-                  width: 115,
-                  titleColor: Colors.white,
-                  onCardTap: () {
-                    Navigator.of(NavigatorKey.navigatorKeyMain.currentContext!)
-                        .push(
-                      MaterialPageRoute(
-                        builder: (context) => ChangeNotifierProvider(
-                          create: (context) => MovieDetailViewModel(
-                            context.read<GetMovieDetailUseCase>(),
-                            context.read<FindBookmarkDataUseCase<Movie>>(),
-                            context.read<SaveBookmarkDataUseCase<Movie>>(),
-                            context.read<DeleteBookmarkDataUseCase<Movie>>(),
-                            context.read<GetReviewByMovieUseCase>(),
-                            context.read<DeleteReviewUseCase>(),
-                            movieId: state.data[idx].id,
-                          ),
-                          child: const MovieDetailScreen(),
-                        ),
+              child: state.isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, idx) => MovieDataCard(
+                        title: state.data[idx].title,
+                        url: state.data[idx].posterPath == null
+                            ? null
+                            : kPosterUrl + state.data[idx].posterPath!,
+                        width: 115,
+                        titleColor: Colors.white,
+                        onCardTap: () {
+                          Navigator.of(
+                                  NavigatorKey.navigatorKeyMain.currentContext!)
+                              .push(
+                            MaterialPageRoute(
+                              builder: (context) => ChangeNotifierProvider(
+                                create: (context) => MovieDetailViewModel(
+                                  context.read<GetMovieDetailUseCase>(),
+                                  context
+                                      .read<FindBookmarkDataUseCase<Movie>>(),
+                                  context
+                                      .read<SaveBookmarkDataUseCase<Movie>>(),
+                                  context
+                                      .read<DeleteBookmarkDataUseCase<Movie>>(),
+                                  context.read<GetReviewByMovieUseCase>(),
+                                  context.read<DeleteReviewUseCase>(),
+                                  movieId: state.data[idx].id,
+                                ),
+                                child: const MovieDetailScreen(),
+                              ),
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
-                itemCount: state.data.length,
-              ),
+                      itemCount: state.data.length,
+                    ),
             ),
           ],
         ),

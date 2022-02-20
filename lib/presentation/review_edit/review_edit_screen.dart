@@ -30,7 +30,10 @@ class _ReviewEditScreenState extends State<ReviewEditScreen> {
 
       _subscription = viewModel.uiEventStream.listen((event) {
         event.when(snackBar: (message) {
-          final snackBar = SnackBar(content: Text(message));
+          final snackBar = SnackBar(
+            content: Text(message),
+            behavior: SnackBarBehavior.floating,
+          );
 
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()

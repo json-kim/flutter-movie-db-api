@@ -46,71 +46,76 @@ class CreditSliverList extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: state.data.length,
-                    itemBuilder: (context, idx) => GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          NavigatorKey.navigatorKeyMain.currentContext!,
-                          MaterialPageRoute(
-                            builder: (context) => ChangeNotifierProvider(
-                              create: (context) => PersonDetailViewModel(
-                                state.data[idx].id,
-                                context.read<GetPersonDetailUseCase>(),
-                                context.read<GetCastWithPersonUseCase>(),
-                                context.read<FindBookmarkDataUseCase<Person>>(),
-                                context.read<SaveBookmarkDataUseCase<Person>>(),
-                                context
-                                    .read<DeleteBookmarkDataUseCase<Person>>(),
+                  child: state.isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: state.data.length,
+                          itemBuilder: (context, idx) => GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                NavigatorKey.navigatorKeyMain.currentContext!,
+                                MaterialPageRoute(
+                                  builder: (context) => ChangeNotifierProvider(
+                                    create: (context) => PersonDetailViewModel(
+                                      state.data[idx].id,
+                                      context.read<GetPersonDetailUseCase>(),
+                                      context.read<GetCastWithPersonUseCase>(),
+                                      context.read<
+                                          FindBookmarkDataUseCase<Person>>(),
+                                      context.read<
+                                          SaveBookmarkDataUseCase<Person>>(),
+                                      context.read<
+                                          DeleteBookmarkDataUseCase<Person>>(),
+                                    ),
+                                    child: const PersonDetailScreen(),
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: AspectRatio(
+                                aspectRatio: 0.8,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: state.data[idx].profilePath == null
+                                          ? Image.asset(
+                                              'asset/image/avatar_placeholder.png',
+                                              fit: BoxFit.cover,
+                                            )
+                                          : CachedNetworkImage(
+                                              imageUrl: kProfileUrl +
+                                                  state.data[idx].profilePath!,
+                                              fit: BoxFit.cover,
+                                              width: double.infinity,
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      const Icon(Icons.error),
+                                            ),
+                                    ),
+                                    FittedBox(
+                                      child: Text(
+                                        state.data[idx].name,
+                                        style: const TextStyle(
+                                            color: Colors.black, fontSize: 16),
+                                      ),
+                                    ),
+                                    FittedBox(
+                                      child: Text(
+                                        state.data[idx].character,
+                                        style: const TextStyle(
+                                            color: Colors.black, fontSize: 12),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              child: const PersonDetailScreen(),
                             ),
                           ),
-                        );
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
-                        child: AspectRatio(
-                          aspectRatio: 0.8,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: state.data[idx].profilePath == null
-                                    ? Image.asset(
-                                        'asset/image/avatar_placeholder.png',
-                                        fit: BoxFit.cover,
-                                      )
-                                    : CachedNetworkImage(
-                                        imageUrl: kProfileUrl +
-                                            state.data[idx].profilePath!,
-                                        fit: BoxFit.cover,
-                                        width: double.infinity,
-                                        errorWidget: (context, url, error) =>
-                                            const Icon(Icons.error),
-                                      ),
-                              ),
-                              FittedBox(
-                                child: Text(
-                                  state.data[idx].name,
-                                  style: const TextStyle(
-                                      color: Colors.black, fontSize: 16),
-                                ),
-                              ),
-                              FittedBox(
-                                child: Text(
-                                  state.data[idx].character,
-                                  style: const TextStyle(
-                                      color: Colors.black, fontSize: 12),
-                                ),
-                              ),
-                            ],
-                          ),
                         ),
-                      ),
-                    ),
-                  ),
                 ),
               ],
             ),

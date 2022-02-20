@@ -36,12 +36,15 @@ class _MovieHomeScreenState extends State<MovieHomeScreen>
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<MovieHomeViewModel>();
+
     return Scaffold(
       body: _buildBody(viewModel),
     );
   }
 
   Widget _buildBody(MovieHomeViewModel viewModel) {
+    final state = viewModel.state;
+
     return CustomScrollView(
       slivers: [
         SliverToBoxAdapter(
@@ -49,42 +52,45 @@ class _MovieHomeScreenState extends State<MovieHomeScreen>
             children: [
               SizedBox(
                 height: 500,
-                child: PageView.builder(
-                  onPageChanged: (page) {
-                    setState(() {
-                      _currentPage = page;
-                    });
-                  },
-                  scrollDirection: Axis.horizontal,
-                  itemCount: viewModel.state.nowPlayingMovies.length,
-                  itemBuilder: (context, idx) {
-                    return MoviePageCard(
-                      movie: viewModel.state.nowPlayingMovies[idx],
-                      onTap: () {
-                        Navigator.of(
-                                NavigatorKey.navigatorKeyMain.currentContext!)
-                            .push(
-                          MaterialPageRoute(
-                            builder: (context) => ChangeNotifierProvider(
-                              create: (context) => MovieDetailViewModel(
-                                context.read<GetMovieDetailUseCase>(),
-                                context.read<FindBookmarkDataUseCase<Movie>>(),
-                                context.read<SaveBookmarkDataUseCase<Movie>>(),
-                                context
-                                    .read<DeleteBookmarkDataUseCase<Movie>>(),
-                                context.read<GetReviewByMovieUseCase>(),
-                                context.read<DeleteReviewUseCase>(),
-                                movieId:
-                                    viewModel.state.nowPlayingMovies[idx].id,
-                              ),
-                              child: const MovieDetailScreen(),
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
+                child: state.isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : PageView.builder(
+                        onPageChanged: (page) {
+                          setState(() {
+                            _currentPage = page;
+                          });
+                        },
+                        scrollDirection: Axis.horizontal,
+                        itemCount: state.nowPlayingMovies.length,
+                        itemBuilder: (context, idx) {
+                          return MoviePageCard(
+                            movie: state.nowPlayingMovies[idx],
+                            onTap: () {
+                              Navigator.of(NavigatorKey
+                                      .navigatorKeyMain.currentContext!)
+                                  .push(
+                                MaterialPageRoute(
+                                  builder: (context) => ChangeNotifierProvider(
+                                    create: (context) => MovieDetailViewModel(
+                                      context.read<GetMovieDetailUseCase>(),
+                                      context.read<
+                                          FindBookmarkDataUseCase<Movie>>(),
+                                      context.read<
+                                          SaveBookmarkDataUseCase<Movie>>(),
+                                      context.read<
+                                          DeleteBookmarkDataUseCase<Movie>>(),
+                                      context.read<GetReviewByMovieUseCase>(),
+                                      context.read<DeleteReviewUseCase>(),
+                                      movieId: state.nowPlayingMovies[idx].id,
+                                    ),
+                                    child: const MovieDetailScreen(),
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
               ),
               Positioned(
                 bottom: 4,
@@ -117,9 +123,9 @@ class _MovieHomeScreenState extends State<MovieHomeScreen>
           ),
         ),
         ChangeNotifierProvider(
-          create: (context) => DataListViewModel<Movie, Param>(
+          create: (context) => DataPageViewModel<Movie, Param>(
             context.read<GetMoviePopularUseCase>(),
-            Param.moviePopular(),
+            const Param.moviePopular(),
           ),
           child: const SliverMovieList(
             title: '인기몰이 영화',
@@ -127,7 +133,7 @@ class _MovieHomeScreenState extends State<MovieHomeScreen>
         ),
         ...viewModel.state.genreList
             .map((genre) => ChangeNotifierProvider(
-                create: (context) => DataListViewModel<Movie, Param>(
+                create: (context) => DataPageViewModel<Movie, Param>(
                     context.read<GetMovieWithGenreUseCase>(),
                     Param.movieWithGenre(genre.id)),
                 child: SliverMovieList(title: genre.name)))

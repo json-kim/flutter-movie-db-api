@@ -1,6 +1,6 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:movie_search/core/util/constants.dart';
 import 'package:movie_search/domain/model/movie/movie.dart';
 import 'package:movie_search/domain/usecase/bookmark/delete_bookmark_data_use_case.dart';
@@ -15,8 +15,8 @@ import 'package:movie_search/presentation/movie_detail/movie_detail_view_model.d
 import 'package:movie_search/presentation/movie_search/movie_search_event.dart';
 import 'package:movie_search/presentation/movie_search/movie_search_view_model.dart';
 import 'package:movie_search/ui/navigator_key.dart';
+import 'package:movie_search/ui/theme.dart';
 import 'package:provider/provider.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class MovieSearchScreen extends StatefulWidget {
   const MovieSearchScreen({Key? key}) : super(key: key);
@@ -28,8 +28,6 @@ class MovieSearchScreen extends StatefulWidget {
 class _MovieSearchScreenState extends State<MovieSearchScreen>
     with AutomaticKeepAliveClientMixin {
   final TextEditingController _textEditingController = TextEditingController();
-  final RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
   Timer? _debounce;
 
   @override
@@ -54,7 +52,6 @@ class _MovieSearchScreenState extends State<MovieSearchScreen>
   @override
   void dispose() {
     _textEditingController.dispose();
-    _refreshController.dispose();
     _debounce?.cancel();
     super.dispose();
   }
@@ -72,52 +69,51 @@ class _MovieSearchScreenState extends State<MovieSearchScreen>
       ),
       body: Column(
         children: [
-          TextField(
-            autofocus: false,
-            style: const TextStyle(color: Colors.white),
-            controller: _textEditingController,
-            cursorColor: Colors.white,
-            decoration: InputDecoration(
-              focusedBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white)),
-              enabledBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white)),
-              suffixIcon: IconButton(
-                icon: const Text(
-                  '검색',
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              autofocus: false,
+              style: const TextStyle(color: whiteColor),
+              controller: _textEditingController,
+              cursorColor: whiteColor,
+              decoration: InputDecoration(
+                focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: whiteColor)),
+                enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: whiteColor)),
+                suffixIcon: IconButton(
+                  icon: const Text(
+                    '검색',
+                  ),
+                  onPressed: () {
+                    final query = _textEditingController.text;
+                    viewModel.onEvent(MovieSearchEvent.search(query: query));
+                  },
                 ),
-                onPressed: () {
-                  final query = _textEditingController.text;
-                  viewModel.onEvent(MovieSearchEvent.search(query));
-                },
               ),
-            ),
-            onChanged: (value) => onQueryChanged(
-              searchMovie: (query) {
-                viewModel.onEvent(MovieSearchEvent.search(query));
-              },
-              query: value,
+              onChanged: (value) => onQueryChanged(
+                searchMovie: (query) {
+                  viewModel.onEvent(MovieSearchEvent.search(query: query));
+                },
+                query: value,
+              ),
             ),
           ),
           Expanded(
-            child: viewModel.state.isLoading
-                ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : GridView.builder(
-                    padding: const EdgeInsets.all(8),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      mainAxisSpacing: 8,
-                      crossAxisSpacing: 8,
-                      childAspectRatio: 0.5,
-                    ),
-                    itemCount: state.movies.length,
-                    itemBuilder: (context, index) {
-                      final movie = state.movies[index];
-
-                      return MovieDataCard(
+              child: RefreshIndicator(
+                  child: PagedGridView(
+                    pagingController: viewModel.pagingController,
+                    builderDelegate: PagedChildBuilderDelegate<Movie>(
+                      noItemsFoundIndicatorBuilder: (context) => Column(
+                        children: const [
+                          Text('검색 기록'),
+                        ],
+                      ),
+                      firstPageErrorIndicatorBuilder: (context) =>
+                          const Center(child: Text('검색 실패')),
+                      newPageErrorIndicatorBuilder: (context) =>
+                          const Center(child: Text('검색 실패')),
+                      itemBuilder: (context, movie, index) => MovieDataCard(
                         url: movie.posterPath == null
                             ? null
                             : kPosterUrl + movie.posterPath!,
@@ -146,37 +142,67 @@ class _MovieSearchScreenState extends State<MovieSearchScreen>
                             ),
                           );
                         },
-                      );
-                    },
+                      ),
+                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      mainAxisSpacing: 8,
+                      crossAxisSpacing: 8,
+                      childAspectRatio: 0.5,
+                    ),
                   ),
-          ),
+                  onRefresh: () async {
+                    viewModel.pagingController.refresh();
+                  })
+              // : GridView.builder(
+              //     padding: const EdgeInsets.all(8),
+              //     gridDelegate:
+              //         const SliverGridDelegateWithFixedCrossAxisCount(
+              //       crossAxisCount: 3,
+              //       mainAxisSpacing: 8,
+              //       crossAxisSpacing: 8,
+              //       childAspectRatio: 0.5,
+              //     ),
+              //     itemCount: state.movies.length,
+              //     itemBuilder: (context, index) {
+              //       final movie = state.movies[index];
+              //
+              //       return MovieDataCard(
+              //         url: movie.posterPath == null
+              //             ? null
+              //             : kPosterUrl + movie.posterPath!,
+              //         title: movie.title,
+              //         titleColor: Colors.white,
+              //         onCardTap: () {
+              //           Navigator.of(
+              //                   NavigatorKey.navigatorKeyMain.currentContext!)
+              //               .push(
+              //             MaterialPageRoute(
+              //               builder: (context) => ChangeNotifierProvider(
+              //                 create: (context) => MovieDetailViewModel(
+              //                   context.read<GetMovieDetailUseCase>(),
+              //                   context
+              //                       .read<FindBookmarkDataUseCase<Movie>>(),
+              //                   context
+              //                       .read<SaveBookmarkDataUseCase<Movie>>(),
+              //                   context
+              //                       .read<DeleteBookmarkDataUseCase<Movie>>(),
+              //                   context.read<GetReviewByMovieUseCase>(),
+              //                   context.read<DeleteReviewUseCase>(),
+              //                   movieId: movie.id,
+              //                 ),
+              //                 child: const MovieDetailScreen(),
+              //               ),
+              //             ),
+              //           );
+              //         },
+              //       );
+              //     },
+              //   ),
+              ),
         ],
       ),
     );
   }
 }
-
-//
-// SmartRefresher(
-// controller: _refreshController,
-// enablePullUp: true,
-// enablePullDown: false,
-// footer: CustomFooter(
-// height: viewModel.isMoreLoading ? 55 : 0,
-// builder: (context, mode) {
-// if (mode == LoadStatus.loading) {
-// return const SizedBox(
-// height: 55.0,
-// child: Center(child: CircularProgressIndicator()),
-// );
-// }
-// return Container();
-// },
-// ),
-// onLoading: () async {
-// // 구분하여 실행하는 과정 필요
-// await viewModel.getMoviesWithGenre();
-// _refreshController.loadComplete();
-// },
-//
-// ),

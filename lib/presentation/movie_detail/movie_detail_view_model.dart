@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:movie_search/core/param/param.dart';
 import 'package:movie_search/domain/model/movie/movie.dart';
@@ -9,6 +11,7 @@ import 'package:movie_search/domain/usecase/review/delete_review_use_case.dart';
 import 'package:movie_search/domain/usecase/review/get_review_by_movie_use_case.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_event.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_state.dart';
+import 'package:movie_search/presentation/movie_detail/movie_detail_ui_event.dart';
 
 class MovieDetailViewModel with ChangeNotifier {
   final GetMovieDetailUseCase _getMovieDetailUseCase;
@@ -23,6 +26,10 @@ class MovieDetailViewModel with ChangeNotifier {
 
   MovieDetailState get state => _state;
 
+  final _uiEventController = StreamController<MovieDetailUiEvent>.broadcast();
+
+  Stream<MovieDetailUiEvent> get stream => _uiEventController.stream;
+
   MovieDetailViewModel(
     this._getMovieDetailUseCase,
     this._findBookmarkDataUseCase,
@@ -35,6 +42,12 @@ class MovieDetailViewModel with ChangeNotifier {
     _loadMovieDetail();
     _loadBookmarkData();
     _loadReview();
+  }
+
+  @override
+  void dispose() {
+    _uiEventController.close();
+    super.dispose();
   }
 
   void onEvent(MovieDetailEvent event) {
@@ -54,11 +67,18 @@ class MovieDetailViewModel with ChangeNotifier {
     final int resultVal;
     if (!_state.isBookmarked) {
       resultVal = await _saveBookmarkData(Movie.fromMovieDetail(movieDetail));
+      if (resultVal != -1) {
+        _uiEventController
+            .add(const MovieDetailUiEvent.snackBar('북마크로 등록되었습니다.'));
+        await _loadBookmarkData();
+      }
     } else {
       resultVal = await _deleteBookmarkData(movieId);
-    }
-    if (resultVal != -1) {
-      await _loadBookmarkData();
+      if (resultVal != -1) {
+        _uiEventController
+            .add(const MovieDetailUiEvent.snackBar('북마크에서 삭제되었습니다.'));
+        await _loadBookmarkData();
+      }
     }
 
     notifyListeners();
@@ -136,9 +156,10 @@ class MovieDetailViewModel with ChangeNotifier {
       if (isDelete) {
         _state = _state.copyWith(review: null);
       }
+      _uiEventController.add(const MovieDetailUiEvent.snackBar('삭제 되었습니다.'));
     }, error: (message) {
-      //TODO: 삭제 실패
       debugPrint(message);
+      _uiEventController.add(const MovieDetailUiEvent.snackBar('삭제 실패'));
     });
 
     notifyListeners();
