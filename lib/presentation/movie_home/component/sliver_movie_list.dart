@@ -17,9 +17,11 @@ import 'package:provider/provider.dart';
 
 class SliverMovieList extends StatelessWidget {
   final String title;
+  final void Function() onTap;
 
   const SliverMovieList({
     required this.title,
+    required this.onTap,
     Key? key,
   }) : super(key: key);
 
@@ -45,18 +47,21 @@ class SliverMovieList extends StatelessWidget {
                   ),
                   const Spacer(),
                   InkWell(
-                    onTap: () {},
-                    child: Row(
-                      children: const [
-                        Text(
-                          '전체보기',
-                          style: TextStyle(fontSize: 13),
-                        ),
-                        Icon(
-                          Icons.arrow_forward_ios,
-                          size: 12,
-                        ),
-                      ],
+                    onTap: onTap,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: const [
+                          Text(
+                            '전체보기',
+                            style: TextStyle(fontSize: 13),
+                          ),
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            size: 12,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],

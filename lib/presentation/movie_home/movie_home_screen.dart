@@ -11,6 +11,8 @@ import 'package:movie_search/domain/usecase/review/delete_review_use_case.dart';
 import 'package:movie_search/domain/usecase/review/get_review_by_movie_use_case.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_screen.dart';
 import 'package:movie_search/presentation/movie_detail/movie_detail_view_model.dart';
+import 'package:movie_search/presentation/movie_genre/movie_genre_screen.dart';
+import 'package:movie_search/presentation/movie_genre/movie_genre_view_model.dart';
 import 'package:movie_search/presentation/movie_list/data_list_view_model.dart';
 import 'package:movie_search/ui/navigator_key.dart';
 import 'package:provider/provider.dart';
@@ -122,21 +124,28 @@ class _MovieHomeScreenState extends State<MovieHomeScreen>
             ],
           ),
         ),
-        ChangeNotifierProvider(
-          create: (context) => DataPageViewModel<Movie, Param>(
-            context.read<GetMoviePopularUseCase>(),
-            const Param.moviePopular(),
-          ),
-          child: const SliverMovieList(
-            title: '인기몰이 영화',
-          ),
-        ),
         ...viewModel.state.genreList
-            .map((genre) => ChangeNotifierProvider(
+            .map(
+              (genre) => ChangeNotifierProvider(
                 create: (context) => DataPageViewModel<Movie, Param>(
                     context.read<GetMovieWithGenreUseCase>(),
                     Param.movieWithGenre(genre.id)),
-                child: SliverMovieList(title: genre.name)))
+                child: SliverMovieList(
+                  title: genre.name,
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ChangeNotifierProvider(
+                          create: (context) => MovieGenreViewModel(
+                              context.read<GetMovieWithGenreUseCase>(), genre),
+                          child: const MovieGenreScreen(),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            )
             .toList(),
       ],
     );

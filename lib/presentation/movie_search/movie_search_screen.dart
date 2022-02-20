@@ -100,107 +100,59 @@ class _MovieSearchScreenState extends State<MovieSearchScreen>
             ),
           ),
           Expanded(
-              child: RefreshIndicator(
-                  child: PagedGridView(
-                    pagingController: viewModel.pagingController,
-                    builderDelegate: PagedChildBuilderDelegate<Movie>(
-                      noItemsFoundIndicatorBuilder: (context) => Column(
-                        children: const [
-                          Text('검색 기록'),
-                        ],
-                      ),
-                      firstPageErrorIndicatorBuilder: (context) =>
-                          const Center(child: Text('검색 실패')),
-                      newPageErrorIndicatorBuilder: (context) =>
-                          const Center(child: Text('검색 실패')),
-                      itemBuilder: (context, movie, index) => MovieDataCard(
-                        url: movie.posterPath == null
-                            ? null
-                            : kPosterUrl + movie.posterPath!,
-                        title: movie.title,
-                        titleColor: Colors.white,
-                        onCardTap: () {
-                          Navigator.of(
-                                  NavigatorKey.navigatorKeyMain.currentContext!)
-                              .push(
-                            MaterialPageRoute(
-                              builder: (context) => ChangeNotifierProvider(
-                                create: (context) => MovieDetailViewModel(
-                                  context.read<GetMovieDetailUseCase>(),
-                                  context
-                                      .read<FindBookmarkDataUseCase<Movie>>(),
-                                  context
-                                      .read<SaveBookmarkDataUseCase<Movie>>(),
-                                  context
-                                      .read<DeleteBookmarkDataUseCase<Movie>>(),
-                                  context.read<GetReviewByMovieUseCase>(),
-                                  context.read<DeleteReviewUseCase>(),
-                                  movieId: movie.id,
-                                ),
-                                child: const MovieDetailScreen(),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      mainAxisSpacing: 8,
-                      crossAxisSpacing: 8,
-                      childAspectRatio: 0.5,
-                    ),
+            child: RefreshIndicator(
+              child: PagedGridView(
+                pagingController: viewModel.pagingController,
+                builderDelegate: PagedChildBuilderDelegate<Movie>(
+                  noItemsFoundIndicatorBuilder: (context) => Column(
+                    children: const [
+                      Text('검색 기록'),
+                    ],
                   ),
-                  onRefresh: () async {
-                    viewModel.pagingController.refresh();
-                  })
-              // : GridView.builder(
-              //     padding: const EdgeInsets.all(8),
-              //     gridDelegate:
-              //         const SliverGridDelegateWithFixedCrossAxisCount(
-              //       crossAxisCount: 3,
-              //       mainAxisSpacing: 8,
-              //       crossAxisSpacing: 8,
-              //       childAspectRatio: 0.5,
-              //     ),
-              //     itemCount: state.movies.length,
-              //     itemBuilder: (context, index) {
-              //       final movie = state.movies[index];
-              //
-              //       return MovieDataCard(
-              //         url: movie.posterPath == null
-              //             ? null
-              //             : kPosterUrl + movie.posterPath!,
-              //         title: movie.title,
-              //         titleColor: Colors.white,
-              //         onCardTap: () {
-              //           Navigator.of(
-              //                   NavigatorKey.navigatorKeyMain.currentContext!)
-              //               .push(
-              //             MaterialPageRoute(
-              //               builder: (context) => ChangeNotifierProvider(
-              //                 create: (context) => MovieDetailViewModel(
-              //                   context.read<GetMovieDetailUseCase>(),
-              //                   context
-              //                       .read<FindBookmarkDataUseCase<Movie>>(),
-              //                   context
-              //                       .read<SaveBookmarkDataUseCase<Movie>>(),
-              //                   context
-              //                       .read<DeleteBookmarkDataUseCase<Movie>>(),
-              //                   context.read<GetReviewByMovieUseCase>(),
-              //                   context.read<DeleteReviewUseCase>(),
-              //                   movieId: movie.id,
-              //                 ),
-              //                 child: const MovieDetailScreen(),
-              //               ),
-              //             ),
-              //           );
-              //         },
-              //       );
-              //     },
-              //   ),
+                  firstPageErrorIndicatorBuilder: (context) =>
+                      const Center(child: Text('검색 실패')),
+                  newPageErrorIndicatorBuilder: (context) =>
+                      const Center(child: Text('검색 실패')),
+                  itemBuilder: (context, movie, index) => MovieDataCard(
+                    url: movie.posterPath == null
+                        ? null
+                        : kPosterUrl + movie.posterPath!,
+                    title: movie.title,
+                    titleColor: Colors.white,
+                    onCardTap: () {
+                      Navigator.of(
+                              NavigatorKey.navigatorKeyMain.currentContext!)
+                          .push(
+                        MaterialPageRoute(
+                          builder: (context) => ChangeNotifierProvider(
+                            create: (context) => MovieDetailViewModel(
+                              context.read<GetMovieDetailUseCase>(),
+                              context.read<FindBookmarkDataUseCase<Movie>>(),
+                              context.read<SaveBookmarkDataUseCase<Movie>>(),
+                              context.read<DeleteBookmarkDataUseCase<Movie>>(),
+                              context.read<GetReviewByMovieUseCase>(),
+                              context.read<DeleteReviewUseCase>(),
+                              movieId: movie.id,
+                            ),
+                            child: const MovieDetailScreen(),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  mainAxisSpacing: 8,
+                  crossAxisSpacing: 8,
+                  childAspectRatio: 0.5,
+                ),
               ),
+              onRefresh: () async {
+                viewModel.pagingController.refresh();
+              },
+            ),
+          ),
         ],
       ),
     );
