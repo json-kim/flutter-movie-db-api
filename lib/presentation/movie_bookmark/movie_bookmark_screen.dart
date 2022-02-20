@@ -162,7 +162,8 @@ class _MovieBookmarkScreenState extends State<MovieBookmarkScreen>
                         child: const PersonDetailScreen(),
                       ),
                     ),
-                  );
+                  ).then((_) =>
+                      viewModel.onEvent(const MovieBookmarkEvent.load()));
                 },
               );
             },
@@ -176,21 +177,22 @@ class _MovieBookmarkScreenState extends State<MovieBookmarkScreen>
 
               return InkWell(
                 onTap: () async {
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => ChangeNotifierProvider(
-                        create: (context) => ReviewEditViewModel(
-                          context.read<CreateReviewUseCase>(),
-                          context.read<GetReviewByMovieUseCase>(),
-                          review: review,
-                          isEditMode: false,
+                  await Navigator.of(context)
+                      .push(
+                        MaterialPageRoute(
+                          builder: (context) => ChangeNotifierProvider(
+                            create: (context) => ReviewEditViewModel(
+                              context.read<CreateReviewUseCase>(),
+                              context.read<GetReviewByMovieUseCase>(),
+                              review: review,
+                              isEditMode: false,
+                            ),
+                            child: ReviewEditScreen(),
+                          ),
                         ),
-                        child: ReviewEditScreen(),
-                      ),
-                    ),
-                  );
-
-                  viewModel.onEvent(const MovieBookmarkEvent.load());
+                      )
+                      .then((_) =>
+                          viewModel.onEvent(const MovieBookmarkEvent.load()));
                 },
                 child: Column(
                   children: [

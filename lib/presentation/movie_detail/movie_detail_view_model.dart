@@ -70,18 +70,16 @@ class MovieDetailViewModel with ChangeNotifier {
       if (resultVal != -1) {
         _uiEventController
             .add(const MovieDetailUiEvent.snackBar('북마크로 등록되었습니다.'));
-        await _loadBookmarkData();
       }
     } else {
       resultVal = await _deleteBookmarkData(movieId);
       if (resultVal != -1) {
         _uiEventController
             .add(const MovieDetailUiEvent.snackBar('북마크에서 삭제되었습니다.'));
-        await _loadBookmarkData();
       }
     }
 
-    notifyListeners();
+    await _loadBookmarkData();
   }
 
   Future<int> _saveBookmarkData(Movie movie) async {

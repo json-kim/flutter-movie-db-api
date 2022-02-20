@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:movie_search/core/param/param.dart';
-import 'package:movie_search/domain/model/cast/cast.dart';
 import 'package:movie_search/domain/model/person/person.dart';
 import 'package:movie_search/domain/usecase/bookmark/delete_bookmark_data_use_case.dart';
 import 'package:movie_search/domain/usecase/bookmark/find_bookmark_data_use_case.dart';
 import 'package:movie_search/domain/usecase/bookmark/save_bookmark_data_use_case.dart';
 import 'package:movie_search/domain/usecase/cast/get_cast_with_person_use_case.dart';
 import 'package:movie_search/domain/usecase/person/get_person_detail_use_case.dart';
-import 'package:movie_search/domain/usecase/use_case.dart';
 import 'package:movie_search/presentation/person_detail/person_detail_event.dart';
 import 'package:movie_search/presentation/person_detail/person_detail_state.dart';
 
@@ -31,6 +29,7 @@ class PersonDetailViewModel with ChangeNotifier {
     this._deleteBookmarkDataUseCase,
   ) {
     _loadPerson();
+    _loadBookmarkData();
   }
 
   Future<void> onEvent(PersonDetailEvent event) {
@@ -47,15 +46,18 @@ class PersonDetailViewModel with ChangeNotifier {
     final int resultVal;
     if (!_state.isBookmarked) {
       resultVal = await _saveBookmarkData(person);
+      await _loadBookmarkData();
     } else {
       resultVal = await _deleteBookmarkData(person.id);
+      await _loadBookmarkData();
     }
     if (resultVal != -1) {
-      await _loadBookmarkData();
     } else {
       // TODO: 북마크 동작 실패
       debugPrint('실패');
     }
+
+    await _loadBookmarkData();
   }
 
   Future<int> _saveBookmarkData(Person person) async {
