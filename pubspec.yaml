@@ -46,7 +46,9 @@ dependencies:
   intl: ^0.17.0
   flutter_rating_stars: ^1.0.3+4
   infinite_scroll_pagination: ^3.1.0
-
+  input_history_text_field: ^0.1.0
+  hive: ^2.0.5
+  hive_flutter: ^1.1.0
 
 
 
@@ -64,7 +66,7 @@ dev_dependencies:
   json_serializable: ^6.1.3
   build_runner: ^2.1.7
   sqflite_common_ffi: ^2.1.0+2
-
+  hive_generator: ^1.1.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

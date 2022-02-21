@@ -39,6 +39,7 @@ class MovieSearchViewModel with ChangeNotifier {
   Future<void> _searchMovies(int page, {String? query}) async {
     if (query != null) {
       _currentQuery = query;
+      _pagingController.itemList = [];
     }
 
     if (_currentQuery.isEmpty) {
