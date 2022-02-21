@@ -39,6 +39,7 @@ import 'package:movie_search/domain/usecase/video/get_video_with_movie_use_case.
 import 'package:movie_search/presentation/movie_bookmark/movie_bookmark_view_model.dart';
 import 'package:movie_search/presentation/movie_home/movie_home_view_model.dart';
 import 'package:movie_search/presentation/movie_search/movie_search_view_model.dart';
+import 'package:movie_search/service/hive_service.dart';
 import 'package:movie_search/service/sql_service.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
@@ -46,6 +47,9 @@ import 'package:provider/single_child_widget.dart';
 Future<List<SingleChildWidget>> setProvider() async {
   await SqlService.instance.init();
   final db = SqlService.instance.db;
+
+  await HiveService.instance.init();
+  final box = HiveService.instance.searchBox;
 
   List<SingleChildWidget> providers = [
     // 데이터 소스

@@ -3,5 +3,6 @@ class SearchHistory {
   final String content;
   final DateTime searchTime;
 
-  SearchHistory(this.id, this.content, this.searchTime);
+  SearchHistory(
+      {required this.id, required this.content, required this.searchTime});
 }
