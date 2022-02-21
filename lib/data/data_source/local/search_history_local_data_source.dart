@@ -29,8 +29,15 @@ class SearchHistoryLocalDataSource {
 
   /// 성공시 1, 실패시 -1
   Future<Result<int>> saveSearchHistory(SearchHistoryDbEntity entity) async {
-    await _box.put(entity.id, entity);
+    // 중복된 값이 있다면 기존 값 삭제
+    _box.toMap().forEach((key, value) {
+      if (value.content == entity.content) {
+        _box.delete(key);
+        return;
+      }
+    });
 
+    await _box.put(entity.id, entity);
     return const Result.success(1);
   }
 }

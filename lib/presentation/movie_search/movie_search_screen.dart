@@ -89,6 +89,7 @@ class _MovieSearchScreenState extends State<MovieSearchScreen>
                   onPressed: () {
                     final query = _textEditingController.text;
                     viewModel.onEvent(MovieSearchEvent.search(query: query));
+                    viewModel.onEvent(MovieSearchEvent.saveHistory(query));
                   },
                 ),
               ),
@@ -106,8 +107,43 @@ class _MovieSearchScreenState extends State<MovieSearchScreen>
                 pagingController: viewModel.pagingController,
                 builderDelegate: PagedChildBuilderDelegate<Movie>(
                   noItemsFoundIndicatorBuilder: (context) => Column(
-                    children: const [
-                      Text('검색 기록'),
+                    children: [
+                      const Text('검색 기록'),
+                      ...state.histories
+                          .map(
+                            (history) => Row(
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    _textEditingController.text =
+                                        history.content;
+                                    viewModel.onEvent(
+                                      MovieSearchEvent.search(
+                                          query: history.content),
+                                    );
+                                  },
+                                  icon: const Icon(Icons.history),
+                                ),
+                                Expanded(child: Text(history.content)),
+                                IconButton(
+                                  onPressed: () {
+                                    viewModel.onEvent(
+                                      MovieSearchEvent.deleteHistory(history),
+                                    );
+                                  },
+                                  icon: const Icon(Icons.clear),
+                                )
+                              ],
+                            ),
+                          )
+                          .toList(),
+                      if (state.histories.isNotEmpty)
+                        TextButton(
+                            onPressed: () {
+                              viewModel.onEvent(
+                                  const MovieSearchEvent.deleteAllHistory());
+                            },
+                            child: const Text('기록 모두 삭제')),
                     ],
                   ),
                   firstPageErrorIndicatorBuilder: (context) =>

@@ -14,6 +14,8 @@ class GetSearchHistoriesUseCase implements UseCase<List<SearchHistory>, void> {
 
     return result.when(
       success: (historyList) {
+        historyList.sort((a, b) => -a.searchTime.millisecondsSinceEpoch
+            .compareTo(b.searchTime.millisecondsSinceEpoch));
         return Result.success(historyList);
       },
       error: (message) {

@@ -2,6 +2,7 @@
 import 'package:movie_search/data/data_source/local/movie_local_data_source.dart';
 import 'package:movie_search/data/data_source/local/person_local_data_source.dart';
 import 'package:movie_search/data/data_source/local/review_local_data_source.dart';
+import 'package:movie_search/data/data_source/local/search_history_local_data_source.dart';
 import 'package:movie_search/data/data_source/remote/movie_remote_data_source.dart';
 import 'package:movie_search/data/repository/bookmark_data/bookmark_movie_repository_impl.dart';
 import 'package:movie_search/data/repository/bookmark_data/bookmark_person_repository_impl.dart';
@@ -13,9 +14,11 @@ import 'package:movie_search/data/repository/movie_data/movie_detail_data_reposi
 import 'package:movie_search/data/repository/movie_data/person_data_repository_impl.dart';
 import 'package:movie_search/data/repository/movie_data/video_data_repository_impl.dart';
 import 'package:movie_search/data/repository/review/review_data_repository_impl.dart';
+import 'package:movie_search/data/repository/search_history/search_history_repository_impl.dart';
 import 'package:movie_search/domain/model/movie/movie.dart';
 import 'package:movie_search/domain/model/person/person.dart';
 import 'package:movie_search/domain/repository/review_data_repository.dart';
+import 'package:movie_search/domain/repository/search_history_repository.dart';
 import 'package:movie_search/domain/usecase/bookmark/delete_bookmark_data_use_case.dart';
 import 'package:movie_search/domain/usecase/bookmark/find_bookmark_data_use_case.dart';
 import 'package:movie_search/domain/usecase/bookmark/get_bookmark_datas_use_case.dart';
@@ -35,6 +38,11 @@ import 'package:movie_search/domain/usecase/review/delete_review_use_case.dart';
 import 'package:movie_search/domain/usecase/review/get_review_by_movie_use_case.dart';
 import 'package:movie_search/domain/usecase/review/get_reviews_use_case.dart';
 import 'package:movie_search/domain/usecase/review/update_review_use_case.dart';
+import 'package:movie_search/domain/usecase/search_history/delete_all_histories_use_case.dart';
+import 'package:movie_search/domain/usecase/search_history/delete_search_history_use_case.dart';
+import 'package:movie_search/domain/usecase/search_history/get_search_histories_use_case.dart';
+import 'package:movie_search/domain/usecase/search_history/save_search_history_use_case.dart';
+import 'package:movie_search/domain/usecase/search_history/search_history_use_cases.dart';
 import 'package:movie_search/domain/usecase/video/get_video_with_movie_use_case.dart';
 import 'package:movie_search/presentation/movie_bookmark/movie_bookmark_view_model.dart';
 import 'package:movie_search/presentation/movie_home/movie_home_view_model.dart';
@@ -65,8 +73,15 @@ Future<List<SingleChildWidget>> setProvider() async {
     Provider<ReviewLocalDataSource>(
       create: (context) => ReviewLocalDataSource(db!),
     ),
+    Provider<SearchHistoryLocalDataSource>(
+      create: (context) => SearchHistoryLocalDataSource(box!),
+    ),
 
     // 레포지토리
+    ProxyProvider<SearchHistoryLocalDataSource, SearchHistoryRepository>(
+      update: (context, dataSource, _) =>
+          SearchHistoryRepositoryImpl(dataSource),
+    ),
     ProxyProvider<ReviewLocalDataSource, ReviewDataRepository>(
       update: (context, dataSource, _) => ReviewDataRepositoryImple(dataSource),
     ),
@@ -101,6 +116,20 @@ Future<List<SingleChildWidget>> setProvider() async {
     ),
 
     // 유스케이스
+    // 검색 기록 유스케이스
+    ProxyProvider<SearchHistoryRepository, GetSearchHistoriesUseCase>(
+      update: (context, repository, _) => GetSearchHistoriesUseCase(repository),
+    ),
+    ProxyProvider<SearchHistoryRepository, DeleteSearchHistoryUseCase>(
+      update: (context, repository, _) =>
+          DeleteSearchHistoryUseCase(repository),
+    ),
+    ProxyProvider<SearchHistoryRepository, DeleteAllHistoryUseCase>(
+      update: (context, repository, _) => DeleteAllHistoryUseCase(repository),
+    ),
+    ProxyProvider<SearchHistoryRepository, SaveSearchHistoryUseCase>(
+      update: (context, repository, _) => SaveSearchHistoryUseCase(repository),
+    ),
     // 리뷰 유스케이스
     ProxyProvider<ReviewDataRepository, GetReviewByMovieUseCase>(
       update: (context, repository, _) => GetReviewByMovieUseCase(repository),
@@ -207,6 +236,13 @@ Future<List<SingleChildWidget>> setProvider() async {
     ChangeNotifierProvider(
       create: (context) => MovieSearchViewModel(
         context.read<GetMovieWithQueryUseCase>(),
+        SearchHistoryUseCases(
+          saveSearchHistoryUseCase: context.read<SaveSearchHistoryUseCase>(),
+          getSearchHistoriesUseCase: context.read<GetSearchHistoriesUseCase>(),
+          deleteSearchHistoryUseCase:
+              context.read<DeleteSearchHistoryUseCase>(),
+          deleteAllHistoryUseCase: context.read<DeleteAllHistoryUseCase>(),
+        ),
       ),
     ),
     ChangeNotifierProvider(

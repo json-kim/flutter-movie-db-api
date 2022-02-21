@@ -12,9 +12,10 @@ class HiveService {
 
   Future<void> init() async {
     await Hive.initFlutter();
-    await Hive.deleteFromDisk();
+    // await Hive.deleteFromDisk(); // TODO: 삭제 코드 (임시)
     Hive.registerAdapter(SearchHistoryDbEntityAdapter());
 
     _searchBox = await Hive.openBox<SearchHistoryDbEntity>('search_history');
+    // _searchBox?.clear(); // 박스 값들 삭제
   }
 }
