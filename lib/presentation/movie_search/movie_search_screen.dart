@@ -29,6 +29,7 @@ class MovieSearchScreen extends StatefulWidget {
 class _MovieSearchScreenState extends State<MovieSearchScreen>
     with AutomaticKeepAliveClientMixin {
   final TextEditingController _textEditingController = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
   Timer? _debounce;
 
   @override
@@ -47,6 +48,9 @@ class _MovieSearchScreenState extends State<MovieSearchScreen>
 
   @override
   void initState() {
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {}
+    });
     super.initState();
   }
 
@@ -62,135 +66,148 @@ class _MovieSearchScreenState extends State<MovieSearchScreen>
     final viewModel = context.watch<MovieSearchViewModel>();
     final state = viewModel.state;
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: const Text('영화 검색'),
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              autofocus: false,
-              style: const TextStyle(color: whiteColor),
-              controller: _textEditingController,
-              cursorColor: whiteColor,
-              decoration: InputDecoration(
-                focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: whiteColor)),
-                enabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: whiteColor)),
-                suffixIcon: IconButton(
-                  icon: const Text(
-                    '검색',
-                  ),
-                  onPressed: () {
-                    final query = _textEditingController.text;
+    return SafeArea(
+      bottom: false,
+      child: Scaffold(
+        body: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                color: Colors.black.withOpacity(0.3),
+                child: TextField(
+                  autofocus: false,
+                  style: const TextStyle(color: whiteColor),
+                  controller: _textEditingController,
+                  cursorColor: whiteColor,
+                  onSubmitted: (query) {
                     viewModel.onEvent(MovieSearchEvent.search(query: query));
                     viewModel.onEvent(MovieSearchEvent.saveHistory(query));
                   },
-                ),
-              ),
-              onChanged: (value) => onQueryChanged(
-                searchMovie: (query) {
-                  viewModel.onEvent(MovieSearchEvent.search(query: query));
-                },
-                query: value,
-              ),
-            ),
-          ),
-          Expanded(
-            child: RefreshIndicator(
-              child: PagedGridView(
-                pagingController: viewModel.pagingController,
-                builderDelegate: PagedChildBuilderDelegate<Movie>(
-                  noItemsFoundIndicatorBuilder: (context) => Column(
-                    children: [
-                      const Text('검색 기록'),
-                      ...state.histories
-                          .map(
-                            (history) => Row(
-                              children: [
-                                IconButton(
-                                  onPressed: () {
-                                    _textEditingController.text =
-                                        history.content;
-                                    viewModel.onEvent(
-                                      MovieSearchEvent.search(
-                                          query: history.content),
-                                    );
-                                  },
-                                  icon: const Icon(Icons.history),
-                                ),
-                                Expanded(child: Text(history.content)),
-                                IconButton(
-                                  onPressed: () {
-                                    viewModel.onEvent(
-                                      MovieSearchEvent.deleteHistory(history),
-                                    );
-                                  },
-                                  icon: const Icon(Icons.clear),
-                                )
-                              ],
-                            ),
-                          )
-                          .toList(),
-                      if (state.histories.isNotEmpty)
-                        TextButton(
-                            onPressed: () {
-                              viewModel.onEvent(
-                                  const MovieSearchEvent.deleteAllHistory());
-                            },
-                            child: const Text('기록 모두 삭제')),
-                    ],
-                  ),
-                  firstPageErrorIndicatorBuilder: (context) =>
-                      const Center(child: Text('검색 실패')),
-                  newPageErrorIndicatorBuilder: (context) =>
-                      const Center(child: Text('검색 실패')),
-                  itemBuilder: (context, movie, index) => MovieDataCard(
-                    url: movie.posterPath == null
-                        ? null
-                        : kPosterUrl + movie.posterPath!,
-                    title: movie.title,
-                    titleColor: Colors.white,
-                    onCardTap: () {
-                      Navigator.of(
-                              NavigatorKey.navigatorKeyMain.currentContext!)
-                          .push(
-                        MaterialPageRoute(
-                          builder: (context) => ChangeNotifierProvider(
-                            create: (context) => MovieDetailViewModel(
-                              context.read<GetMovieDetailUseCase>(),
-                              context.read<FindBookmarkDataUseCase<Movie>>(),
-                              context.read<SaveBookmarkDataUseCase<Movie>>(),
-                              context.read<DeleteBookmarkDataUseCase<Movie>>(),
-                              context.read<GetReviewByMovieUseCase>(),
-                              context.read<DeleteReviewUseCase>(),
-                              movieId: movie.id,
-                            ),
-                            child: const MovieDetailScreen(),
-                          ),
+                  decoration: InputDecoration(
+                      border: InputBorder.none,
+                      suffixIcon: IconButton(
+                        icon: const Icon(
+                          Icons.cancel,
+                          color: Colors.grey,
                         ),
-                      );
+                        onPressed: () {
+                          final query = _textEditingController.text = '';
+                          onQueryChanged(
+                            searchMovie: (query) {
+                              viewModel.onEvent(
+                                  MovieSearchEvent.search(query: query));
+                            },
+                            query: query,
+                          );
+                        },
+                      ),
+                      prefixIcon: const Icon(
+                        Icons.search,
+                        color: Colors.grey,
+                      ),
+                      hintText: '영화 제목 검색'),
+                  onChanged: (value) => onQueryChanged(
+                    searchMovie: (query) {
+                      viewModel.onEvent(MovieSearchEvent.search(query: query));
                     },
+                    query: value,
                   ),
                 ),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  mainAxisSpacing: 8,
-                  crossAxisSpacing: 8,
-                  childAspectRatio: 0.5,
-                ),
               ),
-              onRefresh: () async {
-                viewModel.pagingController.refresh();
-              },
             ),
-          ),
-        ],
+            Expanded(
+              child: RefreshIndicator(
+                child: PagedGridView(
+                  pagingController: viewModel.pagingController,
+                  builderDelegate: PagedChildBuilderDelegate<Movie>(
+                    noItemsFoundIndicatorBuilder: (context) => Column(
+                      children: [
+                        const Text('검색 기록'),
+                        ...state.histories
+                            .map(
+                              (history) => Row(
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      _textEditingController.text =
+                                          history.content;
+                                      viewModel.onEvent(
+                                        MovieSearchEvent.search(
+                                            query: history.content),
+                                      );
+                                    },
+                                    icon: const Icon(Icons.history),
+                                  ),
+                                  Expanded(child: Text(history.content)),
+                                  IconButton(
+                                    onPressed: () {
+                                      viewModel.onEvent(
+                                        MovieSearchEvent.deleteHistory(history),
+                                      );
+                                    },
+                                    icon: const Icon(Icons.clear),
+                                  )
+                                ],
+                              ),
+                            )
+                            .toList(),
+                        if (state.histories.isNotEmpty)
+                          TextButton(
+                              onPressed: () {
+                                viewModel.onEvent(
+                                    const MovieSearchEvent.deleteAllHistory());
+                              },
+                              child: const Text('기록 모두 삭제')),
+                      ],
+                    ),
+                    firstPageErrorIndicatorBuilder: (context) =>
+                        const Center(child: Text('검색 실패')),
+                    newPageErrorIndicatorBuilder: (context) =>
+                        const Center(child: Text('검색 실패')),
+                    itemBuilder: (context, movie, index) => MovieDataCard(
+                      url: movie.posterPath == null
+                          ? null
+                          : kPosterUrl + movie.posterPath!,
+                      title: movie.title,
+                      titleColor: Colors.white,
+                      onCardTap: () {
+                        Navigator.of(
+                                NavigatorKey.navigatorKeyMain.currentContext!)
+                            .push(
+                          MaterialPageRoute(
+                            builder: (context) => ChangeNotifierProvider(
+                              create: (context) => MovieDetailViewModel(
+                                context.read<GetMovieDetailUseCase>(),
+                                context.read<FindBookmarkDataUseCase<Movie>>(),
+                                context.read<SaveBookmarkDataUseCase<Movie>>(),
+                                context
+                                    .read<DeleteBookmarkDataUseCase<Movie>>(),
+                                context.read<GetReviewByMovieUseCase>(),
+                                context.read<DeleteReviewUseCase>(),
+                                movieId: movie.id,
+                              ),
+                              child: const MovieDetailScreen(),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    mainAxisSpacing: 8,
+                    crossAxisSpacing: 8,
+                    childAspectRatio: 0.5,
+                  ),
+                ),
+                onRefresh: () async {
+                  viewModel.pagingController.refresh();
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
