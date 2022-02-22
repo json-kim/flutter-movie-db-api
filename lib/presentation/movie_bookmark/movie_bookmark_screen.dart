@@ -85,162 +85,173 @@ class _MovieBookmarkScreenState extends State<MovieBookmarkScreen>
         controller: _tabController,
         children: [
           // 영화 북마크 탭바뷰
-          GridView.builder(
-            padding: const EdgeInsets.all(8),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              childAspectRatio: 1 / 1.8,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
+          RefreshIndicator(
+            onRefresh: () async {},
+            child: GridView.builder(
+              padding: const EdgeInsets.all(8),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                childAspectRatio: 1 / 1.8,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+              ),
+              itemCount: state.bookmarkMovies.length,
+              itemBuilder: (context, idx) {
+                final movie = state.bookmarkMovies[idx];
+                return MovieDataCard(
+                    url: movie.posterPath == null
+                        ? null
+                        : kPosterUrl + movie.posterPath!,
+                    title: movie.title,
+                    titleColor: Colors.white,
+                    onCardTap: () {
+                      Navigator.of(
+                              NavigatorKey.navigatorKeyMain.currentContext!)
+                          .push(
+                            MaterialPageRoute(
+                              builder: (context) => ChangeNotifierProvider(
+                                create: (context) => MovieDetailViewModel(
+                                    context.read<GetMovieDetailUseCase>(),
+                                    context
+                                        .read<FindBookmarkDataUseCase<Movie>>(),
+                                    context
+                                        .read<SaveBookmarkDataUseCase<Movie>>(),
+                                    context.read<
+                                        DeleteBookmarkDataUseCase<Movie>>(),
+                                    context.read<GetReviewByMovieUseCase>(),
+                                    context.read<DeleteReviewUseCase>(),
+                                    movieId: movie.id),
+                                child: const MovieDetailScreen(),
+                              ),
+                            ),
+                          )
+                          .then((_) => viewModel
+                              .onEvent(const MovieBookmarkEvent.load()));
+                    });
+              },
             ),
-            itemCount: state.bookmarkMovies.length,
-            itemBuilder: (context, idx) {
-              final movie = state.bookmarkMovies[idx];
-              return MovieDataCard(
-                  url: movie.posterPath == null
+          ),
+
+          // 인물 북마크 탭바 뷰
+          RefreshIndicator(
+            onRefresh: () async {},
+            child: GridView.builder(
+              padding: const EdgeInsets.all(8),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                childAspectRatio: 1 / 1.8,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+              ),
+              itemCount: state.bookmarkPerson.length,
+              itemBuilder: (context, idx) {
+                final person = state.bookmarkPerson[idx];
+                return PersonDataCard(
+                  url: person.profilePath == null
                       ? null
-                      : kPosterUrl + movie.posterPath!,
-                  title: movie.title,
+                      : kProfileUrl + person.profilePath!,
+                  title: person.name,
                   titleColor: Colors.white,
                   onCardTap: () {
-                    Navigator.of(NavigatorKey.navigatorKeyMain.currentContext!)
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChangeNotifierProvider(
+                          create: (context) => PersonDetailViewModel(
+                            person.id,
+                            context.read<GetPersonDetailUseCase>(),
+                            context.read<GetCastWithPersonUseCase>(),
+                            context.read<FindBookmarkDataUseCase<Person>>(),
+                            context.read<SaveBookmarkDataUseCase<Person>>(),
+                            context.read<DeleteBookmarkDataUseCase<Person>>(),
+                          ),
+                          child: const PersonDetailScreen(),
+                        ),
+                      ),
+                    ).then((_) =>
+                        viewModel.onEvent(const MovieBookmarkEvent.load()));
+                  },
+                );
+              },
+            ),
+          ),
+
+          // 리뷰 탭바 뷰
+          RefreshIndicator(
+            onRefresh: () async {},
+            child: ListView.builder(
+              itemCount: state.reviews.length,
+              itemBuilder: (context, idx) {
+                final review = state.reviews[idx];
+
+                return InkWell(
+                  onTap: () async {
+                    await Navigator.of(context)
                         .push(
                           MaterialPageRoute(
                             builder: (context) => ChangeNotifierProvider(
-                              create: (context) => MovieDetailViewModel(
-                                  context.read<GetMovieDetailUseCase>(),
-                                  context
-                                      .read<FindBookmarkDataUseCase<Movie>>(),
-                                  context
-                                      .read<SaveBookmarkDataUseCase<Movie>>(),
-                                  context
-                                      .read<DeleteBookmarkDataUseCase<Movie>>(),
-                                  context.read<GetReviewByMovieUseCase>(),
-                                  context.read<DeleteReviewUseCase>(),
-                                  movieId: movie.id),
-                              child: const MovieDetailScreen(),
+                              create: (context) => ReviewEditViewModel(
+                                context.read<CreateReviewUseCase>(),
+                                context.read<GetReviewByMovieUseCase>(),
+                                review: review,
+                                isEditMode: false,
+                              ),
+                              child: ReviewEditScreen(),
                             ),
                           ),
                         )
                         .then((_) =>
                             viewModel.onEvent(const MovieBookmarkEvent.load()));
-                  });
-            },
-          ),
+                  },
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          review.posterPath == null
+                              ? Image.asset(
+                                  'asset/image/poster_placeholder.png')
+                              : CachedNetworkImage(
+                                  imageUrl: kPosterUrl + review.posterPath!,
+                                  width: 80,
+                                  fit: BoxFit.cover,
+                                ),
+                          Expanded(
+                              child: Column(
+                            children: [
+                              // 타이틀
+                              Text(review.movieTitle),
+                              const SizedBox(height: 10),
 
-          // 인물 북마크 탭바 뷰
-          GridView.builder(
-            padding: const EdgeInsets.all(8),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              childAspectRatio: 1 / 1.8,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
-            ),
-            itemCount: state.bookmarkPerson.length,
-            itemBuilder: (context, idx) {
-              final person = state.bookmarkPerson[idx];
-              return PersonDataCard(
-                url: person.profilePath == null
-                    ? null
-                    : kProfileUrl + person.profilePath!,
-                title: person.name,
-                titleColor: Colors.white,
-                onCardTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ChangeNotifierProvider(
-                        create: (context) => PersonDetailViewModel(
-                          person.id,
-                          context.read<GetPersonDetailUseCase>(),
-                          context.read<GetCastWithPersonUseCase>(),
-                          context.read<FindBookmarkDataUseCase<Person>>(),
-                          context.read<SaveBookmarkDataUseCase<Person>>(),
-                          context.read<DeleteBookmarkDataUseCase<Person>>(),
-                        ),
-                        child: const PersonDetailScreen(),
-                      ),
-                    ),
-                  ).then((_) =>
-                      viewModel.onEvent(const MovieBookmarkEvent.load()));
-                },
-              );
-            },
-          ),
-
-          // 리뷰 탭바 뷰
-          ListView.builder(
-            itemCount: state.reviews.length,
-            itemBuilder: (context, idx) {
-              final review = state.reviews[idx];
-
-              return InkWell(
-                onTap: () async {
-                  await Navigator.of(context)
-                      .push(
-                        MaterialPageRoute(
-                          builder: (context) => ChangeNotifierProvider(
-                            create: (context) => ReviewEditViewModel(
-                              context.read<CreateReviewUseCase>(),
-                              context.read<GetReviewByMovieUseCase>(),
-                              review: review,
-                              isEditMode: false,
-                            ),
-                            child: ReviewEditScreen(),
-                          ),
-                        ),
-                      )
-                      .then((_) =>
-                          viewModel.onEvent(const MovieBookmarkEvent.load()));
-                },
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        review.posterPath == null
-                            ? Image.asset('asset/image/poster_placeholder.png')
-                            : CachedNetworkImage(
-                                imageUrl: kPosterUrl + review.posterPath!,
-                                width: 80,
-                                fit: BoxFit.cover,
+                              // 내용
+                              Text(
+                                review.content,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
                               ),
-                        Expanded(
-                            child: Column(
-                          children: [
-                            // 타이틀
-                            Text(review.movieTitle),
-                            const SizedBox(height: 10),
+                              const SizedBox(height: 10),
 
-                            // 내용
-                            Text(
-                              review.content,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 2,
-                            ),
-                            const SizedBox(height: 10),
-
-                            // 별점
-                            RatingStars(
-                              starCount: 5,
-                              starSize: 30,
-                              starSpacing: 10,
-                              value: review.starRating,
-                              valueLabelVisibility: false,
-                            ),
-                          ],
-                        )),
-                      ],
-                    ),
-                    const Divider(
-                      height: 7,
-                      color: whiteColor,
-                      thickness: 0.5,
-                    ),
-                  ],
-                ),
-              );
-            },
+                              // 별점
+                              RatingStars(
+                                starCount: 5,
+                                starSize: 30,
+                                starSpacing: 10,
+                                value: review.starRating,
+                                valueLabelVisibility: false,
+                              ),
+                            ],
+                          )),
+                        ],
+                      ),
+                      const Divider(
+                        height: 7,
+                        color: whiteColor,
+                        thickness: 0.5,
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
           ),
         ],
       ),

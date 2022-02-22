@@ -147,11 +147,18 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
             ),
             body: CustomScrollView(
               slivers: [
+                // 앱바 (뒤로가기 버튼, 토글 버튼, 닫기 버튼)
                 _buildAppBar(size, movieDetail, state.isBookmarked, () {
+                  if (state.isToggle) {
+                    return;
+                  }
+
                   viewModel.onEvent(const MovieDetailEvent.toggleBookmark());
                 }),
+
                 // 영화 정보
                 _buildMovieInfoBar(movieDetail),
+
                 // 배우 제작진
                 ChangeNotifierProvider(
                     create: (context) => DataListViewModel<Credit, Param>(
@@ -159,6 +166,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                           Param.creditWithMovie(viewModel.movieId),
                         ),
                     child: const CreditSliverList()),
+
                 // 관련 영상
                 ChangeNotifierProvider(
                     create: (context) => DataListViewModel<Video, Param>(
@@ -166,6 +174,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                           Param.videoWithMovie(viewModel.movieId),
                         ),
                     child: const VideoSliverList()),
+
                 // 비슷한 영화
                 const SliverToBoxAdapter(
                   child: Padding(

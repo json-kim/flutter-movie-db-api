@@ -9,6 +9,7 @@ part 'movie_detail_state.freezed.dart';
 class MovieDetailState with _$MovieDetailState {
   const factory MovieDetailState({
     Review? review,
+    @Default(false) bool isToggle,
     @Default(null) MovieDetail? movieDetail,
     @Default([]) List<Credit> credits,
     @Default(false) bool isBookmarked,

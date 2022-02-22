@@ -37,6 +37,9 @@ class PersonDetailViewModel with ChangeNotifier {
   }
 
   Future<void> _toggleBookmark() async {
+    _state = _state.copyWith(isToggle: true);
+    notifyListeners();
+
     final person = _state.person;
 
     if (person == null) {
@@ -58,6 +61,8 @@ class PersonDetailViewModel with ChangeNotifier {
     }
 
     await _loadBookmarkData();
+    _state = _state.copyWith(isToggle: false);
+    notifyListeners();
   }
 
   Future<int> _saveBookmarkData(Person person) async {

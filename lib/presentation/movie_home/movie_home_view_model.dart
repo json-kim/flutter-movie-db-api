@@ -4,6 +4,7 @@ import 'package:movie_search/domain/usecase/genre/get_genre_use_case.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_now_playing_use_case.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_popular_use_case.dart';
 
+import 'movie_home_event.dart';
 import 'movie_home_state.dart';
 
 class MovieHomeViewModel with ChangeNotifier {
@@ -19,12 +20,18 @@ class MovieHomeViewModel with ChangeNotifier {
     this._getMovieNowPlayingUseCase,
     this._getGenreUseCase,
   ) {
-    loadNowPlayingMovies();
-    loadPopularMovies();
-    loadGenres();
+    _loadNowPlayingMovies();
+    _loadGenres();
   }
 
-  Future<void> loadNowPlayingMovies() async {
+  void onEvent(MovieHomeEvent event) {
+    event.when(load: () {
+      _loadNowPlayingMovies();
+      _loadGenres();
+    });
+  }
+
+  Future<void> _loadNowPlayingMovies() async {
     _state = _state.copyWith(isLoading: true);
     notifyListeners();
 
@@ -41,19 +48,7 @@ class MovieHomeViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> loadPopularMovies() async {
-    final result = await _getMoviePopularUseCase(const Param.moviePopular());
-
-    result.when(
-        success: (page) {
-          _state = _state.copyWith(popularMovies: page.items);
-        },
-        error: (message) {});
-
-    notifyListeners();
-  }
-
-  Future<void> loadGenres() async {
+  Future<void> _loadGenres() async {
     final result = await _getGenreUseCase(const Param.genres());
 
     result.when(

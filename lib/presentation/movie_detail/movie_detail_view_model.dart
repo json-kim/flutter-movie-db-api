@@ -58,6 +58,9 @@ class MovieDetailViewModel with ChangeNotifier {
   }
 
   Future<void> _toggleBookmark() async {
+    _state = _state.copyWith(isToggle: true);
+    notifyListeners();
+
     final movieDetail = _state.movieDetail;
 
     if (movieDetail == null) {
@@ -80,6 +83,8 @@ class MovieDetailViewModel with ChangeNotifier {
     }
 
     await _loadBookmarkData();
+    _state = _state.copyWith(isToggle: false);
+    notifyListeners();
   }
 
   Future<int> _saveBookmarkData(Movie movie) async {

@@ -9,6 +9,7 @@ class PersonDetailState with _$PersonDetailState {
   const factory PersonDetailState({
     Person? person,
     @Default([]) List<Cast> casts,
+    @Default(false) bool isToggle,
     @Default(false) bool isBookmarked,
     @Default(false) bool isLoading,
   }) = _PersonDetailState;
