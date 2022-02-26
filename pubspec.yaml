@@ -54,6 +54,8 @@ dependencies:
   firebase_core: ^1.12.0
   google_sign_in: ^5.2.4
   flutter_signin_button: ^2.0.0
+  crypto: ^3.0.1
+  sign_in_with_apple: ^3.3.0
 
 
 
