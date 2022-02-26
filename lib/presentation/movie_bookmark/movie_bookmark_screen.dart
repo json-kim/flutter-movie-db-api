@@ -23,6 +23,7 @@ import 'package:movie_search/presentation/person_detail/person_detail_screen.dar
 import 'package:movie_search/presentation/person_detail/person_detail_view_model.dart';
 import 'package:movie_search/presentation/review_edit/review_edit_screen.dart';
 import 'package:movie_search/presentation/review_edit/review_edit_view_model.dart';
+import 'package:movie_search/service/google_sign_in_service.dart';
 import 'package:movie_search/ui/navigator_key.dart';
 import 'package:movie_search/ui/theme.dart';
 import 'package:provider/provider.dart';
@@ -79,6 +80,13 @@ class _MovieBookmarkScreenState extends State<MovieBookmarkScreen>
             ),
           ],
         ),
+        actions: [
+          IconButton(
+              onPressed: () {
+                GoogleSignInService.instance.signOutWithGoogle();
+              },
+              icon: const Icon(Icons.logout))
+        ],
       ),
       body: TabBarView(
         physics: const NeverScrollableScrollPhysics(),

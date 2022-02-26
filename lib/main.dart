@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:movie_search/core/di/dependency_injection.dart';
@@ -9,9 +10,11 @@ import 'package:movie_search/ui/navigator_key.dart';
 import 'package:provider/provider.dart';
 
 import 'core/http_override.dart';
+import 'presentation/auth_gate.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   HttpOverrides.global = MyHttpOverrides();
   final globalProviders = await setProvider();
 
@@ -43,7 +46,7 @@ class MyApp extends StatelessWidget {
           appBarTheme: const AppBarTheme(
               backgroundColor: Colors.transparent, elevation: 0)),
       darkTheme: ThemeData.dark(),
-      home: const MovieTabScreen(),
+      home: const AuthGate(),
     );
   }
 }

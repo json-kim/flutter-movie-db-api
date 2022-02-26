@@ -3,6 +3,7 @@ import 'package:movie_search/core/util/constants.dart';
 
 part 'param.freezed.dart';
 
+// 각 api 요청에 따른 파라미터를 SealedClass방식으로 when 분기에 따라 알맞을 uri을 생성하도록 구현했습니다.
 @freezed
 class Param with _$Param {
   const factory Param.genres() = Genres;
@@ -42,6 +43,7 @@ class Param with _$Param {
   const factory Param.castWithPerson(int personId) = CastWithPerson;
 }
 
+// Param의 타입에 따라 when 분기문 수행
 String paramToUrl(Param param, String language) {
   return param.when<String>(
     genres: () =>

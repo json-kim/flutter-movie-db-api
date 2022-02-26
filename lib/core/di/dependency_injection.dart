@@ -44,6 +44,7 @@ import 'package:movie_search/domain/usecase/search_history/get_search_histories_
 import 'package:movie_search/domain/usecase/search_history/save_search_history_use_case.dart';
 import 'package:movie_search/domain/usecase/search_history/search_history_use_cases.dart';
 import 'package:movie_search/domain/usecase/video/get_video_with_movie_use_case.dart';
+import 'package:movie_search/presentation/auth/auth_view_model.dart';
 import 'package:movie_search/presentation/movie_bookmark/movie_bookmark_view_model.dart';
 import 'package:movie_search/presentation/movie_home/movie_home_view_model.dart';
 import 'package:movie_search/presentation/movie_search/movie_search_view_model.dart';
@@ -251,6 +252,9 @@ Future<List<SingleChildWidget>> setProvider() async {
         context.read<GetBookmarkDatasUseCase<Person>>(),
         context.read<GetReviewsUseCase>(),
       ),
+    ),
+    ChangeNotifierProvider(
+      create: (context) => AuthViewModel(),
     ),
   ];
 

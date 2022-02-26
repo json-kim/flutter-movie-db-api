@@ -52,6 +52,11 @@ class MovieDetailViewModel with ChangeNotifier {
 
   void onEvent(MovieDetailEvent event) {
     event.when(
+        load: () {
+          _loadReview();
+          _loadMovieDetail();
+          _loadBookmarkData();
+        },
         toggleBookmark: _toggleBookmark,
         loadReview: _loadReview,
         deleteReview: _deleteReview);

@@ -48,3 +48,5 @@ app.*.map.json
 
 *.g.dart
 *.freezed.dart
+
+ios/GoogleService-Info.plist
