@@ -56,6 +56,8 @@ dependencies:
   flutter_signin_button: ^2.0.0
   crypto: ^3.0.1
   sign_in_with_apple: ^3.3.0
+  youtube_player_iframe: ^2.2.2
+
 
 
 

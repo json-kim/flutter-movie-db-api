@@ -9,6 +9,17 @@ import 'package:movie_search/presentation/auth/auth_event.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class AuthViewModel with ChangeNotifier {
+  UserCredential? _userCredential;
+
+  User? get user {
+    return _userCredential?.user ?? FirebaseAuth.instance.currentUser;
+  }
+
+  String? get email => user?.email;
+  String? get displayName => user?.displayName;
+  String? get phoneNumber => user?.phoneNumber;
+  String? get photoUrl => user?.photoURL;
+
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
@@ -46,7 +57,7 @@ class AuthViewModel with ChangeNotifier {
     );
 
     // Once signed in, return the UserCredential
-    final userCredential =
+    _userCredential =
         await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
@@ -70,12 +81,13 @@ class AuthViewModel with ChangeNotifier {
     // Create an `OAuthCredential` from the credential returned by Apple.
     final oauthCredential = OAuthProvider("apple.com").credential(
       idToken: appleCredential.identityToken,
+      accessToken: appleCredential.authorizationCode,
       rawNonce: rawNonce,
     );
 
     // Sign in the user with Firebase. If the nonce we generated earlier does
     // not match the nonce in `appleCredential.identityToken`, sign in will fail.
-    final userCredential =
+    _userCredential =
         await FirebaseAuth.instance.signInWithCredential(oauthCredential);
   }
 
@@ -102,5 +114,6 @@ class AuthViewModel with ChangeNotifier {
 
   Future<void> _signOut() async {
     await FirebaseAuth.instance.signOut();
+    _userCredential = null;
   }
 }

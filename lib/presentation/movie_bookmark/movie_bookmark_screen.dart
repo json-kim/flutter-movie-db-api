@@ -23,10 +23,13 @@ import 'package:movie_search/presentation/person_detail/person_detail_screen.dar
 import 'package:movie_search/presentation/person_detail/person_detail_view_model.dart';
 import 'package:movie_search/presentation/review_edit/review_edit_screen.dart';
 import 'package:movie_search/presentation/review_edit/review_edit_view_model.dart';
+import 'package:movie_search/presentation/user/user_view_model.dart';
 import 'package:movie_search/service/google_sign_in_service.dart';
 import 'package:movie_search/ui/navigator_key.dart';
 import 'package:movie_search/ui/theme.dart';
 import 'package:provider/provider.dart';
+
+import '../auth/auth_view_model.dart';
 
 class MovieBookmarkScreen extends StatefulWidget {
   const MovieBookmarkScreen({Key? key}) : super(key: key);
@@ -58,12 +61,13 @@ class _MovieBookmarkScreenState extends State<MovieBookmarkScreen>
 
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<AuthViewModel>();
     final viewModel = context.watch<MovieBookmarkViewModel>();
     final state = viewModel.state;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('마이 노트'),
+        title: Text(user.displayName ?? (user.email ?? '마이 노트')),
         backgroundColor: Colors.transparent,
         elevation: 0,
         bottom: TabBar(

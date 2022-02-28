@@ -5,7 +5,7 @@ import 'package:movie_search/presentation/movie_detail/component/sliver_fixed_he
 import 'package:movie_search/presentation/movie_list/data_list_view_model.dart';
 import 'package:movie_search/ui/theme.dart';
 import 'package:provider/provider.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 class VideoSliverList extends StatelessWidget {
   const VideoSliverList({
@@ -51,19 +51,7 @@ class VideoSliverList extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Expanded(
-                                    child: InheritedYoutubePlayer(
-                                      controller: YoutubePlayerController(
-                                          initialVideoId: state.data[idx].key,
-                                          flags: const YoutubePlayerFlags(
-                                              enableCaption: true,
-                                              captionLanguage: 'ko',
-                                              autoPlay: false,
-                                              loop: false,
-                                              disableDragSeek: true)),
-                                      child: YoutubeCard(
-                                        video: state.data[idx],
-                                      ),
-                                    ),
+                                    child: YoutubeCard(video: state.data[idx]),
                                   ),
                                   Text(
                                     state.data[idx].name,
@@ -96,17 +84,21 @@ class YoutubeCard extends StatefulWidget {
 
 class _YoutubeCardState extends State<YoutubeCard> {
   bool isExpand = false;
+  late YoutubePlayerController _controller;
 
   @override
   void initState() {
-    // youtubePlayerController = YoutubePlayerController(
-    //     initialVideoId: widget.video.key,
-    //     flags: const YoutubePlayerFlags(
-    //         enableCaption: true,
-    //         captionLanguage: 'ko',
-    //         autoPlay: false,
-    //         loop: false,
-    //         disableDragSeek: true));
+    _controller = YoutubePlayerController(
+      initialVideoId: widget.video.key,
+      params: YoutubePlayerParams(
+        startAt: Duration(seconds: 0),
+        showControls: true,
+        showFullscreenButton: true,
+        autoPlay: false,
+        showVideoAnnotations: false,
+      ),
+    );
+
     super.initState();
   }
 
@@ -118,87 +110,12 @@ class _YoutubeCardState extends State<YoutubeCard> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = YoutubePlayerController.of(context)!;
     return Container(
       alignment: Alignment.center,
-      child: YoutubePlayer(
-        controller: controller,
-        bottomActions: [
-          CurrentPosition(),
-          ProgressBar(
-            isExpanded: true,
-          ),
-          RemainingDuration(),
-          InkWell(
-            onTap: () async {
-              final metaData = await Navigator.of(context)
-                  .push<YoutubeMetaData>(MaterialPageRoute(
-                      builder: (context) => Provider<YoutubePlayerController>(
-                            create: (_) => controller,
-                            child: FullScreen(
-                              video: widget.video,
-                              value: controller.value,
-                            ),
-                          )));
-              // if (metaData != null) {
-              //   controller.seekTo(metaData.duration);
-              // }
-              controller.play();
-            },
-            child: const Icon(Icons.fullscreen),
-          )
-        ],
-      ),
-    );
-  }
-}
-
-class FullScreen extends StatefulWidget {
-  final Video video;
-  final YoutubePlayerValue value;
-
-  const FullScreen({Key? key, required this.value, required this.video})
-      : super(key: key);
-
-  @override
-  State<FullScreen> createState() => _FullScreenState();
-}
-
-class _FullScreenState extends State<FullScreen> {
-  // late final YoutubePlayerController controller;
-  @override
-  void initState() {
-    // controller = YoutubePlayerController(initialVideoId: widget.video.key);
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final controller = Provider.of<YoutubePlayerController>(context);
-    return Scaffold(
-      backgroundColor: Colors.black,
-      extendBodyBehindAppBar: true,
-      body: Center(
-        child: YoutubePlayer(
-          onReady: () {
-            controller.play();
-          },
-          controller: controller,
-          bottomActions: [
-            CurrentPosition(),
-            ProgressBar(
-              isExpanded: true,
-            ),
-            RemainingDuration(),
-            InkWell(
-              onTap: () {
-                controller.pause();
-                Navigator.of(context).pop(controller.metadata);
-              },
-              child: const Icon(Icons.fullscreen_exit),
-            )
-          ],
-        ),
+      child: YoutubePlayerIFrame(
+        controller: _controller,
+        gestureRecognizers: {},
+        aspectRatio: 16 / 9,
       ),
     );
   }
