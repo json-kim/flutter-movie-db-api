@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:movie_search/domain/model/movie/movie.dart';
 import 'package:movie_search/domain/model/person/person.dart';
 import 'package:movie_search/domain/usecase/bookmark/get_bookmark_datas_use_case.dart';
+import 'package:movie_search/domain/usecase/bookmark/util/order_type.dart';
 import 'package:movie_search/domain/usecase/review/get_reviews_use_case.dart';
 import 'package:movie_search/presentation/movie_bookmark/movie_bookmark_event.dart';
 import 'package:movie_search/presentation/movie_bookmark/movie_bookmark_state.dart';
@@ -19,8 +20,10 @@ class MovieBookmarkViewModel with ChangeNotifier {
       this._getBookmarkPersonUseCase, this._getReviewsUseCase);
 
   void onEvent(MovieBookmarkEvent event) {
-    event.when(load: _load);
+    event.when(load: _load, orderChange: _orderChange);
   }
+
+  Future<void> _orderChange(OrderType orderType) async {}
 
   Future<void> _load(bool reset) async {
     _state = _state.copyWith(isLoading: true);

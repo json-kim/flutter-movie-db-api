@@ -7,6 +7,7 @@ import 'package:movie_search/domain/model/person/person.dart';
 import 'package:movie_search/domain/usecase/bookmark/delete_bookmark_data_use_case.dart';
 import 'package:movie_search/domain/usecase/bookmark/find_bookmark_data_use_case.dart';
 import 'package:movie_search/domain/usecase/bookmark/save_bookmark_data_use_case.dart';
+import 'package:movie_search/domain/usecase/bookmark/util/order_type.dart';
 import 'package:movie_search/domain/usecase/cast/get_cast_with_person_use_case.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_detail_use_case.dart';
 import 'package:movie_search/domain/usecase/person/get_person_detail_use_case.dart';
@@ -191,78 +192,185 @@ class _MovieBookmarkScreenState extends State<MovieBookmarkScreen>
           // 리뷰 탭바 뷰
           RefreshIndicator(
             onRefresh: () async {},
-            child: ListView.builder(
-              itemCount: state.reviews.length,
-              itemBuilder: (context, idx) {
-                final review = state.reviews[idx];
-
-                return InkWell(
-                  onTap: () async {
-                    await Navigator.of(context)
-                        .push(
-                          MaterialPageRoute(
-                            builder: (context) => ChangeNotifierProvider(
-                              create: (context) => ReviewEditViewModel(
-                                context.read<CreateReviewUseCase>(),
-                                context.read<GetReviewByMovieUseCase>(),
-                                review: review,
-                                isEditMode: false,
-                              ),
-                              child: ReviewEditScreen(),
-                            ),
-                          ),
-                        )
-                        .then((_) =>
-                            viewModel.onEvent(const MovieBookmarkEvent.load()));
-                  },
-                  child: Column(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
                     children: [
-                      Row(
-                        children: [
-                          review.posterPath == null
-                              ? Image.asset(
-                                  'asset/image/poster_placeholder.png')
-                              : CachedNetworkImage(
-                                  imageUrl: kPosterUrl + review.posterPath!,
-                                  width: 80,
-                                  fit: BoxFit.cover,
+                      Spacer(),
+                      GestureDetector(
+                        onTap: () async {
+                          final dialog = AlertDialog(
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('정렬 순서'),
+                                FittedBox(
+                                  child: Row(
+                                    children: [
+                                      Radio<String>(
+                                          value: 'OrderType.date',
+                                          groupValue: state
+                                              .orderType.runtimeType
+                                              .toString(),
+                                          onChanged: (value) {
+                                            if (value != null) {
+                                              viewModel.onEvent(
+                                                  MovieBookmarkEvent
+                                                      .orderChange(
+                                                          OrderType.date(
+                                                              true)));
+                                            }
+                                          }),
+                                      Text('날짜순'),
+                                      Radio<String>(
+                                          value: 'OrderType.rating',
+                                          groupValue: state
+                                              .orderType.runtimeType
+                                              .toString(),
+                                          onChanged: (value) {
+                                            if (value != null) {
+                                              viewModel.onEvent(
+                                                  MovieBookmarkEvent
+                                                      .orderChange(
+                                                          OrderType.rating(
+                                                              true)));
+                                            }
+                                          }),
+                                      Text('별점순'),
+                                      Radio<String>(
+                                          value: 'OrderType.title',
+                                          groupValue: state
+                                              .orderType.runtimeType
+                                              .toString(),
+                                          onChanged: (value) {
+                                            if (value != null) {
+                                              viewModel.onEvent(
+                                                  MovieBookmarkEvent
+                                                      .orderChange(
+                                                          OrderType.title(
+                                                              true)));
+                                            }
+                                          }),
+                                      Text('제목순'),
+                                    ],
+                                  ),
                                 ),
-                          Expanded(
-                              child: Column(
-                            children: [
-                              // 타이틀
-                              Text(review.movieTitle),
-                              const SizedBox(height: 10),
-
-                              // 내용
-                              Text(
-                                review.content,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 2,
-                              ),
-                              const SizedBox(height: 10),
-
-                              // 별점
-                              RatingStars(
-                                starCount: 5,
-                                starSize: 30,
-                                starSpacing: 10,
-                                value: review.starRating,
-                                valueLabelVisibility: false,
-                              ),
+                                Divider(
+                                  height: 0,
+                                  color: whiteColor,
+                                ),
+                              ],
+                            ),
+                            contentPadding: EdgeInsets.fromLTRB(24, 24, 24, 0),
+                            buttonPadding: EdgeInsets.zero,
+                            actionsPadding: EdgeInsets.zero,
+                            actions: [
+                              SizedBox(
+                                width: double.infinity,
+                                child: TextButton(
+                                    onPressed: () {},
+                                    child: Text(
+                                      '확인',
+                                      style: TextStyle(color: whiteColor),
+                                    )),
+                              )
                             ],
-                          )),
-                        ],
-                      ),
-                      const Divider(
-                        height: 7,
-                        color: whiteColor,
-                        thickness: 0.5,
+                          );
+                          final result = await showDialog(
+                              context: context, builder: (_) => dialog);
+                        },
+                        child: Row(
+                          children: [Text('정렬'), Icon(Icons.sort)],
+                        ),
                       ),
                     ],
                   ),
-                );
-              },
+                ),
+                Divider(height: 2, thickness: 0.5, color: whiteColor),
+
+                // 리뷰 리스트
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: state.reviews.length,
+                    itemBuilder: (context, idx) {
+                      final review = state.reviews[idx];
+
+                      return InkWell(
+                        onTap: () async {
+                          await Navigator.of(context)
+                              .push(
+                                MaterialPageRoute(
+                                  builder: (context) => ChangeNotifierProvider(
+                                    create: (context) => ReviewEditViewModel(
+                                      context.read<CreateReviewUseCase>(),
+                                      context.read<GetReviewByMovieUseCase>(),
+                                      review: review,
+                                      isEditMode: false,
+                                    ),
+                                    child: ReviewEditScreen(),
+                                  ),
+                                ),
+                              )
+                              .then((_) => viewModel
+                                  .onEvent(const MovieBookmarkEvent.load()));
+                        },
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                review.posterPath == null
+                                    ? Image.asset(
+                                        'asset/image/poster_placeholder.png')
+                                    : CachedNetworkImage(
+                                        imageUrl:
+                                            kPosterUrl + review.posterPath!,
+                                        width: 80,
+                                        fit: BoxFit.cover,
+                                      ),
+                                Expanded(
+                                    child: Column(
+                                  children: [
+                                    // 타이틀
+                                    Text(review.movieTitle),
+                                    const SizedBox(height: 10),
+
+                                    // 내용
+                                    Text(
+                                      review.content,
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 2,
+                                    ),
+                                    const SizedBox(height: 10),
+
+                                    // 별점
+                                    RatingStars(
+                                      starCount: 5,
+                                      starSize: 30,
+                                      starSpacing: 10,
+                                      value: review.starRating,
+                                      valueLabelVisibility: false,
+                                    ),
+                                  ],
+                                )),
+                              ],
+                            ),
+                            const Divider(
+                              height: 7,
+                              color: whiteColor,
+                              thickness: 0.5,
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
         ],
