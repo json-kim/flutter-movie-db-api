@@ -14,6 +14,7 @@ import 'package:movie_search/domain/usecase/person/get_person_detail_use_case.da
 import 'package:movie_search/domain/usecase/review/create_review_use_case.dart';
 import 'package:movie_search/domain/usecase/review/delete_review_use_case.dart';
 import 'package:movie_search/domain/usecase/review/get_review_by_movie_use_case.dart';
+import 'package:movie_search/presentation/auth/auth_event.dart';
 import 'package:movie_search/presentation/global_components/movie_data_card.dart';
 import 'package:movie_search/presentation/global_components/person_data_card.dart';
 import 'package:movie_search/presentation/movie_bookmark/movie_bookmark_event.dart';
@@ -24,8 +25,7 @@ import 'package:movie_search/presentation/person_detail/person_detail_screen.dar
 import 'package:movie_search/presentation/person_detail/person_detail_view_model.dart';
 import 'package:movie_search/presentation/review_edit/review_edit_screen.dart';
 import 'package:movie_search/presentation/review_edit/review_edit_view_model.dart';
-import 'package:movie_search/presentation/user/user_view_model.dart';
-import 'package:movie_search/service/google_sign_in_service.dart';
+import 'package:movie_search/presentation/setting/setting_screen.dart';
 import 'package:movie_search/ui/navigator_key.dart';
 import 'package:movie_search/ui/theme.dart';
 import 'package:provider/provider.dart';
@@ -68,7 +68,7 @@ class _MovieBookmarkScreenState extends State<MovieBookmarkScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(user.displayName ?? (user.email ?? '마이 노트')),
+        title: Text('마이 노트'),
         backgroundColor: Colors.transparent,
         elevation: 0,
         bottom: TabBar(
@@ -86,11 +86,7 @@ class _MovieBookmarkScreenState extends State<MovieBookmarkScreen>
           ],
         ),
         actions: [
-          IconButton(
-              onPressed: () {
-                GoogleSignInService.instance.signOutWithGoogle();
-              },
-              icon: const Icon(Icons.logout))
+          buildProfileButton(context),
         ],
       ),
       body: TabBarView(
@@ -195,103 +191,109 @@ class _MovieBookmarkScreenState extends State<MovieBookmarkScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      Spacer(),
-                      GestureDetector(
-                        onTap: () async {
-                          final dialog = AlertDialog(
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('정렬 순서'),
-                                FittedBox(
-                                  child: Row(
-                                    children: [
-                                      Radio<String>(
-                                          value: 'OrderType.date',
-                                          groupValue: state
-                                              .orderType.runtimeType
-                                              .toString(),
-                                          onChanged: (value) {
-                                            if (value != null) {
-                                              viewModel.onEvent(
-                                                  MovieBookmarkEvent
-                                                      .orderChange(
-                                                          OrderType.date(
-                                                              true)));
-                                            }
-                                          }),
-                                      Text('날짜순'),
-                                      Radio<String>(
-                                          value: 'OrderType.rating',
-                                          groupValue: state
-                                              .orderType.runtimeType
-                                              .toString(),
-                                          onChanged: (value) {
-                                            if (value != null) {
-                                              viewModel.onEvent(
-                                                  MovieBookmarkEvent
-                                                      .orderChange(
-                                                          OrderType.rating(
-                                                              true)));
-                                            }
-                                          }),
-                                      Text('별점순'),
-                                      Radio<String>(
-                                          value: 'OrderType.title',
-                                          groupValue: state
-                                              .orderType.runtimeType
-                                              .toString(),
-                                          onChanged: (value) {
-                                            if (value != null) {
-                                              viewModel.onEvent(
-                                                  MovieBookmarkEvent
-                                                      .orderChange(
-                                                          OrderType.title(
-                                                              true)));
-                                            }
-                                          }),
-                                      Text('제목순'),
-                                    ],
-                                  ),
-                                ),
-                                Divider(
-                                  height: 0,
-                                  color: whiteColor,
-                                ),
-                              ],
-                            ),
-                            contentPadding: EdgeInsets.fromLTRB(24, 24, 24, 0),
-                            buttonPadding: EdgeInsets.zero,
-                            actionsPadding: EdgeInsets.zero,
-                            actions: [
-                              SizedBox(
-                                width: double.infinity,
-                                child: TextButton(
-                                    onPressed: () {},
-                                    child: Text(
-                                      '확인',
-                                      style: TextStyle(color: whiteColor),
-                                    )),
-                              )
-                            ],
-                          );
-                          final result = await showDialog(
-                              context: context, builder: (_) => dialog);
-                        },
-                        child: Row(
-                          children: [Text('정렬'), Icon(Icons.sort)],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Divider(height: 2, thickness: 0.5, color: whiteColor),
+                // Padding(
+                //   padding: const EdgeInsets.all(8.0),
+                //   child: Row(
+                //     children: [
+                //       Spacer(),
+                //       GestureDetector(
+                //         onTap: () async {
+                //           print(state.orderType.runtimeType
+                //               .toString()
+                //               .split('('));
+                //           final dialog = AlertDialog(
+                //             content: Column(
+                //               mainAxisSize: MainAxisSize.min,
+                //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //               crossAxisAlignment: CrossAxisAlignment.start,
+                //               children: [
+                //                 Text('정렬 순서'),
+                //                 FittedBox(
+                //                   child: Row(
+                //                     children: [
+                //                       Radio<String>(
+                //                           value: 'OrderType.date',
+                //                           groupValue: state
+                //                               .orderType.runtimeType
+                //                               .toString()
+                //                               .split('(')[0],
+                //                           onChanged: (value) {
+                //                             if (value != null) {
+                //                               viewModel.onEvent(
+                //                                 MovieBookmarkEvent.orderChange(
+                //                                   OrderType.date(true),
+                //                                 ),
+                //                               );
+                //                             }
+                //                           }),
+                //                       Text('날짜순'),
+                //                       Radio<String>(
+                //                           value: 'OrderType.rating',
+                //                           groupValue: state
+                //                               .orderType.runtimeType
+                //                               .toString()
+                //                               .split('(')[0],
+                //                           onChanged: (value) {
+                //                             if (value != null) {
+                //                               viewModel.onEvent(
+                //                                 MovieBookmarkEvent.orderChange(
+                //                                   OrderType.rating(true),
+                //                                 ),
+                //                               );
+                //                             }
+                //                           }),
+                //                       Text('별점순'),
+                //                       Radio<String>(
+                //                           value: 'OrderType.title',
+                //                           groupValue: state
+                //                               .orderType.runtimeType
+                //                               .toString()
+                //                               .split('(')[0],
+                //                           onChanged: (value) {
+                //                             if (value != null) {
+                //                               viewModel.onEvent(
+                //                                 MovieBookmarkEvent.orderChange(
+                //                                   OrderType.title(true),
+                //                                 ),
+                //                               );
+                //                             }
+                //                           }),
+                //                       Text('제목순'),
+                //                     ],
+                //                   ),
+                //                 ),
+                //                 Divider(
+                //                   height: 0,
+                //                   color: whiteColor,
+                //                 ),
+                //               ],
+                //             ),
+                //             contentPadding: EdgeInsets.fromLTRB(24, 24, 24, 0),
+                //             buttonPadding: EdgeInsets.zero,
+                //             actionsPadding: EdgeInsets.zero,
+                //             actions: [
+                //               SizedBox(
+                //                 width: double.infinity,
+                //                 child: TextButton(
+                //                     onPressed: () {},
+                //                     child: Text(
+                //                       '확인',
+                //                       style: TextStyle(color: whiteColor),
+                //                     )),
+                //               )
+                //             ],
+                //           );
+                //           final result = await showDialog(
+                //               context: context, builder: (_) => dialog);
+                //         },
+                //         child: Row(
+                //           children: [Text('정렬'), Icon(Icons.sort)],
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                // ),
+                // Divider(height: 2, thickness: 0.5, color: whiteColor),
 
                 // 리뷰 리스트
                 Expanded(
@@ -374,6 +376,35 @@ class _MovieBookmarkScreenState extends State<MovieBookmarkScreen>
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget buildProfileButton(BuildContext context) {
+    final viewModel = context.read<AuthViewModel>();
+    final photoUrl = viewModel.user.photoUrl;
+
+    return IconButton(
+      onPressed: () {
+        // viewModel.onEvent(AuthEvent.logout());
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => SettingScreen(),
+          ),
+        );
+      },
+      icon: Container(
+        width: 28,
+        height: 28,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: CachedNetworkImage(
+            imageUrl: photoUrl,
+            errorWidget: (context, _, __) =>
+                Image.asset('asset/image/avatar_placeholder.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
       ),
     );
   }

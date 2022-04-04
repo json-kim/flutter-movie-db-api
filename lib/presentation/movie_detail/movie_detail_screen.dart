@@ -22,6 +22,7 @@ import 'package:movie_search/presentation/review_edit/review_edit_view_model.dar
 import 'package:movie_search/ui/navigator_key.dart';
 import 'package:movie_search/ui/theme.dart';
 import 'package:provider/provider.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 
 import 'component/credit_sliver_list.dart';
 import 'component/similar_sliver_list.dart';
@@ -290,7 +291,7 @@ Widget _buildAppBar(Size size, MovieDetail movieDetail, bool isBookmarked,
         },
       ),
     ],
-    collapsedHeight: 150,
+    collapsedHeight: size.height * 0.2,
     pinned: true,
     expandedHeight: size.height,
     elevation: 0,
@@ -316,7 +317,7 @@ Widget _buildAppBar(Size size, MovieDetail movieDetail, bool isBookmarked,
           child: SizedBox(
             height: size.height,
             child: LayoutBuilder(builder: (context, constraints) {
-              if (constraints.maxHeight < size.height * 0.65) {
+              if (constraints.maxHeight < size.height * 0.75) {
                 return Container();
               }
               return Container(
@@ -377,7 +378,7 @@ Widget _buildAppBar(Size size, MovieDetail movieDetail, bool isBookmarked,
                       style: const TextStyle(
                         fontSize: 18,
                       ),
-                      maxLines: 10,
+                      maxLines: 7,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],

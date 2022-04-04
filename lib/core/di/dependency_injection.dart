@@ -1,9 +1,23 @@
 // 1. Provider 전체
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:movie_search/data/data_source/local/movie_local_data_source.dart';
 import 'package:movie_search/data/data_source/local/person_local_data_source.dart';
 import 'package:movie_search/data/data_source/local/review_local_data_source.dart';
 import 'package:movie_search/data/data_source/local/search_history_local_data_source.dart';
+import 'package:movie_search/data/data_source/local/token_local_data_source.dart';
+import 'package:movie_search/data/data_source/remote/auth/apple_auth_api.dart';
+import 'package:movie_search/data/data_source/remote/auth/google_auth_api.dart';
+import 'package:movie_search/data/data_source/remote/auth/kakao_auth_api.dart';
+import 'package:movie_search/data/data_source/remote/auth/kakao_user_api.dart';
+import 'package:movie_search/data/data_source/remote/auth/naver_auth_api.dart';
+import 'package:movie_search/data/data_source/remote/auth/naver_user_api.dart';
+import 'package:movie_search/data/data_source/remote/firebase/firebase_auth_remote_data_source.dart';
 import 'package:movie_search/data/data_source/remote/movie_remote_data_source.dart';
+import 'package:movie_search/data/repository/auth/apple_auth_repository_impl.dart';
+import 'package:movie_search/data/repository/auth/fauth_repository_impl.dart';
+import 'package:movie_search/data/repository/auth/google_auth_repository_impl.dart';
+import 'package:movie_search/data/repository/auth/kakao_auth_repository_impl.dart';
+import 'package:movie_search/data/repository/auth/naver_auth_repository_impl.dart';
 import 'package:movie_search/data/repository/bookmark_data/bookmark_movie_repository_impl.dart';
 import 'package:movie_search/data/repository/bookmark_data/bookmark_person_repository_impl.dart';
 import 'package:movie_search/data/repository/movie_data/cast_data_repository_impl.dart';
@@ -17,8 +31,14 @@ import 'package:movie_search/data/repository/review/review_data_repository_impl.
 import 'package:movie_search/data/repository/search_history/search_history_repository_impl.dart';
 import 'package:movie_search/domain/model/movie/movie.dart';
 import 'package:movie_search/domain/model/person/person.dart';
+import 'package:movie_search/domain/repository/bookmark_data_repository.dart';
 import 'package:movie_search/domain/repository/review_data_repository.dart';
 import 'package:movie_search/domain/repository/search_history_repository.dart';
+import 'package:movie_search/domain/usecase/auth/apple_login_use_case.dart';
+import 'package:movie_search/domain/usecase/auth/google_login_use_case.dart';
+import 'package:movie_search/domain/usecase/auth/kakao_login_use_case.dart';
+import 'package:movie_search/domain/usecase/auth/logout_use_case.dart';
+import 'package:movie_search/domain/usecase/auth/naver_login_use_case.dart';
 import 'package:movie_search/domain/usecase/bookmark/delete_bookmark_data_use_case.dart';
 import 'package:movie_search/domain/usecase/bookmark/find_bookmark_data_use_case.dart';
 import 'package:movie_search/domain/usecase/bookmark/get_bookmark_datas_use_case.dart';
@@ -60,173 +80,179 @@ Future<List<SingleChildWidget>> setProvider() async {
   await HiveService.instance.init();
   final box = HiveService.instance.searchBox;
 
-  List<SingleChildWidget> providers = [
-    // 데이터 소스
-    Provider<MovieRemoteDataSource>(
-      create: (context) => MovieRemoteDataSource(),
-    ),
-    Provider<MovieLocalDataSource>(
-      create: (context) => MovieLocalDataSource(db!),
-    ),
-    Provider<PersonLocalDataSource>(
-      create: (context) => PersonLocalDataSource(db!),
-    ),
-    Provider<ReviewLocalDataSource>(
-      create: (context) => ReviewLocalDataSource(db!),
-    ),
-    Provider<SearchHistoryLocalDataSource>(
-      create: (context) => SearchHistoryLocalDataSource(box!),
-    ),
+  // 데이터 소스
+  final tokenLocalDataSource = TokenLocalDataSource.instance;
+  final firebaseAuthRemoteDataSource = FirebaseAuthRemoteDataSource();
+  final kakaoAuthApi = KakaoAuthApi.instance;
+  final kakaoUserApi = KakaoUserApi.instance;
+  final naverAuthApi = NaverAuthApi.instance;
+  final naverUserApi = NaverUserApi.instance;
+  final googleAuthApi = GoogleAuthApi();
+  final appleAuthApi = AppleAuthApi();
+  final movieRemoteDataSource = MovieRemoteDataSource();
+  final movieLocalDataSource = MovieLocalDataSource(db!);
+  final personLocalDataSource = PersonLocalDataSource(db);
+  final reviewLocalDataSource = ReviewLocalDataSource(db);
+  final searchHistoryLocalDataSource = SearchHistoryLocalDataSource(box!);
 
-    // 레포지토리
-    ProxyProvider<SearchHistoryLocalDataSource, SearchHistoryRepository>(
-      update: (context, dataSource, _) =>
-          SearchHistoryRepositoryImpl(dataSource),
-    ),
-    ProxyProvider<ReviewLocalDataSource, ReviewDataRepository>(
-      update: (context, dataSource, _) => ReviewDataRepositoryImple(dataSource),
-    ),
-    ProxyProvider<MovieLocalDataSource, BookmarkMovieRepositoryImpl>(
-      update: (context, dataSource, _) =>
-          BookmarkMovieRepositoryImpl(dataSource),
-    ),
-    ProxyProvider<PersonLocalDataSource, BookmarkPersonRepositoryImpl>(
-      update: (context, dataSource, _) =>
-          BookmarkPersonRepositoryImpl(dataSource),
-    ),
-    ProxyProvider<MovieRemoteDataSource, MovieDataRepositoryImpl>(
-      update: (context, tmdbApi, _) => MovieDataRepositoryImpl(tmdbApi),
-    ),
-    ProxyProvider<MovieRemoteDataSource, GenreDataRepositoryImpl>(
-      update: (context, tmdbApi, _) => GenreDataRepositoryImpl(tmdbApi),
-    ),
-    ProxyProvider<MovieRemoteDataSource, MovieDetailDataRepositoryImpl>(
-      update: (context, tmdbApi, _) => MovieDetailDataRepositoryImpl(tmdbApi),
-    ),
-    ProxyProvider<MovieRemoteDataSource, CreditDataRepositoryImpl>(
-      update: (context, tmdbApi, _) => CreditDataRepositoryImpl(tmdbApi),
-    ),
-    ProxyProvider<MovieRemoteDataSource, VideoDataRepositoryImpl>(
-      update: (context, tmdbApi, _) => VideoDataRepositoryImpl(tmdbApi),
-    ),
-    ProxyProvider<MovieRemoteDataSource, PersonDataRepositoryImpl>(
-      update: (context, tmdbApi, _) => PersonDataRepositoryImpl(tmdbApi),
-    ),
-    ProxyProvider<MovieRemoteDataSource, CastDataRepositoryImpl>(
-      update: (context, tmdbApi, _) => CastDataRepositoryImpl(tmdbApi),
-    ),
+  // 레포지토리
+  final fauthRepository = FAuthRepositoryImpl(firebaseAuthRemoteDataSource);
+  final kakaoRepository = KakaoAuthRepositoryImpl(
+    kakaoAuthApi,
+    kakaoUserApi,
+    tokenLocalDataSource,
+  );
+  final naverRepository = NaverAuthRepositoryImpl(
+    naverAuthApi,
+    naverUserApi,
+    tokenLocalDataSource,
+  );
+  final googleRepository = GoogleAuthRepositoryImpl(googleAuthApi);
+  final appleRepository = AppleAuthRepositoryImpl(appleAuthApi);
+  final searchHistoryRepository =
+      SearchHistoryRepositoryImpl(searchHistoryLocalDataSource);
+  final reviewDataRepository = ReviewDataRepositoryImple(reviewLocalDataSource);
+  final bookmarkDataRepository =
+      BookmarkMovieRepositoryImpl(movieLocalDataSource);
+  final bookmarkPersonRepository =
+      BookmarkPersonRepositoryImpl(personLocalDataSource);
+  final movieDataRepository = MovieDataRepositoryImpl(movieRemoteDataSource);
+  final genreDataRepository = GenreDataRepositoryImpl(movieRemoteDataSource);
+  final movieDetailDataRepository =
+      MovieDetailDataRepositoryImpl(movieRemoteDataSource);
+  final creditDataRepository = CreditDataRepositoryImpl(movieRemoteDataSource);
+  final videoDataRepository = VideoDataRepositoryImpl(movieRemoteDataSource);
+  final personDataRepository = PersonDataRepositoryImpl(movieRemoteDataSource);
+  final castDataRepository = CastDataRepositoryImpl(movieRemoteDataSource);
 
+  // 유스케이스
+  final kakaoLoginUseCase = KakaoLoginUseCase(
+    kakaoRepository,
+    fauthRepository,
+  );
+  final naverLoginUseCase = NaverLoginUseCase(
+    naverRepository,
+    fauthRepository,
+  );
+  final googleLoginUseCase = GoogleLoginUseCase(googleRepository);
+  final appleLoginUseCase = AppleLoginUseCase(appleRepository);
+  final logoutUseCase = LogoutUseCase(
+    googleRepository,
+    appleRepository,
+    kakaoRepository,
+    naverRepository,
+  );
+
+  List<SingleChildWidget> usecaseProviders = [
     // 유스케이스
     // 검색 기록 유스케이스
-    ProxyProvider<SearchHistoryRepository, GetSearchHistoriesUseCase>(
-      update: (context, repository, _) => GetSearchHistoriesUseCase(repository),
+    Provider(
+        create: (context) =>
+            GetSearchHistoriesUseCase(searchHistoryRepository)),
+    Provider(
+        create: (context) => DeleteSearchHistoryUseCase(
+              searchHistoryRepository,
+            )),
+    Provider(
+      create: (context) => DeleteAllHistoryUseCase(searchHistoryRepository),
     ),
-    ProxyProvider<SearchHistoryRepository, DeleteSearchHistoryUseCase>(
-      update: (context, repository, _) =>
-          DeleteSearchHistoryUseCase(repository),
+    Provider(
+      create: (context) => SaveSearchHistoryUseCase(searchHistoryRepository),
     ),
-    ProxyProvider<SearchHistoryRepository, DeleteAllHistoryUseCase>(
-      update: (context, repository, _) => DeleteAllHistoryUseCase(repository),
-    ),
-    ProxyProvider<SearchHistoryRepository, SaveSearchHistoryUseCase>(
-      update: (context, repository, _) => SaveSearchHistoryUseCase(repository),
-    ),
+
     // 리뷰 유스케이스
-    ProxyProvider<ReviewDataRepository, GetReviewByMovieUseCase>(
-      update: (context, repository, _) => GetReviewByMovieUseCase(repository),
+    Provider(
+      create: (context) => GetReviewByMovieUseCase(reviewDataRepository),
     ),
-    ProxyProvider<ReviewDataRepository, GetReviewsUseCase>(
-      update: (context, repository, _) => GetReviewsUseCase(repository),
+    Provider(
+      create: (context) => GetReviewsUseCase(reviewDataRepository),
     ),
-    ProxyProvider<ReviewDataRepository, CreateReviewUseCase>(
-      update: (context, repository, _) => CreateReviewUseCase(repository),
+    Provider(
+      create: (context) => CreateReviewUseCase(reviewDataRepository),
     ),
-    ProxyProvider<ReviewDataRepository, DeleteReviewUseCase>(
-      update: (context, repository, _) => DeleteReviewUseCase(repository),
+    Provider(
+      create: (context) => DeleteReviewUseCase(reviewDataRepository),
     ),
-    ProxyProvider<ReviewDataRepository, UpdateReviewUseCase>(
-      update: (context, repository, _) => UpdateReviewUseCase(repository),
+    Provider(
+      create: (context) => UpdateReviewUseCase(reviewDataRepository),
     ),
-    ProxyProvider<ReviewDataRepository, CreateReviewUseCase>(
-      update: (context, repository, _) => CreateReviewUseCase(repository),
+    Provider(
+      create: (context) => CreateReviewUseCase(reviewDataRepository),
     ),
 
     // 북마크<영화> 유스케이스
-    ProxyProvider<BookmarkMovieRepositoryImpl, GetBookmarkDatasUseCase<Movie>>(
-      update: (context, repository, _) =>
-          GetBookmarkDatasUseCase<Movie>(repository),
+    Provider(
+      create: (context) =>
+          GetBookmarkDatasUseCase<Movie>(bookmarkDataRepository),
     ),
-    ProxyProvider<BookmarkMovieRepositoryImpl, FindBookmarkDataUseCase<Movie>>(
-      update: (context, repository, _) =>
-          FindBookmarkDataUseCase<Movie>(repository),
+    Provider(
+      create: (context) =>
+          FindBookmarkDataUseCase<Movie>(bookmarkDataRepository),
     ),
-    ProxyProvider<BookmarkMovieRepositoryImpl,
-        DeleteBookmarkDataUseCase<Movie>>(
-      update: (context, repository, _) =>
-          DeleteBookmarkDataUseCase<Movie>(repository),
+    Provider(
+      create: (context) =>
+          DeleteBookmarkDataUseCase<Movie>(bookmarkDataRepository),
     ),
-    ProxyProvider<BookmarkMovieRepositoryImpl, SaveBookmarkDataUseCase<Movie>>(
-      update: (context, repository, _) =>
-          SaveBookmarkDataUseCase<Movie>(repository),
+    Provider(
+      create: (context) =>
+          SaveBookmarkDataUseCase<Movie>(bookmarkDataRepository),
     ),
 
     // 북마크<인물> 유스케이스
-    ProxyProvider<BookmarkPersonRepositoryImpl,
-        GetBookmarkDatasUseCase<Person>>(
-      update: (context, repository, _) =>
-          GetBookmarkDatasUseCase<Person>(repository),
+    Provider(
+      create: (context) =>
+          GetBookmarkDatasUseCase<Person>(bookmarkPersonRepository),
     ),
-    ProxyProvider<BookmarkPersonRepositoryImpl,
-        FindBookmarkDataUseCase<Person>>(
-      update: (context, repository, _) =>
-          FindBookmarkDataUseCase<Person>(repository),
+    Provider(
+      create: (context) =>
+          FindBookmarkDataUseCase<Person>(bookmarkPersonRepository),
     ),
-    ProxyProvider<BookmarkPersonRepositoryImpl,
-        DeleteBookmarkDataUseCase<Person>>(
-      update: (context, repository, _) =>
-          DeleteBookmarkDataUseCase<Person>(repository),
+    Provider(
+      create: (context) =>
+          DeleteBookmarkDataUseCase<Person>(bookmarkPersonRepository),
     ),
-    ProxyProvider<BookmarkPersonRepositoryImpl,
-        SaveBookmarkDataUseCase<Person>>(
-      update: (context, repository, _) =>
-          SaveBookmarkDataUseCase<Person>(repository),
+    Provider(
+      create: (context) =>
+          SaveBookmarkDataUseCase<Person>(bookmarkPersonRepository),
     ),
 
     // 영화정보 가져오기 유스케이스
-    ProxyProvider<PersonDataRepositoryImpl, GetPersonDetailUseCase>(
-      update: (context, repository, _) => GetPersonDetailUseCase(repository),
+    Provider(
+      create: (context) => GetPersonDetailUseCase(personDataRepository),
     ),
-    ProxyProvider<CastDataRepositoryImpl, GetCastWithPersonUseCase>(
-      update: (context, repository, _) => GetCastWithPersonUseCase(repository),
+    Provider(
+      create: (context) => GetCastWithPersonUseCase(castDataRepository),
     ),
-    ProxyProvider<VideoDataRepositoryImpl, GetVideoWithMovieUseCase>(
-      update: (context, repository, _) => GetVideoWithMovieUseCase(repository),
+    Provider(
+      create: (context) => GetVideoWithMovieUseCase(videoDataRepository),
     ),
-    ProxyProvider<CreditDataRepositoryImpl, GetCreditWithMovieUseCase>(
-      update: (context, repository, _) => GetCreditWithMovieUseCase(repository),
+    Provider(
+      create: (context) => GetCreditWithMovieUseCase(creditDataRepository),
     ),
-    ProxyProvider<MovieDataRepositoryImpl, GetMoviePopularUseCase>(
-      update: (context, repository, _) => GetMoviePopularUseCase(repository),
+    Provider(
+      create: (context) => GetMoviePopularUseCase(movieDataRepository),
     ),
-    ProxyProvider<MovieDataRepositoryImpl, GetMovieWithQueryUseCase>(
-      update: (context, repository, _) => GetMovieWithQueryUseCase(repository),
+    Provider(
+      create: (context) => GetMovieWithQueryUseCase(movieDataRepository),
     ),
-    ProxyProvider<MovieDataRepositoryImpl, GetMovieNowPlayingUseCase>(
-      update: (context, repository, _) => GetMovieNowPlayingUseCase(repository),
+    Provider(
+      create: (context) => GetMovieNowPlayingUseCase(movieDataRepository),
     ),
-    ProxyProvider<MovieDataRepositoryImpl, GetMovieWithGenreUseCase>(
-      update: (context, repository, _) => GetMovieWithGenreUseCase(repository),
+    Provider(
+      create: (context) => GetMovieWithGenreUseCase(movieDataRepository),
     ),
-    ProxyProvider<MovieDataRepositoryImpl, GetMovieSimilarUseCase>(
-      update: (context, repository, _) => GetMovieSimilarUseCase(repository),
+    Provider(
+      create: (context) => GetMovieSimilarUseCase(movieDataRepository),
     ),
-    ProxyProvider<GenreDataRepositoryImpl, GetGenreUseCase>(
-      update: (context, repository, _) => GetGenreUseCase(repository),
+    Provider(
+      create: (context) => GetGenreUseCase(genreDataRepository),
     ),
-    ProxyProvider<MovieDetailDataRepositoryImpl, GetMovieDetailUseCase>(
-      update: (context, repository, _) => GetMovieDetailUseCase(repository),
+    Provider(
+      create: (context) => GetMovieDetailUseCase(movieDetailDataRepository),
     ),
+  ];
 
+  final List<SingleChildWidget> viewModelProviders = [
     ChangeNotifierProvider(
       create: (context) => MovieHomeViewModel(
         context.read<GetMoviePopularUseCase>(),
@@ -253,10 +279,16 @@ Future<List<SingleChildWidget>> setProvider() async {
         context.read<GetReviewsUseCase>(),
       ),
     ),
-    ChangeNotifierProvider(
-      create: (context) => AuthViewModel(),
+    ChangeNotifierProvider<AuthViewModel>(
+      create: (context) => AuthViewModel(
+        googleLoginUseCase,
+        appleLoginUseCase,
+        kakaoLoginUseCase,
+        naverLoginUseCase,
+        logoutUseCase,
+      ),
     ),
   ];
 
-  return providers;
+  return [...usecaseProviders, ...viewModelProviders];
 }

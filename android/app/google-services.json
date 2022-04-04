@@ -1,0 +1,98 @@
+{
+  "project_info": {
+    "project_number": "486647462293",
+    "project_id": "flutter-movie-6a9ae",
+    "storage_bucket": "flutter-movie-6a9ae.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:486647462293:android:4e2ce93606a450981fde9c",
+        "android_client_info": {
+          "package_name": "com.example.movie_search"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "486647462293-u5vs4t0qav66iss4qgb1pbciusfekddh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.movie_search",
+            "certificate_hash": "eaca4a2c230da070122f1759e4bad28c89f030ca"
+          }
+        },
+        {
+          "client_id": "486647462293-ahb2e5mkb6lcc1df7rcdv78smko2uebo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3e-oRKYv9Xusz2y1AOpnfILhttFNuDbA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "486647462293-ahb2e5mkb6lcc1df7rcdv78smko2uebo.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "486647462293-sj01952r363jv50c2tg6ds8o4lcl1124.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.jsonKim.movieSearch"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:486647462293:android:9051644d962b767c1fde9c",
+        "android_client_info": {
+          "package_name": "com.jsonKim.movie_search"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "486647462293-tfoq5ufe9juv7ebpn190flsh9lr8tllk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jsonKim.movie_search",
+            "certificate_hash": "eaca4a2c230da070122f1759e4bad28c89f030ca"
+          }
+        },
+        {
+          "client_id": "486647462293-ahb2e5mkb6lcc1df7rcdv78smko2uebo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3e-oRKYv9Xusz2y1AOpnfILhttFNuDbA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "486647462293-ahb2e5mkb6lcc1df7rcdv78smko2uebo.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "486647462293-sj01952r363jv50c2tg6ds8o4lcl1124.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.jsonKim.movieSearch"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

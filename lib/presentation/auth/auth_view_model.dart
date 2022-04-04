@@ -1,119 +1,107 @@
-import 'dart:convert';
-import 'dart:math';
-
-import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:movie_search/presentation/auth/auth_event.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:movie_search/domain/model/auth/user_model.dart';
+import 'package:movie_search/domain/usecase/auth/apple_login_use_case.dart';
+import 'package:movie_search/domain/usecase/auth/google_login_use_case.dart';
+import 'package:movie_search/domain/usecase/auth/kakao_login_use_case.dart';
+import 'package:movie_search/domain/usecase/auth/logout_use_case.dart';
+import 'package:movie_search/domain/usecase/auth/naver_login_use_case.dart';
+
+import 'auth_event.dart';
 
 class AuthViewModel with ChangeNotifier {
-  UserCredential? _userCredential;
+  final GoogleLoginUseCase _googleLoginUseCase;
+  final AppleLoginUseCase _appleLoginUseCase;
+  final KakaoLoginUseCase _kakaoLoginUseCase;
+  final NaverLoginUseCase _naverLoginUseCase;
+  final LogoutUseCase _logoutUseCase;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  bool isLoading = false;
 
-  User? get user {
-    return _userCredential?.user ?? FirebaseAuth.instance.currentUser;
-  }
+  UserModel get user => UserModel(
+        email: _firebaseAuth.currentUser?.email ?? '',
+        userName: _firebaseAuth.currentUser?.displayName ?? '유저',
+        photoUrl: _firebaseAuth.currentUser?.photoURL ?? '',
+      );
 
-  String? get email => user?.email;
-  String? get displayName => user?.displayName;
-  String? get phoneNumber => user?.phoneNumber;
-  String? get photoUrl => user?.photoURL;
-
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
+  AuthViewModel(
+    this._googleLoginUseCase,
+    this._appleLoginUseCase,
+    this._kakaoLoginUseCase,
+    this._naverLoginUseCase,
+    this._logoutUseCase,
+  );
 
   void onEvent(AuthEvent event) {
     event.when(
-      signInGoogle: _signInGoogle,
-      signInApple: _signInApple,
-      signInKakao: _signInKakao,
-      signInNaver: _signInNaver,
-      signOut: _signOut,
+      loginWithGoogle: _loginWithGoogle,
+      loginWithApple: _loginWithApple,
+      loginWithKakao: _loginWithKakao,
+      loginWithNaver: _loginWithNaver,
+      loginWithFacebook: _loginWithFacebook,
+      loginWithTwitter: _loginWithTwitter,
+      loginWithYahoo: _loginWithYahoo,
+      logout: _logout,
     );
   }
 
-  Future<void> _signInGoogle() async {
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+  Future<void> _loginWithGoogle() async {
+    isLoading = true;
+    notifyListeners();
 
-    if (googleUser == null) {
-      // TODO: 로그인 실패
-      return;
-    }
+    await _googleLoginUseCase();
 
-    // Obtain the auth details from the request
-    final GoogleSignInAuthentication? googleAuth =
-        await googleUser.authentication;
-
-    if (googleAuth == null) {
-      // TODO: 로그인 실패
-      return;
-    }
-
-    // Create a new credential
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-
-    // Once signed in, return the UserCredential
-    _userCredential =
-        await FirebaseAuth.instance.signInWithCredential(credential);
+    isLoading = false;
+    notifyListeners();
   }
 
-  Future<void> _signInApple() async {
-    // To prevent replay attacks with the credential returned from Apple, we
-    // include a nonce in the credential request. When signing in with
-    // Firebase, the nonce in the id token returned by Apple, is expected to
-    // match the sha256 hash of `rawNonce`.
-    final rawNonce = generateNonce();
-    final nonce = sha256ofString(rawNonce);
+  Future<void> _loginWithApple() async {
+    isLoading = true;
+    notifyListeners();
 
-    // Request credential for the currently signed in Apple account.
-    final appleCredential = await SignInWithApple.getAppleIDCredential(
-      scopes: [
-        AppleIDAuthorizationScopes.email,
-        AppleIDAuthorizationScopes.fullName,
-      ],
-      nonce: nonce,
-    );
+    await _appleLoginUseCase();
 
-    // Create an `OAuthCredential` from the credential returned by Apple.
-    final oauthCredential = OAuthProvider("apple.com").credential(
-      idToken: appleCredential.identityToken,
-      accessToken: appleCredential.authorizationCode,
-      rawNonce: rawNonce,
-    );
-
-    // Sign in the user with Firebase. If the nonce we generated earlier does
-    // not match the nonce in `appleCredential.identityToken`, sign in will fail.
-    _userCredential =
-        await FirebaseAuth.instance.signInWithCredential(oauthCredential);
+    isLoading = false;
+    notifyListeners();
   }
 
-  /// Generates a cryptographically secure random nonce, to be included in a
-  /// credential request.
-  String generateNonce([int length = 32]) {
-    final charset =
-        '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
-    final random = Random.secure();
-    return List.generate(length, (_) => charset[random.nextInt(charset.length)])
-        .join();
+  Future<void> _loginWithKakao() async {
+    isLoading = true;
+    notifyListeners();
+
+    await _kakaoLoginUseCase();
+
+    isLoading = false;
+    notifyListeners();
   }
 
-  /// Returns the sha256 hash of [input] in hex notation.
-  String sha256ofString(String input) {
-    final bytes = utf8.encode(input);
-    final digest = sha256.convert(bytes);
-    return digest.toString();
+  Future<void> _loginWithNaver() async {
+    isLoading = true;
+    notifyListeners();
+
+    await _naverLoginUseCase();
+
+    isLoading = false;
+    notifyListeners();
   }
 
-  Future<void> _signInKakao() async {}
+  Future<void> _loginWithFacebook() async {}
+  Future<void> _loginWithTwitter() async {}
+  Future<void> _loginWithYahoo() async {}
 
-  Future<void> _signInNaver() async {}
+  Future<void> _logout() async {
+    isLoading = true;
+    notifyListeners();
 
-  Future<void> _signOut() async {
-    await FirebaseAuth.instance.signOut();
-    _userCredential = null;
+    final result = await _logoutUseCase();
+
+    result.when(
+        success: (_) {},
+        error: (error) {
+          print('TODO: 로그 아웃 에러');
+        });
+
+    isLoading = false;
+    notifyListeners();
   }
 }

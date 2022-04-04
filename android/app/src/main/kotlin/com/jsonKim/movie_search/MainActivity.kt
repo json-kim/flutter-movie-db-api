@@ -1,4 +1,4 @@
-package com.example.movie_search
+package com.jsonKim.movie_search
 
 import io.flutter.embedding.android.FlutterActivity
 

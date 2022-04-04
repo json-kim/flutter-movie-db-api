@@ -1,4 +1,4 @@
-const String kMaterialApptitle = 'TMDB application';
+const String kMaterialApptitle = '마이 무비';
 
 // TMDB API
 const String kBaseUrl = 'https://api.themoviedb.org/3/';

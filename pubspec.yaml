@@ -29,37 +29,55 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
+  # localization
   flutter_localizations:
     sdk: flutter
 
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
+  # ui
   cupertino_icons: ^1.0.2
-  http: ^0.13.4
-  provider: ^6.0.1
-  freezed_annotation: ^1.1.0
-  youtube_player_flutter: ^8.0.0
-  cached_network_image: ^3.2.0
-  sqflite: ^2.0.2
   fab_circular_menu: ^1.0.2
-  intl: ^0.17.0
+  youtube_player_flutter: ^8.0.0
   flutter_rating_stars: ^1.0.3+4
-  infinite_scroll_pagination: ^3.1.0
-  input_history_text_field: ^0.1.0
+  flutter_signin_button: ^2.0.0
+  youtube_player_iframe: ^2.2.2
+  responsive_sizer: ^3.0.5+1
+
+  # http
+  http: ^0.13.4
+  dio: ^4.0.4
+  flutter_web_auth: ^0.4.1
+
+  # state management
+  provider: ^6.0.1
+
+  # code generator
+  freezed_annotation: ^1.1.0
+
+  # image
+  cached_network_image: ^3.2.0
+
+  # local db
+  sqflite: ^2.0.2
   hive: ^2.0.5
   hive_flutter: ^1.1.0
-  flutter_keyboard_visibility: ^5.2.0
-  firebase_auth: ^3.3.7
+
+  # util
+  intl: ^0.17.0
+  logger: ^1.1.0
+
+  # pagination
+  infinite_scroll_pagination: ^3.1.0
+
+  # firebase (auth)
   firebase_core: ^1.12.0
+  firebase_auth: ^3.3.7
   google_sign_in: ^5.2.4
-  flutter_signin_button: ^2.0.0
-  crypto: ^3.0.1
   sign_in_with_apple: ^3.3.0
-  youtube_player_iframe: ^2.2.2
+  crypto: ^3.0.1
 
-
-
+  # secure
+  flutter_secure_storage: ^5.0.2
 
 
 dev_dependencies:
@@ -95,6 +113,7 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - asset/image/
+    - asset/icon/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
