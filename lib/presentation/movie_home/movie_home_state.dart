@@ -6,10 +6,11 @@ part 'movie_home_state.freezed.dart';
 
 @freezed
 class MovieHomeState with _$MovieHomeState {
-  factory MovieHomeState(
-    List<Movie> nowPlayingMovies,
-    List<Movie> popularMovies,
-    List<Genre> genreList,
-    bool isLoading,
-  ) = _MovieHomeState;
+  factory MovieHomeState({
+    @Default([]) List<Movie> nowPlayingMovies,
+    @Default([]) List<Movie> popularMovies,
+    @Default([]) List<Genre> genreList,
+    @Default(false) bool isLoading,
+    @Default(0) int currentPage,
+  }) = _MovieHomeState;
 }

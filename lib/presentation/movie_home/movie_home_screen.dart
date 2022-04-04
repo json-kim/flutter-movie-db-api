@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:movie_search/core/param/param.dart';
 import 'package:movie_search/domain/model/movie/movie.dart';
 import 'package:movie_search/domain/usecase/bookmark/delete_bookmark_data_use_case.dart';
 import 'package:movie_search/domain/usecase/bookmark/find_bookmark_data_use_case.dart';
 import 'package:movie_search/domain/usecase/bookmark/save_bookmark_data_use_case.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_detail_use_case.dart';
-import 'package:movie_search/domain/usecase/movie/get_movie_popular_use_case.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_with_genre_use_case.dart';
 import 'package:movie_search/domain/usecase/review/delete_review_use_case.dart';
 import 'package:movie_search/domain/usecase/review/get_review_by_movie_use_case.dart';
@@ -32,8 +30,6 @@ class MovieHomeScreen extends StatefulWidget {
 
 class _MovieHomeScreenState extends State<MovieHomeScreen>
     with AutomaticKeepAliveClientMixin {
-  int _currentPage = 0;
-
   @override
   bool get wantKeepAlive => true;
 
@@ -65,7 +61,8 @@ class _MovieHomeScreenState extends State<MovieHomeScreen>
                       : PageView.builder(
                           onPageChanged: (page) {
                             setState(() {
-                              _currentPage = page;
+                              viewModel
+                                  .onEvent(MovieHomeEvent.changeCardPage(page));
                             });
                           },
                           scrollDirection: Axis.horizontal,
@@ -110,7 +107,7 @@ class _MovieHomeScreenState extends State<MovieHomeScreen>
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: List.generate(
                         viewModel.state.nowPlayingMovies.length,
-                        (index) => index == _currentPage
+                        (index) => index == state.currentPage
                             ? Container(
                                 margin:
                                     const EdgeInsets.symmetric(horizontal: 2),

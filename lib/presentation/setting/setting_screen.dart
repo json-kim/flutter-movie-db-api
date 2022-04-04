@@ -31,11 +31,13 @@ class SettingScreen extends StatelessWidget {
                     height: 48,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(4),
-                      child: CachedNetworkImage(
-                        imageUrl: viewModel.user.photoUrl,
-                        errorWidget: (context, _, __) =>
-                            Image.asset('asset/image/avatar_placeholder.png'),
-                      ),
+                      child: viewModel.user.photoUrl == ''
+                          ? Image.asset('asset/image/avatar_placeholder.png')
+                          : CachedNetworkImage(
+                              imageUrl: viewModel.user.photoUrl,
+                              errorWidget: (context, _, __) => Image.asset(
+                                  'asset/image/avatar_placeholder.png'),
+                            ),
                     ),
                   ),
                   const SizedBox(width: 24),

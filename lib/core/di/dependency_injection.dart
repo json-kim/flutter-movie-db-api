@@ -255,7 +255,6 @@ Future<List<SingleChildWidget>> setProvider() async {
   final List<SingleChildWidget> viewModelProviders = [
     ChangeNotifierProvider(
       create: (context) => MovieHomeViewModel(
-        context.read<GetMoviePopularUseCase>(),
         context.read<GetMovieNowPlayingUseCase>(),
         context.read<GetGenreUseCase>(),
       ),

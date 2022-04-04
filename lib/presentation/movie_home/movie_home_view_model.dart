@@ -8,15 +8,13 @@ import 'movie_home_event.dart';
 import 'movie_home_state.dart';
 
 class MovieHomeViewModel with ChangeNotifier {
-  final GetMoviePopularUseCase _getMoviePopularUseCase;
   final GetMovieNowPlayingUseCase _getMovieNowPlayingUseCase;
   final GetGenreUseCase _getGenreUseCase;
 
-  MovieHomeState _state = MovieHomeState([], [], [], false);
+  MovieHomeState _state = MovieHomeState();
   MovieHomeState get state => _state;
 
   MovieHomeViewModel(
-    this._getMoviePopularUseCase,
     this._getMovieNowPlayingUseCase,
     this._getGenreUseCase,
   ) {
@@ -25,10 +23,18 @@ class MovieHomeViewModel with ChangeNotifier {
   }
 
   void onEvent(MovieHomeEvent event) {
-    event.when(load: () {
-      _loadNowPlayingMovies();
-      _loadGenres();
-    });
+    event.when(
+      load: () {
+        _loadNowPlayingMovies();
+        _loadGenres();
+      },
+      changeCardPage: _changeCardPage,
+    );
+  }
+
+  void _changeCardPage(int page) {
+    _state = _state.copyWith(currentPage: page);
+    notifyListeners();
   }
 
   Future<void> _loadNowPlayingMovies() async {
@@ -44,7 +50,7 @@ class MovieHomeViewModel with ChangeNotifier {
         },
         error: (error) {});
 
-    _state = _state.copyWith(isLoading: false);
+    _state = _state.copyWith(isLoading: false, currentPage: 0);
     notifyListeners();
   }
 

@@ -398,12 +398,14 @@ class _MovieBookmarkScreenState extends State<MovieBookmarkScreen>
         height: 28,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(4),
-          child: CachedNetworkImage(
-            imageUrl: photoUrl,
-            errorWidget: (context, _, __) =>
-                Image.asset('asset/image/avatar_placeholder.png'),
-            fit: BoxFit.cover,
-          ),
+          child: photoUrl == ''
+              ? Image.asset('asset/image/avatar_placeholder.png')
+              : CachedNetworkImage(
+                  imageUrl: photoUrl,
+                  errorWidget: (context, _, __) =>
+                      Image.asset('asset/image/avatar_placeholder.png'),
+                  fit: BoxFit.cover,
+                ),
         ),
       ),
     );
