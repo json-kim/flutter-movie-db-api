@@ -202,6 +202,7 @@ class _MovieSearchScreenState extends State<MovieSearchScreen>
                 ),
                 onRefresh: () async {
                   viewModel.pagingController.refresh();
+                  viewModel.onEvent(MovieSearchEvent.loadHistory());
                 },
               ),
             ),

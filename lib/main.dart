@@ -5,9 +5,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:movie_search/core/di/dependency_injection.dart';
+import 'package:movie_search/core/notification/notification_setting.dart';
 import 'package:movie_search/core/util/constants.dart';
 import 'package:movie_search/presentation/auth/auth_screen.dart';
-import 'package:movie_search/presentation/movie_tab_screen.dart';
 import 'package:movie_search/ui/navigator_key.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -17,6 +17,7 @@ import 'presentation/auth_gate.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await setNotification();
   await Firebase.initializeApp();
   HttpOverrides.global = MyHttpOverrides();
   final globalProviders = await setProvider();

@@ -42,6 +42,7 @@ dependencies:
   flutter_signin_button: ^2.0.0
   youtube_player_iframe: ^2.2.2
   responsive_sizer: ^3.0.5+1
+  auto_animated: ^3.0.1
 
   # http
   http: ^0.13.4
@@ -69,7 +70,8 @@ dependencies:
   dart_date: ^1.1.1
   package_info_plus: ^1.4.0
   share_plus: ^4.0.3
-
+  flutter_local_notifications: ^9.4.0
+  timezone: ^0.8.0
 
   # pagination
   infinite_scroll_pagination: ^3.1.0

@@ -5,6 +5,8 @@ class HiveService {
   Box<SearchHistoryDbEntity>? _searchBox;
   Box<SearchHistoryDbEntity>? get searchBox => _searchBox;
 
+  Box? alarmBox;
+
   HiveService._();
 
   static final HiveService _instance = HiveService._();
@@ -16,6 +18,8 @@ class HiveService {
     Hive.registerAdapter(SearchHistoryDbEntityAdapter());
 
     _searchBox = await Hive.openBox<SearchHistoryDbEntity>('search_history');
+
+    alarmBox = await Hive.openBox('alarm');
     // _searchBox?.clear(); // 박스 값들 삭제
   }
 }

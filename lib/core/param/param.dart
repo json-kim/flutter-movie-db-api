@@ -19,6 +19,9 @@ class Param with _$Param {
 
   const factory Param.moviePopular({@Default(1) int page}) = MoviePopular;
 
+  const factory Param.movieUpcoming(
+      {@Default(1) int page, @Default('KR') String region}) = MovieUpcoming;
+
   const factory Param.movieNowPlaying({@Default(1) int page}) = MovieNowPlaying;
 
   const factory Param.keywordWithMovie(int movieId) = KeywordWithMovie;
@@ -56,6 +59,8 @@ String paramToUrl(Param param, String language) {
         '${kBaseUrl}search/movie?api_key=$kApiKey&language=$language&page=$page&query=${queryChange(query)}',
     moviePopular: (int page) =>
         '${kBaseUrl}movie/popular?api_key=$kApiKey&language=$language&page=$page',
+    movieUpcoming: (int page, String region) =>
+        '${kBaseUrl}movie/upcoming?api_key=$kApiKey&language=$language&page=$page&region=$region',
     movieNowPlaying: (int page) =>
         '${kBaseUrl}movie/now_playing?api_key=$kApiKey&language=$language&page=$page',
     keywordWithMovie: (int movieId) =>

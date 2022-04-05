@@ -22,7 +22,6 @@ import 'package:movie_search/presentation/review_edit/review_edit_view_model.dar
 import 'package:movie_search/ui/navigator_key.dart';
 import 'package:movie_search/ui/theme.dart';
 import 'package:provider/provider.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
 
 import 'component/credit_sliver_list.dart';
 import 'component/similar_sliver_list.dart';
@@ -299,8 +298,13 @@ Widget _buildAppBar(Size size, MovieDetail movieDetail, bool isBookmarked,
       clipBehavior: Clip.none,
       children: [
         movieDetail.backdropPath == null
-            ? Container(
-                color: Colors.black,
+            ? CachedNetworkImage(
+                imageUrl: kBackdropUrl + movieDetail.posterPath!,
+                errorWidget: (context, url, error) =>
+                    Container(color: Colors.black),
+                fit: BoxFit.cover,
+                height: size.height,
+                width: size.width,
               )
             : CachedNetworkImage(
                 imageUrl: kBackdropUrl + movieDetail.backdropPath!,

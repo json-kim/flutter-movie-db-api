@@ -57,6 +57,7 @@ import 'package:movie_search/domain/usecase/movie/get_movie_detail_use_case.dart
 import 'package:movie_search/domain/usecase/movie/get_movie_now_playing_use_case.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_popular_use_case.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_similar_use_case.dart';
+import 'package:movie_search/domain/usecase/movie/get_movie_upcoming_use_case.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_with_genre_use_case.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_with_query_use_case.dart';
 import 'package:movie_search/domain/usecase/person/get_person_detail_use_case.dart';
@@ -76,6 +77,7 @@ import 'package:movie_search/presentation/auth/auth_view_model.dart';
 import 'package:movie_search/presentation/movie_bookmark/movie_bookmark_view_model.dart';
 import 'package:movie_search/presentation/movie_home/movie_home_view_model.dart';
 import 'package:movie_search/presentation/movie_search/movie_search_view_model.dart';
+import 'package:movie_search/presentation/movie_soon/movie_soon_view_model.dart';
 import 'package:movie_search/presentation/setting/setting_view_model.dart';
 import 'package:movie_search/service/hive_service.dart';
 import 'package:movie_search/service/package_info_service.dart';
@@ -265,6 +267,9 @@ Future<List<SingleChildWidget>> setProvider() async {
       create: (context) => GetMovieNowPlayingUseCase(movieDataRepository),
     ),
     Provider(
+      create: (context) => GetMovieUpcomingUseCase(movieDataRepository),
+    ),
+    Provider(
       create: (context) => GetMovieWithGenreUseCase(movieDataRepository),
     ),
     Provider(
@@ -321,7 +326,12 @@ Future<List<SingleChildWidget>> setProvider() async {
         deleteBackupUseCase,
         resetUseCase,
       ),
-    )
+    ),
+    ChangeNotifierProvider(
+      create: (context) => MovieSoonViewModel(
+        context.read<GetMovieUpcomingUseCase>(),
+      ),
+    ),
   ];
 
   return [...usecaseProviders, ...viewModelProviders];

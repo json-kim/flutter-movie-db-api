@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:movie_search/presentation/movie_bookmark/movie_bookmark_screen.dart';
 import 'package:movie_search/presentation/movie_home/movie_home_screen.dart';
+import 'package:movie_search/presentation/movie_soon/movie_soon_screen.dart';
 
 import 'movie_search/movie_search_screen.dart';
 
@@ -18,6 +19,7 @@ class _MovieTabScreenState extends State<MovieTabScreen> {
   final List<Widget> _pages = [
     const MovieHomeScreen(),
     const MovieSearchScreen(),
+    const MovieSoonScreen(),
     const MovieBookmarkScreen(),
   ];
 
@@ -49,6 +51,8 @@ class _MovieTabScreenState extends State<MovieTabScreen> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: '홈'),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: '검색'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.movie_filter_rounded), label: '공개 예정'),
           BottomNavigationBarItem(icon: Icon(Icons.menu_book), label: '마이 노트'),
         ],
       ),

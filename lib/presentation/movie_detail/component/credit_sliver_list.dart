@@ -85,6 +85,7 @@ class CreditSliverList extends StatelessWidget {
                                           ? Image.asset(
                                               'asset/image/avatar_placeholder.png',
                                               fit: BoxFit.cover,
+                                              width: double.infinity,
                                             )
                                           : CachedNetworkImage(
                                               imageUrl: kProfileUrl +
@@ -93,22 +94,22 @@ class CreditSliverList extends StatelessWidget {
                                               width: double.infinity,
                                               errorWidget:
                                                   (context, url, error) =>
-                                                      const Icon(Icons.error),
+                                                      Image.asset(
+                                                'asset/image/avatar_placeholder.png',
+                                                fit: BoxFit.cover,
+                                                width: double.infinity,
+                                              ),
                                             ),
                                     ),
-                                    FittedBox(
-                                      child: Text(
-                                        state.data[idx].name,
-                                        style: const TextStyle(
-                                            color: Colors.black, fontSize: 16),
-                                      ),
+                                    Text(
+                                      state.data[idx].name,
+                                      style: const TextStyle(
+                                          color: Colors.black, fontSize: 16),
                                     ),
-                                    FittedBox(
-                                      child: Text(
-                                        state.data[idx].character,
-                                        style: const TextStyle(
-                                            color: Colors.black, fontSize: 12),
-                                      ),
+                                    Text(
+                                      state.data[idx].character,
+                                      style: const TextStyle(
+                                          color: Colors.black, fontSize: 12),
                                     ),
                                   ],
                                 ),
