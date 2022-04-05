@@ -65,6 +65,8 @@ dependencies:
   # util
   intl: ^0.17.0
   logger: ^1.1.0
+  uuid: ^3.0.6
+  dart_date: ^1.1.1
 
   # pagination
   infinite_scroll_pagination: ^3.1.0
@@ -72,6 +74,8 @@ dependencies:
   # firebase (auth)
   firebase_core: ^1.12.0
   firebase_auth: ^3.3.7
+  firebase_storage: ^10.2.10
+  cloud_firestore: ^3.1.11
   google_sign_in: ^5.2.4
   sign_in_with_apple: ^3.3.0
   crypto: ^3.0.1

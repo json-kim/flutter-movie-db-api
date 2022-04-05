@@ -11,6 +11,7 @@ import 'package:movie_search/data/data_source/remote/auth/kakao_auth_api.dart';
 import 'package:movie_search/data/data_source/remote/auth/kakao_user_api.dart';
 import 'package:movie_search/data/data_source/remote/auth/naver_auth_api.dart';
 import 'package:movie_search/data/data_source/remote/auth/naver_user_api.dart';
+import 'package:movie_search/data/data_source/remote/firebase/backup_remote_data_source.dart';
 import 'package:movie_search/data/data_source/remote/firebase/firebase_auth_remote_data_source.dart';
 import 'package:movie_search/data/data_source/remote/movie_remote_data_source.dart';
 import 'package:movie_search/data/repository/auth/apple_auth_repository_impl.dart';
@@ -18,6 +19,7 @@ import 'package:movie_search/data/repository/auth/fauth_repository_impl.dart';
 import 'package:movie_search/data/repository/auth/google_auth_repository_impl.dart';
 import 'package:movie_search/data/repository/auth/kakao_auth_repository_impl.dart';
 import 'package:movie_search/data/repository/auth/naver_auth_repository_impl.dart';
+import 'package:movie_search/data/repository/backup/backup_repository_impl.dart';
 import 'package:movie_search/data/repository/bookmark_data/bookmark_movie_repository_impl.dart';
 import 'package:movie_search/data/repository/bookmark_data/bookmark_person_repository_impl.dart';
 import 'package:movie_search/data/repository/movie_data/cast_data_repository_impl.dart';
@@ -39,6 +41,11 @@ import 'package:movie_search/domain/usecase/auth/google_login_use_case.dart';
 import 'package:movie_search/domain/usecase/auth/kakao_login_use_case.dart';
 import 'package:movie_search/domain/usecase/auth/logout_use_case.dart';
 import 'package:movie_search/domain/usecase/auth/naver_login_use_case.dart';
+import 'package:movie_search/domain/usecase/backup/delete_backup_use_case.dart';
+import 'package:movie_search/domain/usecase/backup/load_backup_data_use_case.dart';
+import 'package:movie_search/domain/usecase/backup/load_backup_list_use_case.dart';
+import 'package:movie_search/domain/usecase/backup/restore_backup_data_use_case.dart';
+import 'package:movie_search/domain/usecase/backup/save_backup_use_case.dart';
 import 'package:movie_search/domain/usecase/bookmark/delete_bookmark_data_use_case.dart';
 import 'package:movie_search/domain/usecase/bookmark/find_bookmark_data_use_case.dart';
 import 'package:movie_search/domain/usecase/bookmark/get_bookmark_datas_use_case.dart';
@@ -53,6 +60,7 @@ import 'package:movie_search/domain/usecase/movie/get_movie_similar_use_case.dar
 import 'package:movie_search/domain/usecase/movie/get_movie_with_genre_use_case.dart';
 import 'package:movie_search/domain/usecase/movie/get_movie_with_query_use_case.dart';
 import 'package:movie_search/domain/usecase/person/get_person_detail_use_case.dart';
+import 'package:movie_search/domain/usecase/reset_use_case.dart';
 import 'package:movie_search/domain/usecase/review/create_review_use_case.dart';
 import 'package:movie_search/domain/usecase/review/delete_review_use_case.dart';
 import 'package:movie_search/domain/usecase/review/get_review_by_movie_use_case.dart';
@@ -68,6 +76,7 @@ import 'package:movie_search/presentation/auth/auth_view_model.dart';
 import 'package:movie_search/presentation/movie_bookmark/movie_bookmark_view_model.dart';
 import 'package:movie_search/presentation/movie_home/movie_home_view_model.dart';
 import 'package:movie_search/presentation/movie_search/movie_search_view_model.dart';
+import 'package:movie_search/presentation/setting/setting_view_model.dart';
 import 'package:movie_search/service/hive_service.dart';
 import 'package:movie_search/service/sql_service.dart';
 import 'package:provider/provider.dart';
@@ -94,6 +103,7 @@ Future<List<SingleChildWidget>> setProvider() async {
   final personLocalDataSource = PersonLocalDataSource(db);
   final reviewLocalDataSource = ReviewLocalDataSource(db);
   final searchHistoryLocalDataSource = SearchHistoryLocalDataSource(box!);
+  final backupDataRemoteDataSource = BackupRemoteDataSource();
 
   // 레포지토리
   final fauthRepository = FAuthRepositoryImpl(firebaseAuthRemoteDataSource);
@@ -124,6 +134,7 @@ Future<List<SingleChildWidget>> setProvider() async {
   final videoDataRepository = VideoDataRepositoryImpl(movieRemoteDataSource);
   final personDataRepository = PersonDataRepositoryImpl(movieRemoteDataSource);
   final castDataRepository = CastDataRepositoryImpl(movieRemoteDataSource);
+  final backupRepository = BackupRepositoryImpl(backupDataRemoteDataSource);
 
   // 유스케이스
   final kakaoLoginUseCase = KakaoLoginUseCase(
@@ -142,9 +153,22 @@ Future<List<SingleChildWidget>> setProvider() async {
     kakaoRepository,
     naverRepository,
   );
+  final saveBackupUseCase = SaveBackupUseCase(backupRepository,
+      bookmarkDataRepository, bookmarkPersonRepository, reviewDataRepository);
+  final loadBackupDataUseCase = LoadBackupDataUseCase(backupRepository);
+  final loadBackupListUseCase = LoadBackupListUseCase(backupRepository);
+  final deleteBackupUseCase = DeleteBackupUseCase(backupRepository);
+  final restoreBackupDataUseCase = RestoreBackupDataUseCase(
+      bookmarkDataRepository,
+      bookmarkPersonRepository,
+      reviewDataRepository,
+      loadBackupDataUseCase);
+  final resetUseCase = ResetUseCase(
+      bookmarkDataRepository, bookmarkPersonRepository, reviewDataRepository);
 
   List<SingleChildWidget> usecaseProviders = [
     // 유스케이스
+
     // 검색 기록 유스케이스
     Provider(
         create: (context) =>
@@ -287,6 +311,15 @@ Future<List<SingleChildWidget>> setProvider() async {
         logoutUseCase,
       ),
     ),
+    ChangeNotifierProvider<SettingViewModel>(
+      create: (context) => SettingViewModel(
+        saveBackupUseCase,
+        loadBackupListUseCase,
+        restoreBackupDataUseCase,
+        deleteBackupUseCase,
+        resetUseCase,
+      ),
+    )
   ];
 
   return [...usecaseProviders, ...viewModelProviders];

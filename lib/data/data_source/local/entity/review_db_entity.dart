@@ -72,4 +72,8 @@ class ReviewDbEntity {
       viewingDate: DateTime.parse(viewingDate),
     );
   }
+
+  String toRawValues() {
+    return '("$id", $movieId, "$movieTitle", "$posterPath", $starRating, "$content", "$createdAt", "$viewingDate")';
+  }
 }

@@ -113,4 +113,8 @@ class PersonDbEntity {
   String toString() {
     return '{PersonDbEntity : $id}';
   }
+
+  String toRawValues() {
+    return '($id, $gender, "$deathday", "$birthday", "$biography", "$homepage", "$imdbId", "$knownForDepartment", "$name", "$placeOfBirth", $popularity, "$profilePath", $adult, "$alsoKnownAs")';
+  }
 }

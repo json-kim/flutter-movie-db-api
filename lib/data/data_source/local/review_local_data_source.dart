@@ -30,7 +30,20 @@ class ReviewLocalDataSource {
           maps.map((e) => ReviewDbEntity.fromJson(e)).toList();
       return Result.success(entities);
     } else {
-      return Result.error('$runtimeType.getReviews : 에러 발생 - 저장된 리뷰가 없습니다.');
+      return Result.success([]);
+    }
+  }
+
+  /// db에서 모든 리뷰 가져오기
+  Future<Result<List<ReviewDbEntity>>> getAllReviews() async {
+    final List<Map<String, dynamic>> maps = await _db.query('review');
+
+    if (maps.isNotEmpty) {
+      final List<ReviewDbEntity> entities =
+          maps.map((e) => ReviewDbEntity.fromJson(e)).toList();
+      return Result.success(entities);
+    } else {
+      return Result.success([]);
     }
   }
 
@@ -78,5 +91,33 @@ class ReviewLocalDataSource {
     } else {
       return const Result.success(true);
     }
+  }
+
+  /// db에 전부 삭제
+  Future<Result<void>> deleteAllReviews() async {
+    await _db.delete('review');
+
+    return Result.success(null);
+  }
+
+  /// 백업 데이터로 db 초기화
+  Future<Result<void>> restoreReviews(List<ReviewDbEntity> reviews) async {
+    final batch = _db.batch();
+    batch.delete('review');
+
+    if (reviews.isNotEmpty) {
+      final valueString =
+          reviews.map((entity) => entity.toRawValues()).join(',');
+      batch.rawInsert('''
+      INSERT INTO review
+        (id, movieId, movieTitle, posterPath, starRating, content, createdAt, viewingDate)
+      VALUES
+        $valueString
+      ''');
+    }
+
+    await batch.commit();
+
+    return Result.success(null);
   }
 }

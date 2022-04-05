@@ -19,6 +19,32 @@ class Review {
     required this.viewingDate,
   });
 
+  factory Review.fromJson(Map<String, dynamic> json) {
+    return Review(
+      id: json['id'],
+      movieId: json['movieId'],
+      movieTitle: json['movieTitle'],
+      posterPath: json['posterPath'],
+      starRating: json['starRating'],
+      content: json['content'],
+      createdAt: DateTime.parse(json['createdAt']),
+      viewingDate: DateTime.parse(json['viewingDate']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'movieId': movieId,
+      'movieTitle': movieTitle,
+      'posterPath': posterPath,
+      'starRating': starRating,
+      'content': content,
+      'createdAt': createdAt.toIso8601String(),
+      'viewingDate': viewingDate.toIso8601String(),
+    };
+  }
+
   @override
   String toString() {
     return 'Review {id: $id, content: $content}';

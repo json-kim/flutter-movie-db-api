@@ -86,4 +86,57 @@ class BookmarkMovieRepositoryImpl
           '$runtimeType : saveData() 에러 발생 \n Movie => Entity 파싱 에러 \n ${e.toString()}');
     }
   }
+
+  @override
+  Future<Result<List<Movie>>> loadAllDatas() async {
+    final result = await _dataSource.getAllMovies();
+
+    return result.when(
+      success: (entities) {
+        try {
+          final List<Movie> movies =
+              entities.map((entity) => entity.toMovie()).toList();
+
+          return Result.success(movies);
+        } catch (e) {
+          return Result.error(
+              '$runtimeType : loadAllDatas() 에러 발생 \n Entity => Movie 파싱 에러 \n ${e.toString()}');
+        }
+      },
+      error: (message) {
+        return Result.error(message);
+      },
+    );
+  }
+
+  @override
+  Future<Result<void>> restoreDatas(List<Movie> datas) async {
+    final entities =
+        datas.map((movie) => MovieDbEntity.fromMovie(movie)).toList();
+
+    final result = await _dataSource.restoreMovies(entities);
+
+    return result.when(
+      success: (restoreResult) {
+        return Result.success(restoreResult);
+      },
+      error: (message) {
+        return Result.error(message);
+      },
+    );
+  }
+
+  @override
+  Future<Result<void>> deleteAll() async {
+    final result = await _dataSource.deleteAllMovies();
+
+    return result.when(
+      success: (_) {
+        return Result.success(null);
+      },
+      error: (message) {
+        return Result.error(message);
+      },
+    );
+  }
 }

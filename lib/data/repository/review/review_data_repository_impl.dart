@@ -71,4 +71,45 @@ class ReviewDataRepositoryImple implements ReviewDataRepository {
       return Result.error(message);
     });
   }
+
+  @override
+  Future<Result<List<Review>>> loadAllReviews() async {
+    final result = await _dataSource.getAllReviews();
+
+    return result.when(success: (entities) {
+      final List<Review> reviews = entities.map((e) => e.toReview()).toList();
+
+      return Result.success(reviews);
+    }, error: (message) {
+      return Result.error(message);
+    });
+  }
+
+  @override
+  Future<Result<void>> restoreReviews(List<Review> reviews) async {
+    final entities =
+        reviews.map((review) => ReviewDbEntity.fromReview(review)).toList();
+
+    final result = await _dataSource.restoreReviews(entities);
+
+    return result.when(
+      success: (restoreResult) {
+        return Result.success(restoreResult);
+      },
+      error: (message) {
+        return Result.error(message);
+      },
+    );
+  }
+
+  @override
+  Future<Result<void>> deleteAll() async {
+    final result = await _dataSource.deleteAllReviews();
+
+    return result.when(success: (_) {
+      return Result.success(null);
+    }, error: (message) {
+      return Result.error(message);
+    });
+  }
 }

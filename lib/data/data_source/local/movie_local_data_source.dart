@@ -35,10 +35,28 @@ class MovieLocalDataSource {
             maps.map((e) => MovieDbEntity.fromJson(e)).toList();
         return Result.success(entities);
       } else {
-        return Result.error('$runtimeType : getMovies 에러 발생 - 저장된 영화가 없습니다.');
+        return Result.success([]);
       }
     } catch (e) {
       return Result.error('$runtimeType : getMovies 에러 발생 \n${e.toString()}');
+    }
+  }
+
+  // db에서 모든 영화 가져오기
+  Future<Result<List<MovieDbEntity>>> getAllMovies() async {
+    try {
+      final List<Map<String, dynamic>> maps = await _db.query('movie');
+
+      if (maps.isNotEmpty) {
+        final List<MovieDbEntity> entities =
+            maps.map((e) => MovieDbEntity.fromJson(e)).toList();
+        return Result.success(entities);
+      } else {
+        return Result.success([]);
+      }
+    } catch (e) {
+      return Result.error(
+          '$runtimeType : getAllMovies 에러 발생 \n${e.toString()}');
     }
   }
 
@@ -71,5 +89,33 @@ class MovieLocalDataSource {
     } catch (e) {
       return Result.error('$runtimeType : deleteMovie 에러 발생 \n${e.toString()}');
     }
+  }
+
+  /// db 전부 삭제
+  Future<Result<void>> deleteAllMovies() async {
+    await _db.delete('movie');
+
+    return Result.success(null);
+  }
+
+  /// 백업 데이터로 db 초기화
+  Future<Result<void>> restoreMovies(List<MovieDbEntity> movies) async {
+    final batch = _db.batch();
+    batch.delete('movie');
+
+    if (movies.isNotEmpty) {
+      final valueString =
+          movies.map((entity) => entity.toRawValues()).join(',');
+      batch.rawInsert('''
+      INSERT INTO movie
+        (id, title, posterPath, backdropPath, adult, genreIds, originalLanguage, originalTitle, overview, popularity, popularity, releaseDate, video, voteAverage, voteCount, bookmarkTime)
+      VALUES
+        $valueString
+      ''');
+    }
+
+    await batch.commit();
+
+    return Result.success(null);
   }
 }

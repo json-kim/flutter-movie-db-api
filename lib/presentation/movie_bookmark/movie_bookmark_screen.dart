@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_stars/flutter_rating_stars.dart';
+import 'package:logger/logger.dart';
 import 'package:movie_search/core/util/constants.dart';
 import 'package:movie_search/domain/model/movie/movie.dart';
 import 'package:movie_search/domain/model/person/person.dart';
@@ -386,12 +387,17 @@ class _MovieBookmarkScreenState extends State<MovieBookmarkScreen>
 
     return IconButton(
       onPressed: () {
-        // viewModel.onEvent(AuthEvent.logout());
-        Navigator.of(context).push(
+        Navigator.of(context)
+            .push(
           MaterialPageRoute(
             builder: (context) => SettingScreen(),
           ),
-        );
+        )
+            .then((_) {
+          context
+              .read<MovieBookmarkViewModel>()
+              .onEvent(MovieBookmarkEvent.load());
+        });
       },
       icon: Container(
         width: 28,

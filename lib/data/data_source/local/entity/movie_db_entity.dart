@@ -118,4 +118,8 @@ class MovieDbEntity {
   String toString() {
     return 'MovieDbEntity{id: $id}';
   }
+
+  String toRawValues() {
+    return '($id, "$title", "$posterPath", "$backdropPath", $adult, "$genreIds", "$originalLanguage", "$originalTitle", "$overview", $popularity, $popularity, "$releaseDate", $video, $voteAverage, $voteCount, $bookmarkTime)';
+  }
 }

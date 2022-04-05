@@ -7,7 +7,7 @@ class PersonLocalDataSource {
 
   PersonLocalDataSource(this._db);
 
-  // db에서 아이디를 가지고 인물정보 가져오기기
+  /// db에서 아이디를 가지고 인물정보 가져오기기
   Future<Result<PersonDbEntity>> getPersonById(int id) async {
     try {
       final List<Map<String, dynamic>> maps =
@@ -24,7 +24,7 @@ class PersonLocalDataSource {
     }
   }
 
-  // db에서 인물리스트 가져오기
+  /// db에서 인물리스트 가져오기
   Future<Result<List<PersonDbEntity>>> getPersons(int page) async {
     try {
       final List<Map<String, dynamic>> maps =
@@ -35,14 +35,32 @@ class PersonLocalDataSource {
             maps.map((e) => PersonDbEntity.fromJson(e)).toList();
         return Result.success(entities);
       } else {
-        return Result.error('$runtimeType : getPersons 에러 발생 - 저장된 인물이 없습니다.');
+        return Result.success([]);
       }
     } catch (e) {
       return Result.error('$runtimeType : getPersons 에러 발생 \n${e.toString()}');
     }
   }
 
-  // db에 인물 저장하기
+  /// db에서 모든 인물정보 가져오기
+  Future<Result<List<PersonDbEntity>>> getAllPersons() async {
+    try {
+      final List<Map<String, dynamic>> maps = await _db.query('person');
+
+      if (maps.isNotEmpty) {
+        final List<PersonDbEntity> entities =
+            maps.map((e) => PersonDbEntity.fromJson(e)).toList();
+        return Result.success(entities);
+      } else {
+        return Result.success([]);
+      }
+    } catch (e) {
+      return Result.error(
+          '$runtimeType : getAllPersons 에러 발생 \n${e.toString()}');
+    }
+  }
+
+  /// db에 인물 저장하기
   Future<Result<int>> insertPerson(PersonDbEntity person) async {
     try {
       final result = await _db.insert('person', person.toJson());
@@ -58,7 +76,7 @@ class PersonLocalDataSource {
     }
   }
 
-  // db에서 인물 삭제하기
+  /// db에서 인물 삭제하기
   Future<Result<int>> deletePerson(int id) async {
     try {
       final result =
@@ -73,5 +91,33 @@ class PersonLocalDataSource {
       return Result.error(
           '$runtimeType : deletePerson 에러 발생 \n${e.toString()}');
     }
+  }
+
+  /// db 전부 삭제
+  Future<Result<void>> deleteAllPersons() async {
+    await _db.delete('person');
+
+    return Result.success(null);
+  }
+
+  /// 백업 데이터로 db 초기화
+  Future<Result<void>> restorePersons(List<PersonDbEntity> persons) async {
+    final batch = _db.batch();
+    batch.delete('person');
+
+    if (persons.isNotEmpty) {
+      final valueString =
+          persons.map((entity) => entity.toRawValues()).join(',');
+      batch.rawInsert('''
+      INSERT INTO person
+        (id, gender, deathday, birthday, biography, homepage, imdbId, knownForDepartment, name, placeOfBirth, popularity, profilePath, adult, alsoKnownAs)
+      VALUES
+        $valueString
+      ''');
+    }
+
+    await batch.commit();
+
+    return Result.success(null);
   }
 }

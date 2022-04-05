@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:movie_search/domain/model/movie/movie.dart';
 import 'package:movie_search/domain/model/person/person.dart';
 import 'package:movie_search/domain/usecase/bookmark/get_bookmark_datas_use_case.dart';
@@ -35,6 +36,7 @@ class MovieBookmarkViewModel with ChangeNotifier {
     await _loadBookmarkMovie(_state.moviePage);
     await _loadBookmarkPerson(_state.personPage);
     await _loadReviews(_state.reviewPage);
+
     _state = _state.copyWith(isLoading: false);
     notifyListeners();
   }

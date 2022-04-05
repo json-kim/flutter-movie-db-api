@@ -74,4 +74,54 @@ class BookmarkPersonRepositoryImpl
           '$runtimeType.saveData : Person => entity 파싱 에러 발생 \n$e');
     }
   }
+
+  @override
+  Future<Result<List<Person>>> loadAllDatas() async {
+    final result = await _dataSource.getAllPersons();
+
+    return result.when(success: (entityList) {
+      try {
+        final List<Person> personList =
+            entityList.map((entity) => entity.toPerson()).toList();
+
+        return Result.success(personList);
+      } catch (e) {
+        return Result.error(
+            '$runtimeType.loadAllDatas : entity => Person 파싱 에러 발생\n$e');
+      }
+    }, error: (message) {
+      return Result.error(message);
+    });
+  }
+
+  @override
+  Future<Result<void>> restoreDatas(List<Person> datas) async {
+    final entities =
+        datas.map((person) => PersonDbEntity.fromPerson(person)).toList();
+
+    final result = await _dataSource.restorePersons(entities);
+
+    return result.when(
+      success: (restoreResult) {
+        return Result.success(restoreResult);
+      },
+      error: (message) {
+        return Result.error(message);
+      },
+    );
+  }
+
+  @override
+  Future<Result<void>> deleteAll() async {
+    final result = await _dataSource.deleteAllPersons();
+
+    return result.when(
+      success: (_) {
+        return Result.success(null);
+      },
+      error: (message) {
+        return Result.error(message);
+      },
+    );
+  }
 }
