@@ -8,6 +8,7 @@ import 'package:movie_search/domain/usecase/review/data/review_builder.dart';
 import 'package:movie_search/domain/usecase/review/get_review_by_movie_use_case.dart';
 import 'package:movie_search/presentation/review_edit/review_edit_state.dart';
 import 'package:movie_search/presentation/review_edit/review_edit_ui_event.dart';
+import 'package:share_plus/share_plus.dart';
 
 import 'review_edit_event.dart';
 
@@ -48,10 +49,16 @@ class ReviewEditViewModel with ChangeNotifier {
 
   void onEvent(ReviewEditEvent event) {
     event.when(
-        setRating: _setRating,
-        setDate: _setDate,
-        changeMode: _changeMode,
-        saveReview: _saveReview);
+      setRating: _setRating,
+      setDate: _setDate,
+      changeMode: _changeMode,
+      saveReview: _saveReview,
+      shareReview: _shareReview,
+    );
+  }
+
+  void _shareReview() {
+    Share.share('${_builder.movieTitle!}\n${state.content}');
   }
 
   void _changeMode(bool isEditMode) {

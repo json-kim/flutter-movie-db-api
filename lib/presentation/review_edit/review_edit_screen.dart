@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_stars/flutter_rating_stars.dart';
 import 'package:intl/intl.dart';
-import 'package:movie_search/domain/model/movie_detail/movie_detail.dart';
 import 'package:movie_search/presentation/review_edit/review_edit_event.dart';
 import 'package:provider/provider.dart';
 
@@ -66,18 +65,25 @@ class _ReviewEditScreenState extends State<ReviewEditScreen> {
             },
             icon: const Icon(Icons.clear)),
         actions: [
+          if (!state.isEditMode)
+            IconButton(
+              onPressed: () {
+                viewModel.onEvent(ReviewEditEvent.shareReview());
+              },
+              icon: Icon(Icons.share),
+            ),
           state.isEditMode
               ? IconButton(
                   onPressed: () {
                     final String content = _textEditingController.text;
                     viewModel.onEvent(ReviewEditEvent.saveReview(content));
                   },
-                  icon: const Text('저장'))
+                  icon: const Icon(Icons.save))
               : IconButton(
                   onPressed: () {
                     viewModel.onEvent(const ReviewEditEvent.changeMode(true));
                   },
-                  icon: const Text('수정')),
+                  icon: const Icon(Icons.edit)),
         ],
       ),
       body: Padding(

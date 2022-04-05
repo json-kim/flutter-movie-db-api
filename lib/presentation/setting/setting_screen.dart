@@ -30,7 +30,7 @@ class _SettingScreenState extends State<SettingScreen> {
     Future.microtask(() async {
       final viewModel = context.read<SettingViewModel>();
 
-      viewModel.uiEventStream.listen((event) {
+      _subscription = viewModel.uiEventStream.listen((event) {
         event.when(
           snackBar: (message) {
             final snackBar = SnackBar(
@@ -84,8 +84,8 @@ class _SettingScreenState extends State<SettingScreen> {
 
   @override
   void dispose() {
-    _subscription?.cancel();
     super.dispose();
+    _subscription?.cancel();
   }
 
   @override
