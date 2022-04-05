@@ -24,6 +24,16 @@ class AuthScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // 로고 이미지
+                  Image.asset(
+                    'asset/icon/vector_icon.png',
+                    width: 40.w,
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    '영화 리뷰',
+                    style: TextStyle(fontSize: 24),
+                  ),
+                  const SizedBox(height: 24),
                   SizedBox(
                     width: 60.w,
                     child: SignInButton(Buttons.Google, text: '구글 로그인',

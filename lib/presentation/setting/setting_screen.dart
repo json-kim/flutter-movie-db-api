@@ -6,6 +6,7 @@ import 'package:movie_search/domain/model/backup/backup_item.dart';
 import 'package:movie_search/presentation/auth/auth_event.dart';
 import 'package:movie_search/presentation/auth/auth_view_model.dart';
 import 'package:movie_search/presentation/global_components/check_dialog.dart';
+import 'package:movie_search/presentation/info/info_screen.dart';
 import 'package:movie_search/presentation/setting/setting_event.dart';
 import 'package:movie_search/presentation/setting/setting_view_model.dart';
 import 'package:provider/provider.dart';
@@ -240,7 +241,13 @@ class _SettingScreenState extends State<SettingScreen> {
                 ),
                 const Divider(),
                 InkWell(
-                  onTap: () async {},
+                  onTap: () async {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => InfoScreen(),
+                      ),
+                    );
+                  },
                   child: SizedBox(
                     height: 48,
                     child: Padding(

@@ -78,11 +78,13 @@ import 'package:movie_search/presentation/movie_home/movie_home_view_model.dart'
 import 'package:movie_search/presentation/movie_search/movie_search_view_model.dart';
 import 'package:movie_search/presentation/setting/setting_view_model.dart';
 import 'package:movie_search/service/hive_service.dart';
+import 'package:movie_search/service/package_info_service.dart';
 import 'package:movie_search/service/sql_service.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
 Future<List<SingleChildWidget>> setProvider() async {
+  await PackageInfoService.instance.init();
   await SqlService.instance.init();
   final db = SqlService.instance.db;
 
