@@ -1,4 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:movie_search/core/error/error_api.dart';
+import 'package:movie_search/core/result/result.dart';
 import 'package:movie_search/domain/repository/fauth_repository.dart';
 import 'package:movie_search/domain/repository/oauth_api_repository.dart';
 
@@ -12,27 +14,31 @@ class NaverLoginUseCase {
     this._fAuthRepository,
   );
 
-  Future<void> call() async {
-    // 네이버 계정으로 로그인(토큰 발급)
-    await _naverAuthRepository.login();
+  Future<Result<void>> call() async {
+    return ErrorApi.handleAuthError(() async {
+      // 네이버 계정으로 로그인(토큰 발급)
+      await _naverAuthRepository.login();
 
-    // 네이버 유저정보 가져오기
-    final user = await _naverAuthRepository.getUserData();
+      // 네이버 유저정보 가져오기
+      final user = await _naverAuthRepository.getUserData();
 
-    // 커스텀 토큰 발급
-    final customToken = await _fAuthRepository.issueCustomToken(user);
+      // 커스텀 토큰 발급
+      final customToken = await _fAuthRepository.issueCustomToken(user);
 
-    // 파이어베이스 인증
-    await _auth.signInWithCustomToken(customToken);
+      // 파이어베이스 인증
+      await _auth.signInWithCustomToken(customToken);
 
-    // 유저정보 업데이트
-    final currentUser = _auth.currentUser;
-    final idTokenResult = await currentUser?.getIdTokenResult();
+      // 유저정보 업데이트
+      final currentUser = _auth.currentUser;
+      final idTokenResult = await currentUser?.getIdTokenResult();
 
-    final claims = idTokenResult?.claims;
-    if (claims != null) {
-      await currentUser?.updateDisplayName(claims['naverUserName']);
-      await currentUser?.updatePhotoURL(claims['naverPhotoUrl']);
-    }
+      final claims = idTokenResult?.claims;
+      if (claims != null) {
+        await currentUser?.updateDisplayName(claims['naverUserName']);
+        await currentUser?.updatePhotoURL(claims['naverPhotoUrl']);
+      }
+
+      return Result.success(null);
+    }, '$runtimeType.call()');
   }
 }

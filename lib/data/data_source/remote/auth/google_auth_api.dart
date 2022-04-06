@@ -18,7 +18,7 @@ class GoogleAuthApi {
     final googleAccount = await _googleSignIn.signIn();
 
     if (googleAccount == null) {
-      throw BaseException('로그인 캔슬');
+      throw AuthException(LoginMethod.google, message: '로그인 캔슬');
     }
 
     return googleAccount;

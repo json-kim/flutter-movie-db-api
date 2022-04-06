@@ -10,4 +10,8 @@ class AuthException extends BaseException {
   LoginMethod loginMethod;
 
   AuthException(this.loginMethod, {String? message}) : super(message);
+
+  @override
+  String toString() =>
+      'AuthException(loginMethod: $loginMethod, message: $message)';
 }
