@@ -17,6 +17,7 @@ import 'package:movie_search/presentation/movie_detail/movie_detail_screen.dart'
 import 'package:movie_search/presentation/movie_detail/movie_detail_view_model.dart';
 import 'package:movie_search/presentation/movie_soon/movie_soon_event.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:dart_date/dart_date.dart';
 import 'package:provider/provider.dart';
 
 import 'movie_soon_view_model.dart';
@@ -190,25 +191,12 @@ class UpcomingMovieCard extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          IconButton(
-                            padding: EdgeInsets.all(4),
-                            onPressed: () {
+                          _buildAlarmButton(
+                            movie.releaseDate,
+                            viewModel.isAlarmed(movie.id),
+                            () {
                               viewModel.onEvent(MovieSoonEvent.alarm(movie));
                             },
-                            icon: Column(
-                              children: [
-                                Icon(
-                                  viewModel.isAlarmed(movie.id)
-                                      ? Icons.notifications_active
-                                      : Icons.notifications_active_outlined,
-                                  size: 20.sp,
-                                ),
-                                Text(
-                                  '알람받기',
-                                  style: TextStyle(fontSize: 11.sp),
-                                ),
-                              ],
-                            ),
                           ),
                         ],
                       ),
@@ -241,5 +229,40 @@ class UpcomingMovieCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildAlarmButton(
+      String? releaseDate, bool isAlarmed, void Function() onPressed) {
+    if (releaseDate == null) {
+      return Text('날짜 미정');
+    }
+
+    final date = DateTime.parse(releaseDate);
+    final diff = -date.differenceInDays(DateTime.now());
+    // 오늘 공개
+    if (diff == 0) {
+      return Text('오늘 공개');
+    } else if (diff > 0) {
+      return Text('$diff일전 공개');
+    } else {
+      return IconButton(
+        padding: EdgeInsets.all(4),
+        onPressed: onPressed,
+        icon: Column(
+          children: [
+            Icon(
+              isAlarmed
+                  ? Icons.notifications_active
+                  : Icons.notifications_active_outlined,
+              size: 20.sp,
+            ),
+            Text(
+              '알람받기',
+              style: TextStyle(fontSize: 11.sp),
+            ),
+          ],
+        ),
+      );
+    }
   }
 }
