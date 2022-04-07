@@ -60,6 +60,14 @@ class PersonLocalDataSource {
     }
   }
 
+  /// db에 저장된 인물의 개수 가져오기
+  Future<int> getCountPersons() async {
+    final result = await _db.rawQuery('SELECT COUNT(*) FROM person;');
+    final count = Sqflite.firstIntValue(result);
+
+    return count ?? 0;
+  }
+
   /// db에 인물 저장하기
   Future<Result<int>> insertPerson(PersonDbEntity person) async {
     try {

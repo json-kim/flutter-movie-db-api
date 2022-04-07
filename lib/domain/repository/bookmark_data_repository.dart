@@ -1,9 +1,10 @@
+import 'package:movie_search/core/page/page.dart';
 import 'package:movie_search/core/result/result.dart';
 
 abstract class BookmarkDataRepository<DataType, ParamType> {
   Future<Result<List<DataType>>> loadAllDatas();
 
-  Future<Result<List<DataType>>> loadDataList(int page);
+  Future<Result<Page<DataType>>> loadDataList(int page);
 
   Future<Result<DataType>> loadData(ParamType param);
 

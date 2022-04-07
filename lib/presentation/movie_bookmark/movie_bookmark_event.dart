@@ -6,7 +6,7 @@ part 'movie_bookmark_event.freezed.dart';
 
 @freezed
 class MovieBookmarkEvent with _$MovieBookmarkEvent {
-  const factory MovieBookmarkEvent.load({@Default(true) bool reset}) = Load;
+  const factory MovieBookmarkEvent.load() = Load;
   const factory MovieBookmarkEvent.orderChange(OrderType orderType) =
       OrderChange;
   const factory MovieBookmarkEvent.deleteReview(Review review) = DeleteReview;

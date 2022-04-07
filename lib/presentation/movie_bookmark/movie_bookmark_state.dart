@@ -10,12 +10,6 @@ part 'movie_bookmark_state.freezed.dart';
 class MovieBookmarkState with _$MovieBookmarkState {
   const factory MovieBookmarkState({
     @Default(OrderType.date(true)) OrderType orderType,
-    @Default([]) List<Movie> bookmarkMovies,
-    @Default([]) List<Person> bookmarkPerson,
-    @Default([]) List<Review> reviews,
-    @Default(1) moviePage,
-    @Default(1) personPage,
-    @Default(1) reviewPage,
     @Default(false) bool isLoading,
   }) = _MovieBookmarkState;
 }

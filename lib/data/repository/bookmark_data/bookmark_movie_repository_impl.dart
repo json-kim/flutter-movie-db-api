@@ -1,3 +1,4 @@
+import 'package:movie_search/core/page/page.dart';
 import 'package:movie_search/core/result/result.dart';
 import 'package:movie_search/data/data_source/local/entity/movie_db_entity.dart';
 import 'package:movie_search/data/data_source/local/movie_local_data_source.dart';
@@ -45,7 +46,9 @@ class BookmarkMovieRepositoryImpl
   }
 
   @override
-  Future<Result<List<Movie>>> loadDataList(int page) async {
+  Future<Result<Page<Movie>>> loadDataList(int page) async {
+    final count = await _dataSource.getCountMovies();
+    final totalPage = count ~/ 20 + 1;
     final result = await _dataSource.getMovies(page);
 
     return result.when(
@@ -54,7 +57,11 @@ class BookmarkMovieRepositoryImpl
           final List<Movie> movies =
               entities.map((entity) => entity.toMovie()).toList();
 
-          return Result.success(movies);
+          return Result.success(Page<Movie>(
+            currentPage: page,
+            items: movies,
+            lastPage: totalPage,
+          ));
         } catch (e) {
           return Result.error(
               '$runtimeType : loadDataList() 에러 발생 \n Entity => Movie 파싱 에러 \n ${e.toString()}');

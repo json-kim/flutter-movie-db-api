@@ -47,6 +47,14 @@ class ReviewLocalDataSource {
     }
   }
 
+  /// db에서 리뷰 개수 가져오기
+  Future<int> getReviewCount() async {
+    final result = await _db.rawQuery('SELECT COUNT(*) FROM review');
+    final count = Sqflite.firstIntValue(result);
+
+    return count ?? 0;
+  }
+
   /// db에 리뷰 삽입하기
   /// 이미 존재할 시 업데이트
   Future<Result<int>> insertReview(ReviewDbEntity reviewDbEntity) async {

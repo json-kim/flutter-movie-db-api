@@ -1,3 +1,4 @@
+import 'package:movie_search/core/page/page.dart';
 import 'package:movie_search/core/result/result.dart';
 import 'package:movie_search/data/data_source/local/entity/person_db_entity.dart';
 import 'package:movie_search/data/data_source/local/person_local_data_source.dart';
@@ -39,7 +40,9 @@ class BookmarkPersonRepositoryImpl
   }
 
   @override
-  Future<Result<List<Person>>> loadDataList(int page) async {
+  Future<Result<Page<Person>>> loadDataList(int page) async {
+    final count = await _dataSource.getCountPersons();
+    final totalPage = count ~/ 20 + 1;
     final result = await _dataSource.getPersons(page);
 
     return result.when(success: (entityList) {
@@ -47,7 +50,11 @@ class BookmarkPersonRepositoryImpl
         final List<Person> personList =
             entityList.map((entity) => entity.toPerson()).toList();
 
-        return Result.success(personList);
+        return Result.success(Page<Person>(
+          currentPage: page,
+          lastPage: totalPage,
+          items: personList,
+        ));
       } catch (e) {
         return Result.error(
             '$runtimeType.loadDataList : entity => Person 파싱 에러 발생\n$e');

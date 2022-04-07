@@ -1,3 +1,4 @@
+import 'package:movie_search/core/page/page.dart';
 import 'package:movie_search/core/result/result.dart';
 import 'package:movie_search/data/data_source/local/entity/review_db_entity.dart';
 import 'package:movie_search/data/data_source/local/review_local_data_source.dart';
@@ -47,13 +48,19 @@ class ReviewDataRepositoryImple implements ReviewDataRepository {
   }
 
   @override
-  Future<Result<List<Review>>> loadReviews(int page) async {
+  Future<Result<Page<Review>>> loadReviews(int page) async {
+    final count = await _dataSource.getReviewCount();
+    final totalPage = count ~/ 20 + 1;
     final result = await _dataSource.getReviews(page);
 
     return result.when(success: (entities) {
       final List<Review> reviews = entities.map((e) => e.toReview()).toList();
 
-      return Result.success(reviews);
+      return Result.success(Page<Review>(
+        currentPage: page,
+        lastPage: totalPage,
+        items: reviews,
+      ));
     }, error: (message) {
       return Result.error(message);
     });

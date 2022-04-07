@@ -1,3 +1,4 @@
+import 'package:movie_search/core/page/page.dart';
 import 'package:movie_search/core/result/result.dart';
 
 import '../model/review/review.dart';
@@ -5,7 +6,7 @@ import '../model/review/review.dart';
 abstract class ReviewDataRepository {
   Future<Result<List<Review>>> loadAllReviews();
 
-  Future<Result<List<Review>>> loadReviews(int page);
+  Future<Result<Page<Review>>> loadReviews(int page);
 
   Future<Result<Review>> loadReviewByMovie(int movieId);
 

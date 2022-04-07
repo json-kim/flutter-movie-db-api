@@ -7,7 +7,7 @@ class MovieLocalDataSource {
 
   MovieLocalDataSource(this._db);
 
-  // db에서 아이디를 가지고 영화정보 가져오기기
+  /// db에서 아이디를 가지고 영화정보 가져오기기
   Future<Result<MovieDbEntity>> getMovieById(int id) async {
     try {
       final List<Map<String, dynamic>> maps =
@@ -24,7 +24,7 @@ class MovieLocalDataSource {
     }
   }
 
-  // db에서 영화리스트 가져오기
+  /// db에서 영화리스트 가져오기
   Future<Result<List<MovieDbEntity>>> getMovies(int page) async {
     try {
       final List<Map<String, dynamic>> maps =
@@ -42,7 +42,15 @@ class MovieLocalDataSource {
     }
   }
 
-  // db에서 모든 영화 가져오기
+  /// db에 저장된 영화의 개수 가져오기
+  Future<int> getCountMovies() async {
+    final result = await _db.rawQuery('SELECT COUNT(*) FROM movie;');
+    final count = Sqflite.firstIntValue(result);
+
+    return count ?? 0;
+  }
+
+  /// db에서 모든 영화 가져오기
   Future<Result<List<MovieDbEntity>>> getAllMovies() async {
     try {
       final List<Map<String, dynamic>> maps = await _db.query('movie');
@@ -60,7 +68,7 @@ class MovieLocalDataSource {
     }
   }
 
-  // db에 영화 저장하기
+  /// db에 영화 저장하기
   Future<Result<int>> insertMovie(MovieDbEntity movie) async {
     try {
       final result = await _db.insert('movie', movie.toJson());
@@ -75,7 +83,7 @@ class MovieLocalDataSource {
     }
   }
 
-  // db에서 영화 삭제하기
+  /// db에서 영화 삭제하기
   Future<Result<int>> deleteMovie(int id) async {
     try {
       final result =
