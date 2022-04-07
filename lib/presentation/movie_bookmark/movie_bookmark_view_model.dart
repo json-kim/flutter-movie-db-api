@@ -1,27 +1,41 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:movie_search/domain/model/movie/movie.dart';
 import 'package:movie_search/domain/model/person/person.dart';
+import 'package:movie_search/domain/model/review/review.dart';
 import 'package:movie_search/domain/usecase/bookmark/get_bookmark_datas_use_case.dart';
 import 'package:movie_search/domain/usecase/bookmark/util/order_type.dart';
+import 'package:movie_search/domain/usecase/review/delete_review_use_case.dart';
 import 'package:movie_search/domain/usecase/review/get_reviews_use_case.dart';
 import 'package:movie_search/presentation/movie_bookmark/movie_bookmark_event.dart';
 import 'package:movie_search/presentation/movie_bookmark/movie_bookmark_state.dart';
+import 'package:movie_search/presentation/movie_bookmark/movie_bookmark_ui_event.dart';
 
 class MovieBookmarkViewModel with ChangeNotifier {
   final GetBookmarkDatasUseCase<Movie> _getBookmarkMovieUseCase;
   final GetBookmarkDatasUseCase<Person> _getBookmarkPersonUseCase;
   final GetReviewsUseCase _getReviewsUseCase;
+  final DeleteReviewUseCase _deleteReviewUseCase;
 
   MovieBookmarkState _state = MovieBookmarkState();
 
   MovieBookmarkState get state => _state;
 
-  MovieBookmarkViewModel(this._getBookmarkMovieUseCase,
-      this._getBookmarkPersonUseCase, this._getReviewsUseCase);
+  MovieBookmarkViewModel(
+    this._getBookmarkMovieUseCase,
+    this._getBookmarkPersonUseCase,
+    this._getReviewsUseCase,
+    this._deleteReviewUseCase,
+  );
+
+  final _streamController = StreamController<MovieBookmarkUiEvent>.broadcast();
+  Stream<MovieBookmarkUiEvent> get uiEventStream => _streamController.stream;
 
   void onEvent(MovieBookmarkEvent event) {
-    event.when(load: _load, orderChange: _orderChange);
+    event.when(
+        load: _load, orderChange: _orderChange, deleteReview: _deleteReview);
   }
 
   Future<void> _orderChange(OrderType orderType) async {}
@@ -81,6 +95,24 @@ class MovieBookmarkViewModel with ChangeNotifier {
       debugPrint(message);
     });
 
+    notifyListeners();
+  }
+
+  Future<void> _deleteReview(Review review) async {
+    _state = _state.copyWith(isLoading: true);
+    notifyListeners();
+
+    final result = await _deleteReviewUseCase(review.id);
+
+    result.when(success: (isDelete) {
+      _load(true);
+      _streamController.add(const MovieBookmarkUiEvent.snackBar('삭제 되었습니다.'));
+    }, error: (message) {
+      debugPrint(message);
+      _streamController.add(const MovieBookmarkUiEvent.snackBar('삭제 실패'));
+    });
+
+    _state = _state.copyWith(isLoading: false);
     notifyListeners();
   }
 }

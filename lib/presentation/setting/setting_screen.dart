@@ -207,7 +207,8 @@ class _SettingScreenState extends State<SettingScreen> {
                 InkWell(
                   onTap: () async {
                     final dialog = AlertDialog(
-                      content: Text('로그아웃하시겠어요?'),
+                      content: Text(
+                          '정말로 로그아웃하시겠어요?\n\n주의: 다른 계정으로 로그인 시 기존 정보가 사라집니다. 백업 하시고 로그아웃 하시는 것을 추천드립니다.'),
                       actions: [
                         TextButton(
                             onPressed: () {

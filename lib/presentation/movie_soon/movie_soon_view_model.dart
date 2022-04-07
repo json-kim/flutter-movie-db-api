@@ -6,8 +6,6 @@ import 'package:hive/hive.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:movie_search/core/param/param.dart';
 import 'package:movie_search/domain/model/movie/movie.dart';
-import 'package:movie_search/domain/usecase/movie/data/movie_upcoming.dart';
-import 'package:movie_search/service/hive_service.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:movie_search/domain/usecase/movie/get_movie_upcoming_use_case.dart';
@@ -116,7 +114,7 @@ class MovieSoonViewModel with ChangeNotifier {
           ?.deleteNotificationChannelGroup('id');
 
       await flutterLocalNotificationsPlugin.zonedSchedule(
-        0, // id는 unique해야합니다. int값
+        movie.id, // id는 unique해야합니다. int값
         movie.title,
         '${movie.title}가 오늘 공개됩니다.',
         _setNotiTime(DateTime.parse(movie.releaseDate!)),

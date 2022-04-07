@@ -43,6 +43,7 @@ dependencies:
   youtube_player_iframe: ^2.2.2
   responsive_sizer: ^3.0.5+1
   auto_animated: ^3.0.1
+  flutter_slidable: ^1.2.0
 
   # http
   http: ^0.13.4

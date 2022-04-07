@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_stars/flutter_rating_stars.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:logger/logger.dart';
 import 'package:movie_search/core/util/constants.dart';
 import 'package:movie_search/domain/model/movie/movie.dart';
@@ -303,71 +304,90 @@ class _MovieBookmarkScreenState extends State<MovieBookmarkScreen>
                     itemBuilder: (context, idx) {
                       final review = state.reviews[idx];
 
-                      return InkWell(
-                        onTap: () async {
-                          await Navigator.of(context)
-                              .push(
-                                MaterialPageRoute(
-                                  builder: (context) => ChangeNotifierProvider(
-                                    create: (context) => ReviewEditViewModel(
-                                      context.read<CreateReviewUseCase>(),
-                                      context.read<GetReviewByMovieUseCase>(),
-                                      review: review,
-                                      isEditMode: false,
-                                    ),
-                                    child: ReviewEditScreen(),
-                                  ),
-                                ),
-                              )
-                              .then((_) => viewModel
-                                  .onEvent(const MovieBookmarkEvent.load()));
-                        },
-                        child: Column(
+                      return Slidable(
+                        key: ValueKey(review.id),
+                        endActionPane: ActionPane(
+                          motion: ScrollMotion(),
                           children: [
-                            Row(
-                              children: [
-                                review.posterPath == null
-                                    ? Image.asset(
-                                        'asset/image/poster_placeholder.png')
-                                    : CachedNetworkImage(
-                                        imageUrl:
-                                            kPosterUrl + review.posterPath!,
-                                        width: 80,
-                                        fit: BoxFit.cover,
-                                      ),
-                                Expanded(
-                                    child: Column(
-                                  children: [
-                                    // 타이틀
-                                    Text(review.movieTitle),
-                                    const SizedBox(height: 10),
-
-                                    // 내용
-                                    Text(
-                                      review.content,
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 2,
-                                    ),
-                                    const SizedBox(height: 10),
-
-                                    // 별점
-                                    RatingStars(
-                                      starCount: 5,
-                                      starSize: 30,
-                                      starSpacing: 10,
-                                      value: review.starRating,
-                                      valueLabelVisibility: false,
-                                    ),
-                                  ],
-                                )),
-                              ],
-                            ),
-                            const Divider(
-                              height: 7,
-                              color: whiteColor,
-                              thickness: 0.5,
+                            SlidableAction(
+                              onPressed: (contenxt) {
+                                viewModel.onEvent(
+                                    MovieBookmarkEvent.deleteReview(review));
+                              },
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                              icon: Icons.delete,
+                              label: '삭제',
                             ),
                           ],
+                        ),
+                        child: InkWell(
+                          onTap: () async {
+                            await Navigator.of(context)
+                                .push(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        ChangeNotifierProvider(
+                                      create: (context) => ReviewEditViewModel(
+                                        context.read<CreateReviewUseCase>(),
+                                        context.read<GetReviewByMovieUseCase>(),
+                                        review: review,
+                                        isEditMode: false,
+                                      ),
+                                      child: ReviewEditScreen(),
+                                    ),
+                                  ),
+                                )
+                                .then((_) => viewModel
+                                    .onEvent(const MovieBookmarkEvent.load()));
+                          },
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  review.posterPath == null
+                                      ? Image.asset(
+                                          'asset/image/poster_placeholder.png')
+                                      : CachedNetworkImage(
+                                          imageUrl:
+                                              kPosterUrl + review.posterPath!,
+                                          width: 80,
+                                          fit: BoxFit.cover,
+                                        ),
+                                  Expanded(
+                                      child: Column(
+                                    children: [
+                                      // 타이틀
+                                      Text(review.movieTitle),
+                                      const SizedBox(height: 10),
+
+                                      // 내용
+                                      Text(
+                                        review.content,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 2,
+                                      ),
+                                      const SizedBox(height: 10),
+
+                                      // 별점
+                                      RatingStars(
+                                        starCount: 5,
+                                        starSize: 30,
+                                        starSpacing: 10,
+                                        value: review.starRating,
+                                        valueLabelVisibility: false,
+                                      ),
+                                    ],
+                                  )),
+                                ],
+                              ),
+                              const Divider(
+                                height: 7,
+                                color: whiteColor,
+                                thickness: 0.5,
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     },
