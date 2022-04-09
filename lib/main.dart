@@ -39,6 +39,14 @@ class MyApp extends StatelessWidget {
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return MaterialApp(
+                localizationsDelegates: const [
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                ],
+                supportedLocales: const [
+                  Locale('ko'),
+                ],
                 darkTheme: ThemeData.dark(),
                 home: ResponsiveSizer(
                   builder: (context, orientation, screenType) => AuthScreen(),
@@ -53,8 +61,7 @@ class MyApp extends StatelessWidget {
               GlobalWidgetsLocalizations.delegate,
             ],
             supportedLocales: const [
-              Locale('en', 'US'),
-              Locale('ko', 'KR'),
+              Locale('ko'),
             ],
             title: kMaterialApptitle,
             theme: ThemeData.dark().copyWith(

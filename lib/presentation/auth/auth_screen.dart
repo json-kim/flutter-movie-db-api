@@ -7,8 +7,27 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 import 'auth_event.dart';
 import 'auth_view_model.dart';
 
-class AuthScreen extends StatelessWidget {
+class AuthScreen extends StatefulWidget {
   const AuthScreen({Key? key}) : super(key: key);
+
+  @override
+  State<AuthScreen> createState() => _AuthScreenState();
+}
+
+class _AuthScreenState extends State<AuthScreen> {
+  late Image iconImage;
+
+  @override
+  void initState() {
+    iconImage = Image.asset('asset/icon/vector_icon.png');
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    precacheImage(iconImage.image, context);
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +43,7 @@ class AuthScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // 로고 이미지
-                  Image.asset(
-                    'asset/icon/vector_icon.png',
-                    width: 40.w,
-                  ),
+                  SizedBox(width: 40.w, child: iconImage),
                   const SizedBox(height: 24),
                   Text(
                     '영화 리뷰',
