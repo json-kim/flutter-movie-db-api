@@ -24,9 +24,12 @@ class ErrorApi {
         message = '존재하지 않는 계정입니다.';
       } else if (errorCode == 'invalid-email') {
         message = '이메일의 형식이 틀립니다.';
+      } else if (errorCode == 'email-already-in-use') {
+        message = '동일한 이메일이 존재합니다.';
       } else {
         message = '로그인 실패';
       }
+      logger.e(errorCode);
 
       return Result.error(message);
     } on Exception catch (e) {

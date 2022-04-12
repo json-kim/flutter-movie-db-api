@@ -9,6 +9,7 @@ import 'package:movie_search/domain/usecase/auth/google_login_use_case.dart';
 import 'package:movie_search/domain/usecase/auth/kakao_login_use_case.dart';
 import 'package:movie_search/domain/usecase/auth/logout_use_case.dart';
 import 'package:movie_search/domain/usecase/auth/naver_login_use_case.dart';
+import 'package:movie_search/domain/usecase/auth/sign_up_use_case.dart';
 import 'package:movie_search/presentation/auth/auth_ui_event.dart';
 
 import 'auth_event.dart';
@@ -20,6 +21,7 @@ class AuthViewModel with ChangeNotifier {
   final NaverLoginUseCase _naverLoginUseCase;
   final EmailLoginUseCase _emailLoginUseCase;
   final LogoutUseCase _logoutUseCase;
+  final SignUpUseCase _signUpUseCase;
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   bool isLoading = false;
 
@@ -36,10 +38,20 @@ class AuthViewModel with ChangeNotifier {
     this._naverLoginUseCase,
     this._emailLoginUseCase,
     this._logoutUseCase,
+    this._signUpUseCase,
   );
 
   final _uiEventController = StreamController<AuthUiEvent>.broadcast();
   Stream<AuthUiEvent> get uiEvent => _uiEventController.stream;
+  final _signUpEventController = StreamController<AuthUiEvent>.broadcast();
+  Stream<AuthUiEvent> get signUpEvent => _signUpEventController.stream;
+
+  @override
+  void dispose() {
+    _uiEventController.close();
+    _signUpEventController.close();
+    super.dispose();
+  }
 
   void onEvent(AuthEvent event) {
     event.when(
@@ -52,6 +64,7 @@ class AuthViewModel with ChangeNotifier {
       loginWithTwitter: _loginWithTwitter,
       loginWithYahoo: _loginWithYahoo,
       logout: _logout,
+      signup: _signUp,
     );
   }
 
@@ -125,6 +138,22 @@ class AuthViewModel with ChangeNotifier {
         success: (_) {},
         error: (error) {
           print('TODO: 로그 아웃 에러');
+        });
+
+    isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> _signUp(String email, String password, String nickName) async {
+    isLoading = true;
+    notifyListeners();
+
+    final result = await _signUpUseCase(email, password, nickName);
+
+    result.when(
+        success: (_) {},
+        error: (message) {
+          _signUpEventController.add(AuthUiEvent.snackBar(message));
         });
 
     isLoading = false;

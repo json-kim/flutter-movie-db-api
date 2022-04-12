@@ -1,5 +1,4 @@
 // 1. Provider 전체
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:movie_search/data/data_source/local/movie_local_data_source.dart';
 import 'package:movie_search/data/data_source/local/person_local_data_source.dart';
 import 'package:movie_search/data/data_source/local/review_local_data_source.dart';
@@ -33,15 +32,13 @@ import 'package:movie_search/data/repository/review/review_data_repository_impl.
 import 'package:movie_search/data/repository/search_history/search_history_repository_impl.dart';
 import 'package:movie_search/domain/model/movie/movie.dart';
 import 'package:movie_search/domain/model/person/person.dart';
-import 'package:movie_search/domain/repository/bookmark_data_repository.dart';
-import 'package:movie_search/domain/repository/review_data_repository.dart';
-import 'package:movie_search/domain/repository/search_history_repository.dart';
 import 'package:movie_search/domain/usecase/auth/apple_login_use_case.dart';
 import 'package:movie_search/domain/usecase/auth/email_login_use_case.dart';
 import 'package:movie_search/domain/usecase/auth/google_login_use_case.dart';
 import 'package:movie_search/domain/usecase/auth/kakao_login_use_case.dart';
 import 'package:movie_search/domain/usecase/auth/logout_use_case.dart';
 import 'package:movie_search/domain/usecase/auth/naver_login_use_case.dart';
+import 'package:movie_search/domain/usecase/auth/sign_up_use_case.dart';
 import 'package:movie_search/domain/usecase/backup/delete_backup_use_case.dart';
 import 'package:movie_search/domain/usecase/backup/load_backup_data_use_case.dart';
 import 'package:movie_search/domain/usecase/backup/load_backup_list_use_case.dart';
@@ -76,7 +73,6 @@ import 'package:movie_search/domain/usecase/search_history/search_history_use_ca
 import 'package:movie_search/domain/usecase/video/get_video_with_movie_use_case.dart';
 import 'package:movie_search/presentation/auth/auth_view_model.dart';
 import 'package:movie_search/presentation/movie_bookmark/movie_bookmark_view_model.dart';
-import 'package:movie_search/presentation/movie_detail/movie_detail_event.dart';
 import 'package:movie_search/presentation/movie_home/movie_home_view_model.dart';
 import 'package:movie_search/presentation/movie_search/movie_search_view_model.dart';
 import 'package:movie_search/presentation/movie_soon/movie_soon_view_model.dart';
@@ -95,7 +91,9 @@ Future<List<SingleChildWidget>> setProvider() async {
   await HiveService.instance.init();
   final box = HiveService.instance.searchBox;
 
+  // **********
   // 데이터 소스
+  // **********
   final tokenLocalDataSource = TokenLocalDataSource.instance;
   final firebaseAuthRemoteDataSource = FirebaseAuthRemoteDataSource();
   final kakaoAuthApi = KakaoAuthApi.instance;
@@ -111,7 +109,9 @@ Future<List<SingleChildWidget>> setProvider() async {
   final searchHistoryLocalDataSource = SearchHistoryLocalDataSource(box!);
   final backupDataRemoteDataSource = BackupRemoteDataSource();
 
+  // **********
   // 레포지토리
+  // **********
   final fauthRepository = FAuthRepositoryImpl(firebaseAuthRemoteDataSource);
   final kakaoRepository = KakaoAuthRepositoryImpl(
     kakaoAuthApi,
@@ -142,7 +142,9 @@ Future<List<SingleChildWidget>> setProvider() async {
   final castDataRepository = CastDataRepositoryImpl(movieRemoteDataSource);
   final backupRepository = BackupRepositoryImpl(backupDataRemoteDataSource);
 
+  // **********
   // 유스케이스
+  // **********
   final kakaoLoginUseCase = KakaoLoginUseCase(
     kakaoRepository,
     fauthRepository,
@@ -160,6 +162,7 @@ Future<List<SingleChildWidget>> setProvider() async {
     naverRepository,
   );
   final emailLoginUseCase = EmailLoginUseCase();
+  final signUpUseCase = SignUpUseCase();
   final saveBackupUseCase = SaveBackupUseCase(backupRepository,
       bookmarkDataRepository, bookmarkPersonRepository, reviewDataRepository);
   final loadBackupDataUseCase = LoadBackupDataUseCase(backupRepository);
@@ -174,9 +177,9 @@ Future<List<SingleChildWidget>> setProvider() async {
       bookmarkDataRepository, bookmarkPersonRepository, reviewDataRepository);
 
   List<SingleChildWidget> usecaseProviders = [
-    // 유스케이스
-
+    // **********
     // 검색 기록 유스케이스
+    // **********
     Provider(
         create: (context) =>
             GetSearchHistoriesUseCase(searchHistoryRepository)),
@@ -211,7 +214,9 @@ Future<List<SingleChildWidget>> setProvider() async {
       create: (context) => CreateReviewUseCase(reviewDataRepository),
     ),
 
+    // **********
     // 북마크<영화> 유스케이스
+    // **********
     Provider(
       create: (context) =>
           GetBookmarkDatasUseCase<Movie>(bookmarkDataRepository),
@@ -229,7 +234,9 @@ Future<List<SingleChildWidget>> setProvider() async {
           SaveBookmarkDataUseCase<Movie>(bookmarkDataRepository),
     ),
 
+    // **********
     // 북마크<인물> 유스케이스
+    // **********
     Provider(
       create: (context) =>
           GetBookmarkDatasUseCase<Person>(bookmarkPersonRepository),
@@ -247,7 +254,9 @@ Future<List<SingleChildWidget>> setProvider() async {
           SaveBookmarkDataUseCase<Person>(bookmarkPersonRepository),
     ),
 
+    // **********
     // 영화정보 가져오기 유스케이스
+    // **********
     Provider(
       create: (context) => GetPersonDetailUseCase(personDataRepository),
     ),
@@ -286,6 +295,9 @@ Future<List<SingleChildWidget>> setProvider() async {
     ),
   ];
 
+  // **********
+  // 뷰모델
+  // **********
   final List<SingleChildWidget> viewModelProviders = [
     ChangeNotifierProvider(
       create: (context) => MovieHomeViewModel(
@@ -321,6 +333,7 @@ Future<List<SingleChildWidget>> setProvider() async {
         naverLoginUseCase,
         emailLoginUseCase,
         logoutUseCase,
+        signUpUseCase,
       ),
     ),
     ChangeNotifierProvider<SettingViewModel>(

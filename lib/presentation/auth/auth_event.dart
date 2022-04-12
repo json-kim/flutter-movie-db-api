@@ -14,4 +14,6 @@ class AuthEvent with _$AuthEvent {
   const factory AuthEvent.loginWithTwitter() = LoginWithTwitter;
   const factory AuthEvent.loginWithYahoo() = LoginWithYahoo;
   const factory AuthEvent.logout() = Logout;
+  const factory AuthEvent.signup(
+      String email, String password, String nickName) = Signup;
 }

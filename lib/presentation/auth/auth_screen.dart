@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
 import 'package:movie_search/presentation/auth/find_pw_screen.dart';
+import 'package:movie_search/ui/ui_constants.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 import 'auth_event.dart';
 import 'auth_view_model.dart';
-import 'signin_screen.dart';
+import 'sign_up_screen.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({Key? key}) : super(key: key);
@@ -117,36 +118,12 @@ class _AuthScreenState extends State<AuthScreen> {
                                   return null;
                                 },
                                 keyboardType: TextInputType.emailAddress,
-                                decoration: InputDecoration(
-                                  enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      borderSide: BorderSide(
-                                          color: Colors.transparent)),
-                                  border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      borderSide: BorderSide(
-                                          color: Colors.transparent)),
-                                  errorBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      borderSide: BorderSide(
-                                          color: Colors.transparent)),
-                                  focusedErrorBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      borderSide:
-                                          BorderSide(color: Colors.red)),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      borderSide:
-                                          BorderSide(color: Colors.white)),
-                                  labelText: '이메일',
-                                  labelStyle: TextStyle(color: Colors.white),
-                                  fillColor: Colors.white10,
-                                  filled: true,
-                                  prefixIcon: Icon(
-                                    Icons.mail,
-                                    color: Colors.white,
-                                  ),
-                                ),
+                                decoration: formDecoration.copyWith(
+                                    labelText: '이메일',
+                                    prefixIcon: Icon(
+                                      Icons.email,
+                                      color: Colors.white,
+                                    )),
                                 cursorColor: Colors.white,
                               ),
                             ),
@@ -164,32 +141,12 @@ class _AuthScreenState extends State<AuthScreen> {
                                   return null;
                                 },
                                 obscureText: true,
-                                decoration: InputDecoration(
-                                  enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      borderSide: BorderSide(
-                                          color: Colors.transparent)),
-                                  errorBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      borderSide: BorderSide(
-                                          color: Colors.transparent)),
-                                  focusedErrorBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      borderSide:
-                                          BorderSide(color: Colors.red)),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      borderSide:
-                                          BorderSide(color: Colors.white)),
-                                  labelText: '비밀번호',
-                                  labelStyle: TextStyle(color: Colors.white),
-                                  fillColor: Colors.white10,
-                                  filled: true,
-                                  prefixIcon: Icon(
-                                    Icons.lock,
-                                    color: Colors.white,
-                                  ),
-                                ),
+                                decoration: formDecoration.copyWith(
+                                    labelText: '비밀번호',
+                                    prefixIcon: Icon(
+                                      Icons.lock,
+                                      color: Colors.white,
+                                    )),
                                 cursorColor: Colors.white,
                               ),
                             ),
@@ -226,7 +183,7 @@ class _AuthScreenState extends State<AuthScreen> {
                             TextButton(
                                 onPressed: () {
                                   Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => SignInScreen(),
+                                    builder: (context) => SignUpScreen(),
                                   ));
                                 },
                                 child: Text(
@@ -332,7 +289,6 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
               if (viewModel.isLoading)
                 Container(
-                  color: Colors.white.withOpacity(0.2),
                   alignment: Alignment.center,
                   child: const CircularProgressIndicator(),
                 ),
