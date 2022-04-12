@@ -4,6 +4,8 @@ part 'auth_event.freezed.dart';
 
 @freezed
 class AuthEvent with _$AuthEvent {
+  const factory AuthEvent.loginWithEmail(String email, String password) =
+      LoginWithEmail;
   const factory AuthEvent.loginWithGoogle() = LoginWithGoogle;
   const factory AuthEvent.loginWithApple() = LoginWithApple;
   const factory AuthEvent.loginWithKakao() = LoginWithKakao;

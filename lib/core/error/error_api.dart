@@ -15,6 +15,20 @@ class ErrorApi {
     logger = Logger();
     try {
       return await requestFunction();
+    } on FirebaseAuthException catch (e) {
+      final errorCode = e.code;
+      final String message;
+      if (errorCode == 'worng-password') {
+        message = '비밀번호가 틀렸습니다.';
+      } else if (errorCode == 'user-not-found') {
+        message = '존재하지 않는 계정입니다.';
+      } else if (errorCode == 'invalid-email') {
+        message = '이메일의 형식이 틀립니다.';
+      } else {
+        message = '로그인 실패';
+      }
+
+      return Result.error(message);
     } on Exception catch (e) {
       if (e is KakaoTokenException || e is NaverTokenException) {
         // 토큰 만료시 로그아웃 처리

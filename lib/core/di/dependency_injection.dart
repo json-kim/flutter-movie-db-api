@@ -37,6 +37,7 @@ import 'package:movie_search/domain/repository/bookmark_data_repository.dart';
 import 'package:movie_search/domain/repository/review_data_repository.dart';
 import 'package:movie_search/domain/repository/search_history_repository.dart';
 import 'package:movie_search/domain/usecase/auth/apple_login_use_case.dart';
+import 'package:movie_search/domain/usecase/auth/email_login_use_case.dart';
 import 'package:movie_search/domain/usecase/auth/google_login_use_case.dart';
 import 'package:movie_search/domain/usecase/auth/kakao_login_use_case.dart';
 import 'package:movie_search/domain/usecase/auth/logout_use_case.dart';
@@ -158,6 +159,7 @@ Future<List<SingleChildWidget>> setProvider() async {
     kakaoRepository,
     naverRepository,
   );
+  final emailLoginUseCase = EmailLoginUseCase();
   final saveBackupUseCase = SaveBackupUseCase(backupRepository,
       bookmarkDataRepository, bookmarkPersonRepository, reviewDataRepository);
   final loadBackupDataUseCase = LoadBackupDataUseCase(backupRepository);
@@ -317,6 +319,7 @@ Future<List<SingleChildWidget>> setProvider() async {
         appleLoginUseCase,
         kakaoLoginUseCase,
         naverLoginUseCase,
+        emailLoginUseCase,
         logoutUseCase,
       ),
     ),

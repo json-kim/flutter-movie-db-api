@@ -1,11 +1,15 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_search/domain/model/auth/user_model.dart';
 import 'package:movie_search/domain/usecase/auth/apple_login_use_case.dart';
+import 'package:movie_search/domain/usecase/auth/email_login_use_case.dart';
 import 'package:movie_search/domain/usecase/auth/google_login_use_case.dart';
 import 'package:movie_search/domain/usecase/auth/kakao_login_use_case.dart';
 import 'package:movie_search/domain/usecase/auth/logout_use_case.dart';
 import 'package:movie_search/domain/usecase/auth/naver_login_use_case.dart';
+import 'package:movie_search/presentation/auth/auth_ui_event.dart';
 
 import 'auth_event.dart';
 
@@ -14,6 +18,7 @@ class AuthViewModel with ChangeNotifier {
   final AppleLoginUseCase _appleLoginUseCase;
   final KakaoLoginUseCase _kakaoLoginUseCase;
   final NaverLoginUseCase _naverLoginUseCase;
+  final EmailLoginUseCase _emailLoginUseCase;
   final LogoutUseCase _logoutUseCase;
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   bool isLoading = false;
@@ -29,11 +34,16 @@ class AuthViewModel with ChangeNotifier {
     this._appleLoginUseCase,
     this._kakaoLoginUseCase,
     this._naverLoginUseCase,
+    this._emailLoginUseCase,
     this._logoutUseCase,
   );
 
+  final _uiEventController = StreamController<AuthUiEvent>.broadcast();
+  Stream<AuthUiEvent> get uiEvent => _uiEventController.stream;
+
   void onEvent(AuthEvent event) {
     event.when(
+      loginWithEmail: _loginWithEmail,
       loginWithGoogle: _loginWithGoogle,
       loginWithApple: _loginWithApple,
       loginWithKakao: _loginWithKakao,
@@ -43,6 +53,22 @@ class AuthViewModel with ChangeNotifier {
       loginWithYahoo: _loginWithYahoo,
       logout: _logout,
     );
+  }
+
+  Future<void> _loginWithEmail(String email, String password) async {
+    isLoading = true;
+    notifyListeners();
+
+    final result = await _emailLoginUseCase(email, password);
+
+    result.when(
+        success: (_) {},
+        error: (message) {
+          _uiEventController.add(AuthUiEvent.snackBar(message));
+        });
+
+    isLoading = false;
+    notifyListeners();
   }
 
   Future<void> _loginWithGoogle() async {
