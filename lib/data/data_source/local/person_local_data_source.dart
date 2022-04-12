@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:movie_search/core/error/auth_exception.dart';
 import 'package:movie_search/core/result/result.dart';
 import 'package:movie_search/data/data_source/local/entity/person_db_entity.dart';
 import 'package:sqflite/sqflite.dart';
@@ -7,11 +9,21 @@ class PersonLocalDataSource {
 
   PersonLocalDataSource(this._db);
 
+  String _getUid() {
+    final currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser == null) {
+      throw BaseException('currentuser is null login is needed');
+    }
+
+    return currentUser.uid;
+  }
+
   /// db에서 아이디를 가지고 인물정보 가져오기기
   Future<Result<PersonDbEntity>> getPersonById(int id) async {
     try {
-      final List<Map<String, dynamic>> maps =
-          await _db.query('person', where: 'id = ?', whereArgs: [id]);
+      final List<Map<String, dynamic>> maps = await _db.query('person',
+          where: 'uid = ? and id = ?', whereArgs: [_getUid(), id]);
 
       if (maps.isNotEmpty) {
         return Result.success(PersonDbEntity.fromJson(maps.first));
@@ -27,8 +39,11 @@ class PersonLocalDataSource {
   /// db에서 인물리스트 가져오기
   Future<Result<List<PersonDbEntity>>> getPersons(int page) async {
     try {
-      final List<Map<String, dynamic>> maps =
-          await _db.query('person', offset: (page - 1) * 20, limit: 20);
+      final List<Map<String, dynamic>> maps = await _db.query('person',
+          offset: (page - 1) * 20,
+          limit: 20,
+          where: 'uid = ?',
+          whereArgs: [_getUid()]);
 
       if (maps.isNotEmpty) {
         final List<PersonDbEntity> entities =
@@ -45,7 +60,8 @@ class PersonLocalDataSource {
   /// db에서 모든 인물정보 가져오기
   Future<Result<List<PersonDbEntity>>> getAllPersons() async {
     try {
-      final List<Map<String, dynamic>> maps = await _db.query('person');
+      final List<Map<String, dynamic>> maps =
+          await _db.query('person', where: 'uid = ?', whereArgs: [_getUid()]);
 
       if (maps.isNotEmpty) {
         final List<PersonDbEntity> entities =
@@ -62,7 +78,8 @@ class PersonLocalDataSource {
 
   /// db에 저장된 인물의 개수 가져오기
   Future<int> getCountPersons() async {
-    final result = await _db.rawQuery('SELECT COUNT(*) FROM person;');
+    final result = await _db
+        .rawQuery('SELECT COUNT(*) FROM person WHERE uid = "${_getUid()}"');
     final count = Sqflite.firstIntValue(result);
 
     return count ?? 0;
@@ -87,8 +104,8 @@ class PersonLocalDataSource {
   /// db에서 인물 삭제하기
   Future<Result<int>> deletePerson(int id) async {
     try {
-      final result =
-          await _db.delete('person', where: 'id = ?', whereArgs: [id]);
+      final result = await _db.delete('person',
+          where: 'uid = ? and id = ?', whereArgs: [_getUid(), id]);
 
       if (result < 1) {
         return Result.error(
@@ -118,7 +135,7 @@ class PersonLocalDataSource {
           persons.map((entity) => entity.toRawValues()).join(',');
       batch.rawInsert('''
       INSERT INTO person
-        (id, gender, deathday, birthday, biography, homepage, imdbId, knownForDepartment, name, placeOfBirth, popularity, profilePath, adult, alsoKnownAs)
+        (uid, id, gender, deathday, birthday, biography, homepage, imdbId, knownForDepartment, name, placeOfBirth, popularity, profilePath, adult, alsoKnownAs)
       VALUES
         $valueString
       ''');

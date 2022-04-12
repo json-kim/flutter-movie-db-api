@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:movie_search/core/error/auth_exception.dart';
 import 'package:movie_search/core/page/page.dart';
 import 'package:movie_search/core/result/result.dart';
 import 'package:movie_search/data/data_source/local/entity/movie_db_entity.dart';
@@ -10,6 +12,16 @@ class BookmarkMovieRepositoryImpl
   final MovieLocalDataSource _dataSource;
 
   BookmarkMovieRepositoryImpl(this._dataSource);
+
+  String _getUid() {
+    final currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser == null) {
+      throw BaseException('currentuser is null login is needed');
+    }
+
+    return currentUser.uid;
+  }
 
   @override
   Future<Result<int>> deleteData(int movieId) async {
@@ -76,7 +88,7 @@ class BookmarkMovieRepositoryImpl
   @override
   Future<Result<int>> saveData(Movie movie) async {
     try {
-      final movieEntity = MovieDbEntity.fromMovie(movie);
+      final movieEntity = MovieDbEntity.fromMovie(movie, _getUid());
 
       final result = await _dataSource.insertMovie(movieEntity);
 
@@ -118,8 +130,9 @@ class BookmarkMovieRepositoryImpl
 
   @override
   Future<Result<void>> restoreDatas(List<Movie> datas) async {
+    final uid = _getUid();
     final entities =
-        datas.map((movie) => MovieDbEntity.fromMovie(movie)).toList();
+        datas.map((movie) => MovieDbEntity.fromMovie(movie, uid)).toList();
 
     final result = await _dataSource.restoreMovies(entities);
 

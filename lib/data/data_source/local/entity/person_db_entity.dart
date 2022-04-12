@@ -1,6 +1,7 @@
 import 'package:movie_search/domain/model/person/person.dart';
 
 class PersonDbEntity {
+  final String uid;
   final int id;
   final int gender;
   final String? deathday;
@@ -17,6 +18,7 @@ class PersonDbEntity {
   final String alsoKnownAs;
 
   PersonDbEntity({
+    required this.uid,
     required this.id,
     required this.gender,
     required this.deathday,
@@ -33,8 +35,9 @@ class PersonDbEntity {
     required this.alsoKnownAs,
   });
 
-  factory PersonDbEntity.fromPerson(Person person) {
+  factory PersonDbEntity.fromPerson(Person person, String uid) {
     return PersonDbEntity(
+      uid: uid,
       id: person.id,
       gender: person.gender,
       deathday: person.deathday,
@@ -54,6 +57,7 @@ class PersonDbEntity {
 
   factory PersonDbEntity.fromJson(Map<String, dynamic> json) {
     return PersonDbEntity(
+      uid: json['uid'] as String,
       id: json['id'] as int,
       gender: json['gender'] as int,
       deathday: json['deathday'] as String?,
@@ -73,6 +77,7 @@ class PersonDbEntity {
 
   Map<String, dynamic> toJson() {
     return {
+      'uid': uid,
       'id': id,
       'gender': gender,
       'deathday': deathday,
@@ -115,6 +120,6 @@ class PersonDbEntity {
   }
 
   String toRawValues() {
-    return '($id, $gender, "$deathday", "$birthday", "$biography", "$homepage", "$imdbId", "$knownForDepartment", "$name", "$placeOfBirth", $popularity, "$profilePath", $adult, "$alsoKnownAs")';
+    return '("$uid", $id, $gender, "$deathday", "$birthday", "$biography", "$homepage", "$imdbId", "$knownForDepartment", "$name", "$placeOfBirth", $popularity, "$profilePath", $adult, "$alsoKnownAs")';
   }
 }

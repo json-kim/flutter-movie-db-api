@@ -25,6 +25,7 @@ class SqlService {
         await db.execute(
           '''
           CREATE TABLE movie(
+            uid TEXT NOT NULL,
             id INTEGER PRIMARY KEY,
             title TEXT NOT NULL,
             posterPath TEXT,
@@ -47,6 +48,7 @@ class SqlService {
         await db.execute(
           '''
           CREATE TABLE person(
+            uid TEXT NOT NULL,
             id INTEGER PRIMARY KEY,
             gender INTEGER NOT NULL,
             deathday TEXT,
@@ -68,6 +70,7 @@ class SqlService {
         await db.execute(
           '''
           CREATE TABLE review(
+            uid TEXT NOT NULL,
             id TEXT PRIMARY KEY,
             movieId INTEGER NOT NULL,
             movieTitle TEXT NOT NULL,

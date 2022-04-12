@@ -65,6 +65,8 @@ class _MovieBookmarkScreenState extends State<MovieBookmarkScreen>
             ..showSnackBar(snackBar);
         });
       });
+
+      viewModel.onEvent(MovieBookmarkEvent.load());
     });
     super.initState();
   }
@@ -317,6 +319,15 @@ class _MovieBookmarkScreenState extends State<MovieBookmarkScreen>
                     ),
                   );
                 },
+                noItemsFoundIndicatorBuilder: (context) => Column(
+                  children: const [
+                    Text('저장된 리뷰가 없습니다.'),
+                  ],
+                ),
+                firstPageErrorIndicatorBuilder: (context) =>
+                    const Center(child: Text('가져오기 실패')),
+                newPageErrorIndicatorBuilder: (context) =>
+                    const Center(child: Text('가져오기 실패')),
               ),
             ),
           ),

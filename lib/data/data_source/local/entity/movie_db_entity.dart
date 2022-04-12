@@ -1,6 +1,7 @@
 import 'package:movie_search/domain/model/movie/movie.dart';
 
 class MovieDbEntity {
+  final String uid;
   final int id;
   final String title;
   final String? posterPath;
@@ -18,6 +19,7 @@ class MovieDbEntity {
   final int bookmarkTime;
 
   MovieDbEntity({
+    required this.uid,
     required this.id,
     required this.title,
     required this.posterPath,
@@ -35,8 +37,9 @@ class MovieDbEntity {
     required this.releaseDate,
   });
 
-  factory MovieDbEntity.fromMovie(Movie movie) {
+  factory MovieDbEntity.fromMovie(Movie movie, String uid) {
     return MovieDbEntity(
+      uid: uid,
       title: movie.title,
       id: movie.id,
       posterPath: movie.posterPath,
@@ -57,6 +60,7 @@ class MovieDbEntity {
 
   factory MovieDbEntity.fromJson(Map<String, dynamic> json) {
     return MovieDbEntity(
+      uid: json['uid'] as String,
       id: json['id'] as int,
       title: json['title'] as String,
       posterPath: json['posterPath'] as String?,
@@ -77,6 +81,7 @@ class MovieDbEntity {
 
   Map<String, dynamic> toJson() {
     return {
+      'uid': uid,
       'id': id,
       'title': title,
       'posterPath': posterPath,
@@ -120,6 +125,6 @@ class MovieDbEntity {
   }
 
   String toRawValues() {
-    return '($id, "$title", "$posterPath", "$backdropPath", $adult, "$genreIds", "$originalLanguage", "$originalTitle", "$overview", $popularity, $popularity, "$releaseDate", $video, $voteAverage, $voteCount, $bookmarkTime)';
+    return '("$uid", $id, "$title", "$posterPath", "$backdropPath", $adult, "$genreIds", "$originalLanguage", "$originalTitle", "$overview", $popularity, $popularity, "$releaseDate", $video, $voteAverage, $voteCount, $bookmarkTime)';
   }
 }

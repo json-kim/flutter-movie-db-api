@@ -1,6 +1,7 @@
 import 'package:movie_search/domain/model/review/review.dart';
 
 class ReviewDbEntity {
+  final String uid;
   final String id;
   final int movieId;
   final String movieTitle;
@@ -11,6 +12,7 @@ class ReviewDbEntity {
   final String viewingDate;
 
   ReviewDbEntity({
+    required this.uid,
     required this.id,
     required this.movieId,
     required this.movieTitle,
@@ -23,6 +25,7 @@ class ReviewDbEntity {
 
   factory ReviewDbEntity.fromJson(Map<String, dynamic> json) {
     return ReviewDbEntity(
+      uid: json['uid'] as String,
       id: json['id'] as String,
       movieId: json['movieId'] as int,
       movieTitle: json['movieTitle'] as String,
@@ -36,6 +39,7 @@ class ReviewDbEntity {
 
   Map<String, dynamic> toJson() {
     return {
+      'uid': uid,
       'id': id,
       'movieId': movieId,
       'movieTitle': movieTitle,
@@ -47,8 +51,9 @@ class ReviewDbEntity {
     };
   }
 
-  factory ReviewDbEntity.fromReview(Review review) {
+  factory ReviewDbEntity.fromReview(Review review, String uid) {
     return ReviewDbEntity(
+      uid: uid,
       id: review.id,
       movieId: review.movieId,
       movieTitle: review.movieTitle,
@@ -74,6 +79,6 @@ class ReviewDbEntity {
   }
 
   String toRawValues() {
-    return '("$id", $movieId, "$movieTitle", "$posterPath", $starRating, "$content", "$createdAt", "$viewingDate")';
+    return '("$uid", "$id", $movieId, "$movieTitle", "$posterPath", $starRating, "$content", "$createdAt", "$viewingDate")';
   }
 }

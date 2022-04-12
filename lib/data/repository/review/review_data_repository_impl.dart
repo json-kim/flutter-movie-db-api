@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:movie_search/core/error/auth_exception.dart';
 import 'package:movie_search/core/page/page.dart';
 import 'package:movie_search/core/result/result.dart';
 import 'package:movie_search/data/data_source/local/entity/review_db_entity.dart';
@@ -10,9 +12,19 @@ class ReviewDataRepositoryImple implements ReviewDataRepository {
 
   ReviewDataRepositoryImple(this._dataSource);
 
+  String _getUid() {
+    final currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser == null) {
+      throw BaseException('currentuser is null login is needed');
+    }
+
+    return currentUser.uid;
+  }
+
   @override
   Future<Result<int>> createReview(Review review) async {
-    final ReviewDbEntity entity = ReviewDbEntity.fromReview(review);
+    final ReviewDbEntity entity = ReviewDbEntity.fromReview(review, _getUid());
 
     final result = await _dataSource.insertReview(entity);
 
@@ -68,7 +80,7 @@ class ReviewDataRepositoryImple implements ReviewDataRepository {
 
   @override
   Future<Result<int>> updateReview(Review review) async {
-    final entity = ReviewDbEntity.fromReview(review);
+    final entity = ReviewDbEntity.fromReview(review, _getUid());
 
     final result = await _dataSource.updateReview(entity);
 
@@ -94,8 +106,10 @@ class ReviewDataRepositoryImple implements ReviewDataRepository {
 
   @override
   Future<Result<void>> restoreReviews(List<Review> reviews) async {
-    final entities =
-        reviews.map((review) => ReviewDbEntity.fromReview(review)).toList();
+    final uid = _getUid();
+    final entities = reviews
+        .map((review) => ReviewDbEntity.fromReview(review, _getUid()))
+        .toList();
 
     final result = await _dataSource.restoreReviews(entities);
 
