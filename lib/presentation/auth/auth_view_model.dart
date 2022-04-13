@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:movie_search/domain/model/auth/user_model.dart';
 import 'package:movie_search/domain/usecase/auth/apple_login_use_case.dart';
 import 'package:movie_search/domain/usecase/auth/email_login_use_case.dart';
+import 'package:movie_search/domain/usecase/auth/find_pw_use_case.dart';
 import 'package:movie_search/domain/usecase/auth/google_login_use_case.dart';
 import 'package:movie_search/domain/usecase/auth/kakao_login_use_case.dart';
 import 'package:movie_search/domain/usecase/auth/logout_use_case.dart';
@@ -22,6 +23,7 @@ class AuthViewModel with ChangeNotifier {
   final EmailLoginUseCase _emailLoginUseCase;
   final LogoutUseCase _logoutUseCase;
   final SignUpUseCase _signUpUseCase;
+  final FindPWUseCase _findPWUseCase;
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   bool isLoading = false;
 
@@ -39,17 +41,21 @@ class AuthViewModel with ChangeNotifier {
     this._emailLoginUseCase,
     this._logoutUseCase,
     this._signUpUseCase,
+    this._findPWUseCase,
   );
 
   final _uiEventController = StreamController<AuthUiEvent>.broadcast();
   Stream<AuthUiEvent> get uiEvent => _uiEventController.stream;
   final _signUpEventController = StreamController<AuthUiEvent>.broadcast();
   Stream<AuthUiEvent> get signUpEvent => _signUpEventController.stream;
+  final _findPWEventController = StreamController<AuthUiEvent>.broadcast();
+  Stream<AuthUiEvent> get findPWEvent => _findPWEventController.stream;
 
   @override
   void dispose() {
     _uiEventController.close();
     _signUpEventController.close();
+    _findPWEventController.close();
     super.dispose();
   }
 
@@ -65,6 +71,7 @@ class AuthViewModel with ChangeNotifier {
       loginWithYahoo: _loginWithYahoo,
       logout: _logout,
       signup: _signUp,
+      findPW: _findPW,
     );
   }
 
@@ -155,6 +162,22 @@ class AuthViewModel with ChangeNotifier {
         error: (message) {
           _signUpEventController.add(AuthUiEvent.snackBar(message));
         });
+
+    isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> _findPW(String email) async {
+    isLoading = true;
+    notifyListeners();
+
+    final result = await _findPWUseCase(email);
+
+    result.when(success: (_) {
+      _findPWEventController.add(AuthUiEvent.snackBar('메일이 발송되었습니다.'));
+    }, error: (message) {
+      _findPWEventController.add(AuthUiEvent.snackBar(message));
+    });
 
     isLoading = false;
     notifyListeners();

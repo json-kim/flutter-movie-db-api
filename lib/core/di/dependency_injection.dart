@@ -34,6 +34,7 @@ import 'package:movie_search/domain/model/movie/movie.dart';
 import 'package:movie_search/domain/model/person/person.dart';
 import 'package:movie_search/domain/usecase/auth/apple_login_use_case.dart';
 import 'package:movie_search/domain/usecase/auth/email_login_use_case.dart';
+import 'package:movie_search/domain/usecase/auth/find_pw_use_case.dart';
 import 'package:movie_search/domain/usecase/auth/google_login_use_case.dart';
 import 'package:movie_search/domain/usecase/auth/kakao_login_use_case.dart';
 import 'package:movie_search/domain/usecase/auth/logout_use_case.dart';
@@ -163,6 +164,7 @@ Future<List<SingleChildWidget>> setProvider() async {
   );
   final emailLoginUseCase = EmailLoginUseCase();
   final signUpUseCase = SignUpUseCase();
+  final findPWUseCase = FindPWUseCase();
   final saveBackupUseCase = SaveBackupUseCase(backupRepository,
       bookmarkDataRepository, bookmarkPersonRepository, reviewDataRepository);
   final loadBackupDataUseCase = LoadBackupDataUseCase(backupRepository);
@@ -334,6 +336,7 @@ Future<List<SingleChildWidget>> setProvider() async {
         emailLoginUseCase,
         logoutUseCase,
         signUpUseCase,
+        findPWUseCase,
       ),
     ),
     ChangeNotifierProvider<SettingViewModel>(
